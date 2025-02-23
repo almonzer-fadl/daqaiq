@@ -15,7 +15,7 @@
 }
 
 body {
-  color: var(--foreground);
+  color: #000000; /* Change font color to black */
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -23,6 +23,7 @@ body {
 .btn-ghost{
   border-color: #e88213;
   background-color: #e88213;
+  color: #ffffff;
 }
 .btn-ghost :hover{
   border-color: #e88213;
