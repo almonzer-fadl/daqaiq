@@ -17,8 +17,8 @@ export default function LoginPage({ onClose }) {
         <h2 className="popup-title">تسجيل الدخول</h2>
         <form onSubmit={handleSubmit}>
           <label className="input-label">
-            رقم الجوال:
-            <input type="text" name="username" className="input-field" placeholder="رقم الجوال" inputMode="numeric" />
+             الايميل او رقم الجوال:
+            <input type="text" name="username" className="input-field" placeholder="الايميل او رقم الجوال" inputMode="numeric" />
           </label>
           <br />
           <label className="input-label">

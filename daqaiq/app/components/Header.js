@@ -41,7 +41,7 @@ function Header() {
           </div>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-2 w-45 p-2 shadow">
+            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-2 w-45 p-2 shadow text-white lg:text-black">
             <li><a href="#">الرئيسية</a></li>
             <li><a>من نحن</a></li>
             <li>
@@ -62,7 +62,7 @@ function Header() {
         <button className="btn btn-ghost text-xl ml-2" onClick={handleLoginClick}>الدخول</button>
       </div>
       <div className="navbar-center hidden lg:flex flex-grow justify-center">
-        <ul className="menu menu-horizontal px-1 flex gap-4">
+        <ul className="menu menu-horizontal px-1 flex gap-4 text-white lg:text-black">
           <li><a>الأسئلة الشائعة</a></li>
           <li><a>تواصل معنا</a></li>
           <li><a>موقعنا</a></li>
@@ -82,7 +82,7 @@ function Header() {
       </div>
       <div className="navbar-end flex items-center">
         <a className="ml-2" href='#'>
-          <Image src={logoImg} alt="Logo" width={40} height={40} />
+          <Image src={logoImg} alt="Logo" width={100} height={100} /> {/* Adjusted size */}
         </a>
       </div>
       {showPopup && <LoginPage onClose={handleCloseClick} />} {/* Render the LoginPage component */}
