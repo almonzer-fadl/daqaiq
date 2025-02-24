@@ -30,72 +30,76 @@ const Hero = () => { // Define the Hero functional component
             </div>
             <style jsx>{`
                 .hero-container {
-                    display: flex; // Use flexbox layout
-                    align-items: center; // Center items vertically
-                    margin: 80px 0; // Add vertical margin
-                    z-index: 4; // Set stacking order
-                    flex-direction: row; // Arrange items in a row
+                    display: flex;
+                    align-items: center;
+                    margin: 80px 0;
+                    z-index: 4;
+                    flex-direction: row;
+                    
                 }
                 .hero-image {
-                    flex: 1; // Allow image container to take up one part of the available space
-                    margin-right: 20px; // Add right margin
-                    z-index: 10; // Set stacking order
+                    flex: 1;
+                    margin-right: 20px;
+                    margin-left: 20px;
+                    z-index: 10;
                 }
                 .hero-image img {
-                    width: 100%; // Make image take up full width of container
-                    height: auto; // Maintain aspect ratio
+                    width: 100%;
+                    height: auto;
                 }
                 .hero-text-container {
-                    flex: 2; // Allow text container to take up two parts of the available space
-                    z-index: 5; // Set stacking order
-                    text-align: center; // Center text
+                    flex: 2;
+                    z-index: 5;
+                    text-align: center;
                 }
                 .hero-text-container h1 {
-                    font-family: Cairo; // Set font family
-                    font-size: 24px; // Set font size
-                    color: #252525; // Set text color
-                    margin: 30px 0; // Add vertical margin
+                    font-family: Cairo;
+                    font-size: 24px;
+                    color: #252525;
+                    margin: 30px 0;
                 }
                 .hero-text-container p {
-                    font-family: Cairo; // Set font family
-                    font-size: 14px; // Set font size
-                    color: #252525; // Set text color
-                    margin: 30px 0; // Add vertical margin
+                    font-family: Cairo;
+                    font-size: 14px;
+                    color: #252525;
+                    margin: 30px 0;
                 }
                 .hero-buttons {
-                    display: flex; // Use flexbox layout
-                    justify-content: center; // Center buttons horizontally
-                    z-index: 6; // Set stacking order
+                    display: flex;
+                    justify-content: center;
+                    z-index: 6;
                 }
                 .primary-button {
-                    background-color: #FF9030; // Set background color
-                    font-family: Cairo; // Set font family
-                    font-size: 14px; // Set font size
-                    font-weight: bold; // Set font weight
-                    color: #FFF; // Set text color
-                    margin: 0 10px; // Add horizontal margin
-                    border-radius: 5px; // Round corners
-                    cursor: pointer; // Change cursor on hover
+                    background-color: #FF9030;
+                    font-family: Cairo;
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #FFF;
+                    margin: 0 10px;
+                    border-radius: 5px;
+                    cursor: pointer;
                 }
                 .secondary-button {
-                    background-color: #FFF; // Set background color
-                    font-family: Cairo; // Set font family
-                    font-size: 14px; // Set font size
-                    font-weight: bold; // Set font weight
-                    color: #FF5A27; // Set text color
-                    margin: 0 10px; // Add horizontal margin
-                    border: 2px solid #FF5A27; // Set border color and width
-                    border-radius: 5px; // Round corners
-                    cursor: pointer; // Change cursor on hover
+                    background-color: #FFF;
+                    font-family: Cairo;
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #FF5A27;
+                    margin: 0 10px;
+                    border: 2px solid #FF5A27;
+                    border-radius: 5px;
+                    cursor: pointer;
                 }
                 @media (max-width: 768px) {
                     .hero-container {
-                        flex-direction: column; // Arrange items in a column
-                        align-items: center; // Center items horizontally
+                        flex-direction: column;
+                        align-items: center;
+                        margin-top: 120px;
+                        margin-left: 0px;
                     }
                     .hero-image {
-                        margin-right: 0; // Remove right margin
-                        margin-bottom: 20px; // Add bottom margin
+                        margin-right: 0;
+                        margin-bottom: 20px;
                     }
                 }
             `}</style>

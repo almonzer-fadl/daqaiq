@@ -60,15 +60,21 @@ const LowerHero = () => {
                 .container {
                     display: flex;
                     flex-direction: row;
-                    justify-content: space-between;
-                    margin: 0 0 50px;
+                    justify-content: center; // Changed from space-between to center
+                    align-items: center;
+                    margin: 0 auto 50px;
+                    gap: 0px; // Added to remove gap between elements
+                    max-width: 1200px; /* Add max-width to contain the content */
+                    width: 100%;
+                    padding: 0 20px; /* Add padding for smaller screens */
                 }
                 .text-container {
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
                     max-width: 498px;
-                    margin-right: 0px; /* Add margin to create space between text and image */
+                    margin-right: 20px; // Added margin for spacing
+                    padding: 0 20px; // Added padding instead of margin
                 }
                 .text-block {
                     margin-bottom: 30px;
@@ -98,26 +104,28 @@ const LowerHero = () => {
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    margin-left: 0; /* Remove the margin to minimize the gap */
+                    margin: 0; // Removed all margins
                 }
                 @media (max-width: 768px) {
                     .container {
                         flex-direction: column;
+                        gap: 20px; // Added small gap for mobile view
+                        padding: 0 10px; // Reduce padding for mobile
                     }
                     .image-container {
                         width: 100%;
                         height: auto;
-                        margin-bottom: 20px; /* Reduce the margin to minimize the gap */
-                        margin-left: 0;
+                        margin: 0; // Removed all margins
                     }
                     .text-container {
-                        margin-right: 0;
-                        margin-top: 20px;
+                        margin: 0; // Removed all margins
+                        padding: 0 10px; // Reduced padding for mobile
                     }
                 }
                 @media (min-width: 769px) {
                     .container {
                         flex-direction: row-reverse;
+                        gap: 0; // Ensure no gap in desktop view
                     }
                 }
             `}</style>

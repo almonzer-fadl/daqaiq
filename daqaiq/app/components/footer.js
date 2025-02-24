@@ -1,5 +1,6 @@
 "use client"; // Ensures this component is treated as a Client Component
 import React from 'react';
+import Image from 'next/image';
 
 const Footer = () => {
     return (
@@ -8,37 +9,57 @@ const Footer = () => {
                 <div className="icon-container">
                     <div className="icon">
                         <button className="icon-button">
-                            <svg viewBox="0 0 32 32" data-icon-set="fa">
-                                <use href="/static/icon_libraries/fontawesome-4.7.0.svg#fa-youtube-play"></use>
-                            </svg>
+                        <Image 
+                                src="/whatsapp.png" // Remove /public from the path
+                                alt="Facebook" 
+                                width={25} 
+                                height={25}
+                                style={{ objectFit: 'contain' }} // Add style for better image fitting
+                            />
                         </button>
                     </div>
                     <div className="icon">
                         <button className="icon-button">
-                            <svg viewBox="0 0 32 32" data-icon-set="fa">
-                                <use href="/static/icon_libraries/fontawesome-4.7.0.svg#fa-twitter"></use>
-                            </svg>
+                            <Image 
+                                src="/facebook.png" // Remove /public from the path
+                                alt="Facebook" 
+                                width={25} 
+                                height={25}
+                                style={{ objectFit: 'contain' }} // Add style for better image fitting
+                            />
                         </button>
                     </div>
                     <div className="icon">
                         <button className="icon-button">
-                            <svg viewBox="0 0 32 32" data-icon-set="fa">
-                                <use href="/static/icon_libraries/fontawesome-4.7.0.svg#fa-linkedin"></use>
-                            </svg>
+                        <Image 
+                                src="/twitter.png" // Remove /public from the path
+                                alt="Facebook" 
+                                width={25} 
+                                height={25}
+                                style={{ objectFit: 'contain' }} // Add style for better image fitting
+                            />
                         </button>
                     </div>
                     <div className="icon">
                         <button className="icon-button">
-                            <svg viewBox="0 0 32 32" data-icon-set="fa">
-                                <use href="/static/icon_libraries/fontawesome-4.7.0.svg#fa-instagram"></use>
-                            </svg>
+                        <Image 
+                                src="/instagram.png" // Remove /public from the path
+                                alt="Facebook" 
+                                width={25} 
+                                height={25}
+                                style={{ objectFit: 'contain' }} // Add style for better image fitting
+                            />
                         </button>
                     </div>
                     <div className="icon">
                         <button className="icon-button">
-                            <svg viewBox="0 0 32 32" data-icon-set="fa">
-                                <use href="/static/icon_libraries/fontawesome-4.7.0.svg#fa-phone"></use>
-                            </svg>
+                        <Image 
+                                src="/snapchat.png" // Remove /public from the path
+                                alt="Facebook" 
+                                width={25} 
+                                height={25}
+                                style={{ objectFit: 'contain' }} // Add style for better image fitting
+                            />
                         </button>
                     </div>
                 </div>
@@ -63,9 +84,9 @@ const Footer = () => {
             </div>
             <div className="company-info">
                 <div className="description">
-                    فاحص هي شركة سعودية رائدة متخصصة في مجال فحص السيارات المستعملة قبل الشراء - وتشمل خدماتنا الفحص الشامل للسيارات، وتقييم السيارات المستعملة بالإضافة إلى خدمة تقرير موجز
+                   <p> نقدم خدمات فحص وصيانة السيارات بسرعة ودقة، باستخدام أحدث التقنيات وفريق متخصص لضمان أفضل أداء لسيارتك. دقة في دقائق – لأن وقتك ثمين!</p>
                 </div>
-                <div className="phone-number">920031814</div>
+                
             </div>
             <div className="payment-methods">
                 <div className="payment-icon">
@@ -85,13 +106,13 @@ const Footer = () => {
                 </div>
             </div>
             <div className="footer-bottom">
-                <div className="copyright">© 2024 جميع الحقوق محفوظة لشركة فاحص</div>
+                <div className="copyright">© 2025 جميع الحقوق محفوظة لشركة دقائق</div>
             </div>
             <style jsx>{`
                 .footer {
                     background-color: rgb(0, 49, 69);
                     width: 100%;
-                    padding: 10px 5%;
+                    padding: 3px 3%; /* Further reduced padding */
                     display: flex;
                     flex-direction: column;
                     align-items: center;
@@ -104,35 +125,35 @@ const Footer = () => {
                     justify-content: space-between;
                     width: 100%;
                     max-width: 1200px;
-                    margin: 0 auto;
+                    margin: 3px auto; /* Further reduced margin */
                     flex-wrap: wrap;
                 }
 
                 .icon-container {
                     display: flex;
-                    gap: 10px;
+                    gap: 5px; /* Further reduced gap */
                 }
 
                 .links-container {
                     display: flex;
-                    gap: 10px;
+                    gap: 5px; /* Further reduced gap */
                     flex-wrap: wrap;
                 }
 
                 .services {
                     width: 100%;
                     max-width: 1200px;
-                    margin: 10px auto;
+                    margin: 3px auto; /* Further reduced margin */
                     display: flex;
                     justify-content: center;
-                    gap: 20px;
+                    gap: 5px; /* Further reduced gap */
                     flex-wrap: wrap;
                 }
 
                 .company-info {
                     width: 100%;
                     max-width: 1200px;
-                    margin: 10px auto;
+                    margin: 3px auto; /* Further reduced margin */
                     text-align: center;
                 }
 
@@ -141,27 +162,32 @@ const Footer = () => {
                     max-width: 768px;
                     margin: 0 auto;
                     text-align: center;
+                    color: white; /* Add this line to make text color white */
+                }
+
+                .description p {
+                    color: white; /* Add this line to ensure paragraph text is white */
                 }
 
                 .payment-methods {
                     display: flex;
                     justify-content: center;
-                    gap: 10px;
-                    margin: 10px 0;
+                    gap: 5px; /* Further reduced gap */
+                    margin: 3px 0; /* Further reduced margin */
                     flex-wrap: wrap;
                 }
 
                 .footer-bottom {
                     width: 100%;
                     text-align: center;
-                    margin: 5px 0;
+                    margin: 2px 0; /* Further reduced margin */
                 }
 
                 @media (max-width: 768px) {
                     .social-icons {
                         flex-direction: column;
                         align-items: center;
-                        gap: 10px;
+                        gap: 3px; /* Further reduced gap for mobile */
                     }
 
                     .icon-container {
@@ -175,11 +201,11 @@ const Footer = () => {
                     .services {
                         flex-direction: column;
                         align-items: center;
-                        gap: 10px;
+                        gap: 3px; /* Further reduced gap for mobile */
                     }
 
                     .description {
-                        padding: 0 10px;
+                        padding: 0 3px; /* Further reduced padding */
                     }
 
                     .payment-methods {
@@ -189,23 +215,24 @@ const Footer = () => {
 
                 .link, .service {
                     font-family: Cairo;
-                    font-size: 14px;
+                    font-size: 14px; /* Increased from 11px */
                     font-weight: 400;
-                    color: rgb(196, 196, 196);
+                    color: white; /* Changed from rgb(196, 196, 196) to white */
                     text-align: center;
                     line-height: 1;
                     cursor: pointer;
-                    padding: 5px 10px;
+                    padding: 2px 5px; /* Further reduced padding */
+                    text-decoration: none; /* Add this line to remove underline */
                 }
 
                 .icon {
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    width: 35px;
-                    height: 35px;
-                    border: 2px solid rgb(196, 196, 196);
-                    border-radius: 25px;
+                    width: 35px; /* Increased from 25px */
+                    height: 35px; /* Increased from 25px */
+                    border: 1px solid rgb(196, 196, 196); /* Thinner border */
+                    border-radius: 20px; /* Adjusted border radius */
                     cursor: pointer;
                 }
 
@@ -213,13 +240,13 @@ const Footer = () => {
                     display: flex;
                     color: rgb(196, 196, 196);
                     border-radius: 4px;
-                    width: 20px;
-                    height: 20px;
+                    width: 25px; /* Increased from 18px */
+                    height: 25px; /* Increased from 18px */
                 }
 
                 .payment-icon {
-                    width: 40px;
-                    height: 40px;
+                    width: 40px; /* Increased from 30px */
+                    height: 40px; /* Increased from 30px */
                 }
 
                 .payment-icon img {
@@ -230,23 +257,35 @@ const Footer = () => {
 
                 .phone-number {
                     font-family: Cairo;
-                    font-size: 14px;
+                    font-size: 16px; /* Increased from 11px */
                     font-weight: 400;
-                    color: rgb(196, 196, 196);
+                    color: white; /* Changed from rgb(196, 196, 196) to white */
                     text-align: center;
                     line-height: 1;
-                    padding: 0px 10px;
-                    margin: 10px 0px;
+                    padding: 0px 5px; /* Further reduced padding */
+                    margin: 3px 0; /* Further reduced margin */
+                    display: flex;
+                    justify-content: center; /* Center the phone number */
+                    align-items: center; /* Center vertically */
                 }
 
                 .copyright {
                     font-family: Cairo;
-                    font-size: 14px;
+                    font-size: 14px; /* Increased from 11px */
                     font-weight: 400;
-                    color: rgb(196, 196, 196);
+                    color: white; /* Changed from rgb(196, 196, 196) to white */
                     text-align: center;
                     line-height: 1;
-                    padding: 5px 0px;
+                    padding: 2px 0; /* Further reduced padding */
+                }
+
+                .text-block h3 {
+                    font-size: 16px; /* Added for consistent text sizing */
+                    margin-bottom: 5px;
+                }
+
+                .text-block p {
+                    font-size: 14px; /* Added for consistent text sizing */
                 }
             `}</style>
         </footer>

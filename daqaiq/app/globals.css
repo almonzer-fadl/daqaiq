@@ -9,7 +9,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #73859C; /* Define the background color variable for dark mode */
+    --background: #999A9E; /* Define the background color variable for dark mode */
     --foreground: #ededed; /* Define the foreground color variable for dark mode */
   }
 }
