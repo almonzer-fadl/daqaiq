@@ -68,7 +68,7 @@ const LowerHero = () => {
                     flex-direction: column;
                     justify-content: center;
                     max-width: 498px;
-                    margin-right: 20px; /* Add margin to create space between text and image */
+                    margin-right: 0px; /* Add margin to create space between text and image */
                 }
                 .text-block {
                     margin-bottom: 30px;
@@ -98,7 +98,7 @@ const LowerHero = () => {
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    margin-right: 80px;
+                    margin-left: 0; /* Remove the margin to minimize the gap */
                 }
                 @media (max-width: 768px) {
                     .container {
@@ -107,11 +107,17 @@ const LowerHero = () => {
                     .image-container {
                         width: 100%;
                         height: auto;
-                        margin-bottom: 40px;
+                        margin-bottom: 20px; /* Reduce the margin to minimize the gap */
+                        margin-left: 0;
                     }
                     .text-container {
                         margin-right: 0;
-                        mardin-top: 20px;
+                        margin-top: 20px;
+                    }
+                }
+                @media (min-width: 769px) {
+                    .container {
+                        flex-direction: row-reverse;
                     }
                 }
             `}</style>

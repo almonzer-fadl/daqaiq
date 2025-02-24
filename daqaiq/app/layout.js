@@ -18,7 +18,7 @@ export const metadata = { // Define metadata for the application
 
 export default function RootLayout({ children }) { // Define the RootLayout functional component
   return (
-    <html lang="en">
+    <html lang="ar">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
