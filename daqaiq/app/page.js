@@ -1,6 +1,7 @@
 import Image from "next/image"; // Import Image component from Next.js
 import Header from "./components/Header"; // Import Header component
 import Hero from "./components/Hero"; // Import Hero component
+import LowerHero from "./components/lower-hero";
 
 export default function Home() { // Define the Home functional component
   return (
@@ -10,8 +11,8 @@ export default function Home() { // Define the Home functional component
         {/* Main content area with flexbox layout */}
         
         <Header /> {/* Render the Header component */}
-        <Hero /> {/* Render the Hero component */}
-
+        <Hero />
+        <LowerHero/>
       </main>
     </div>
   );
