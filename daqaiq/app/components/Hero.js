@@ -9,7 +9,7 @@ const Hero = () => { // Define the Hero functional component
             {/* Main container with flexbox layout */}
             <div className="hero-image"> 
                 {/* Image container with flex property */}
-                <img src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fb964d3e6d165a571306324c2c0e36a50.cdn.bubble.io%2Ff1725809087109x403311892363749950%2Fabout_320_220.png?w=384&amp;h=216&amp;auto=compress&amp;dpr=1.25&amp;fit=max" alt="Hero" />
+                <img src="./public/hero-image.jpg" alt="Hero Image" />
                 {/* Hero image */}
             </div>
             <div className="hero-text-container">
