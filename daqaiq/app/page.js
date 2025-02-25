@@ -3,6 +3,7 @@ import Header from "./components/Header"; // Import Header component
 import Hero from "./components/Hero"; // Import Hero component
 import LowerHero from "./components/lower-hero";
 import Footer from "./components/footer";
+import Customers from "./components/costomers";
 
 
 export default function Home() { // Define the Home functional component
@@ -14,6 +15,7 @@ export default function Home() { // Define the Home functional component
         {/* Main content area with flex-grow to fill the remaining space */}
         <Hero />
         <LowerHero />
+        <Customers/>
         
       </main>
       <Footer /> {/* Render the Footer component */}

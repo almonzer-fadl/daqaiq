@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react';
 import styles from './Customers.module.css'; // Import the CSS module
 
 const Customers = () => {
-    const [position, setPosition] = useState(0);
-
     const customers = [
         {
             url: "https://taajeerfinance.com/ar/",
@@ -43,23 +41,11 @@ const Customers = () => {
         }
     ];
 
-    useEffect(() => {
-        const moveCards = () => {
-            setPosition((prevPos) => {
-                const newPos = prevPos - 1;
-                return newPos <= -100 ? 0 : newPos;
-            });
-        };
-
-        const interval = setInterval(moveCards, 50);
-        return () => clearInterval(interval);
-    }, []);
-
     const duplicatedCustomers = [...customers, ...customers];
 
     return (
         <div className={styles.container}>
-            <ul className={styles.cards} style={{ transform: `translateX(${position}px)` }}>
+            <ul className={styles.cards}>
                 {duplicatedCustomers.map((customer, index) => (
                     <li key={index} className={styles.card}>
                         <a href={customer.url} target="_blank" rel="noopener noreferrer">
