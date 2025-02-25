@@ -2,6 +2,7 @@
 
 import { useState } from 'react'; // Import useState hook from React
 import Image from 'next/image'; // Import Image component from Next.js
+import Link from 'next/link'; // Import Link component from Next.js
 import logoImg from '@/public/logo.png'; // Import logo image
 import LoginPage from './loginPage'; // Import the LoginPage component
 
@@ -50,7 +51,7 @@ function Header() { // Define the Header functional component
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-2 w-45 p-2 shadow text-white lg:text-black">
             {/* Dropdown menu items */}
             <li><a href="#">الرئيسية</a></li>
-            <li><a>من نحن</a></li>
+            <li><Link href="/aboutus">من نحن</Link></li>
             <li>
               <a onClick={toggleSubmenu}>خدماتنا</a>
               {/* Submenu toggle */}
@@ -90,7 +91,7 @@ function Header() { // Define the Header functional component
               </ul>
             )}
           </li>
-          <li><a>من نحن</a></li>
+          <li><Link href="/aboutus">من نحن</Link></li>
           <li><a href="#">الرئيسية</a></li>
         </ul>
       </div>
