@@ -1,0 +1,56 @@
+.container {
+    min-height: 100vh;
+    padding-top: 6rem;
+    background: var(--background);
+  }
+  
+  .header {
+    background-color: var(--primary-color);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    color: white;
+    text-align: center;
+  }
+  
+  .priceCards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .price {
+    font-size: 2rem;
+    color: var(--secondary-color);
+    font-weight: bold;
+    margin: 1rem 0;
+  }
+  
+  .features {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+  }
+  
+  .feature {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  @media (min-width: 768px) {
+    .priceCards {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
