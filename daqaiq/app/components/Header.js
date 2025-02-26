@@ -50,8 +50,8 @@ function Header() { // Define the Header functional component
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-2 w-45 p-2 shadow text-white lg:text-black">
             {/* Dropdown menu items */}
-            <li><a href="#">الرئيسية</a></li>
-            <li><Link href="link">من نحن</Link></li>
+            <li><Link href="/">الرئيسية</Link></li>
+            <li><Link href="/about">من نحن</Link></li>
             <li>
               <a onClick={toggleSubmenu}>خدماتنا</a>
               {/* Submenu toggle */}
@@ -63,10 +63,10 @@ function Header() { // Define the Header functional component
                 </ul>
               )}
             </li>
-            <li><a>الأسعار</a></li>
-            <li><a>موقعنا</a></li>
-            <li><a>تواصل معنا</a></li>
-            <li><a>الأسئلة الشائعة</a></li>
+            <li><Link href="/prices">الأسعار</Link></li>
+            <li><Link href="/location">موقعنا</Link></li>
+            <li><Link href="/contact">تواصل معنا</Link></li>
+            <li><Link href="/faq">الأسئلة الشائعة</Link></li>
           </ul>
         </div>
         <button className="btn btn-ghost text-xl ml-2" onClick={handleLoginClick}>الدخول</button>
@@ -77,7 +77,7 @@ function Header() { // Define the Header functional component
         <ul className="menu menu-horizontal px-1 flex gap-4 text-white lg:text-black">
           {/* Horizontal menu items */}
           <li><a>الأسئلة الشائعة</a></li>
-          <li><a>تواصل معنا</a></li>
+          <li><Link href="/contact">تواصل معنا</Link></li>
           <li><a>موقعنا</a></li>
           <li><a>الأسعار</a></li>
           <li>
@@ -91,8 +91,8 @@ function Header() { // Define the Header functional component
               </ul>
             )}
           </li>
-          <li><Link href="link">من نحن</Link></li>
-          <li><a href="#">الرئيسية</a></li>
+          <li><Link href="/about">من نحن</Link></li>
+          <li><a href="/">الرئيسية</a></li>
         </ul>
       </div>
       <div className="navbar-end flex items-center">
