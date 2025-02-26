@@ -3,8 +3,10 @@
 @tailwind utilities; /* Import Tailwind's utility styles */
 
 :root {
-  --background: #ffffff; /* Define the background color variable */
+  --background: #999A9E; /* Define the background color variable */
   --foreground: #171717; /* Define the foreground color variable */
+  --primary-color: rgb(0, 49, 69);
+  --secondary-color: #E88213;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -30,3 +32,5 @@ body {
   border-color: #e88213; /* Set the border color on hover */
   background-color: transparent; /* Set the background color to transparent on hover */
 }
+
+/* Add any global styles here */

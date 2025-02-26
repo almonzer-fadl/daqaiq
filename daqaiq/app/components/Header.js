@@ -76,23 +76,23 @@ function Header() { // Define the Header functional component
         {/* Navbar center section for larger screens */}
         <ul className="menu menu-horizontal px-1 flex gap-4 text-white lg:text-black">
           {/* Horizontal menu items */}
-          <li><a>الأسئلة الشائعة</a></li>
+          <li><Link href="/faq">الأسئلة الشائعة</Link></li>
           <li><Link href="/contact">تواصل معنا</Link></li>
-          <li><a>موقعنا</a></li>
-          <li><a>الأسعار</a></li>
+          <li><Link href="/location">موقعنا</Link></li>
+          <li><Link href="/prices">الأسعار</Link></li>
           <li>
             <a onClick={toggleSubmenu}>خدماتنا</a>
             {/* Submenu toggle */}
             {isSubmenuOpen && (
               <ul className="p-2">
                 {/* Submenu items */}
-                <li><a>Submenu 1</a></li>
-                <li><a>Submenu 2</a></li>
+                <li><Link href="/services/1">Submenu 1</Link></li>
+                <li><Link href="/services/2">Submenu 2</Link></li>
               </ul>
             )}
           </li>
           <li><Link href="/about">من نحن</Link></li>
-          <li><a href="/">الرئيسية</a></li>
+          <li><Link href="/">الرئيسية</Link></li>
         </ul>
       </div>
       <div className="navbar-end flex items-center">
