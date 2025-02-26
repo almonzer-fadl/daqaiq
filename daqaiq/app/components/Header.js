@@ -51,7 +51,7 @@ function Header() { // Define the Header functional component
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-2 w-45 p-2 shadow text-white lg:text-black">
             {/* Dropdown menu items */}
             <li><a href="#">الرئيسية</a></li>
-            <li><Link href="/aboutus">من نحن</Link></li>
+            <li><Link href="link">من نحن</Link></li>
             <li>
               <a onClick={toggleSubmenu}>خدماتنا</a>
               {/* Submenu toggle */}
@@ -91,7 +91,7 @@ function Header() { // Define the Header functional component
               </ul>
             )}
           </li>
-          <li><Link href="/aboutus">من نحن</Link></li>
+          <li><Link href="link">من نحن</Link></li>
           <li><a href="#">الرئيسية</a></li>
         </ul>
       </div>
