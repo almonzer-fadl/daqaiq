@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import styles from './faq.module.css';
 import Header from '../components/Header';
 import Footer from '../components/footer';
 
@@ -7,16 +8,16 @@ const FAQItem = ({ question, answer }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border-b border-gray-200">
+    <div className={styles.faqitem}>
       <button
-        className="w-full text-right py-4 px-6 focus:outline-none flex justify-between items-center"
+        className={styles.question}
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="text-lg font-semibold text-primary">{question}</span>
         <span className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>▼</span>
       </button>
       {isOpen && (
-        <div className="px-6 pb-4 text-right text-gray-600">
+        <div className={styles.answer}>
           {answer}
         </div>
       )}
@@ -40,8 +41,8 @@ export default function FAQ() {
   return (
     <main className="min-h-screen bg-white">
       <Header />
-      <div className="container mx-auto px-4 pt-24">
-        <div className="bg-primary text-white p-8 rounded-lg shadow-lg mb-8">
+      <div className={styles.container}>
+        <div className={styles.header}>
           <h1 className="text-4xl font-bold text-center mb-8">الأسئلة الشائعة</h1>
         </div>
         <div className="max-w-3xl mx-auto my-12 bg-white rounded-lg shadow-md overflow-hidden">
