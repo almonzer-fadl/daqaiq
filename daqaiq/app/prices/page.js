@@ -52,8 +52,75 @@ export default function Prices() {
         price: "499", 
         features: ["فحص شامل", "تقرير مفصل", "ضمان الفحص", "فحص كمبيوتر", "تقييم السعر"]
       }
+    ],
+    suv: [
+      {
+        title: "الباقة الأساسية",
+        price: "399",
+        features: ["فحص شامل", "تقرير مفصل", "ضمان الفحص"]
+      },
+      {
+        title: "الباقة المتقدمة", 
+        price: "499",
+        features: ["فحص شامل", "تقرير مفصل", "ضمان الفحص", "فحص كمبيوتر"]
+      },
+      {
+        title: "الباقة الشاملة",
+        price: "599", 
+        features: ["فحص شامل", "تقرير مفصل", "ضمان الفحص", "فحص كمبيوتر", "تقييم السعر"]
+      }
+    ],
+    european: [
+      {
+        title: "الباقة الأساسية",
+        price: "499",
+        features: ["فحص شامل", "تقرير مفصل", "ضمان الفحص"]
+      },
+      {
+        title: "الباقة المتقدمة", 
+        price: "599",
+        features: ["فحص شامل", "تقرير مفصل", "ضمان الفحص", "فحص كمبيوتر"]
+      },
+      {
+        title: "الباقة الشاملة",
+        price: "699", 
+        features: ["فحص شامل", "تقرير مفصل", "ضمان الفحص", "فحص كمبيوتر", "تقييم السعر"]
+      }
+    ],
+    luxury: [
+      {
+        title: "الباقة الأساسية",
+        price: "699",
+        features: ["فحص شامل", "تقرير مفصل", "ضمان الفحص"]
+      },
+      {
+        title: "الباقة المتقدمة", 
+        price: "799",
+        features: ["فحص شامل", "تقرير مفصل", "ضمان الفحص", "فحص كمبيوتر"]
+      },
+      {
+        title: "الباقة الشاملة",
+        price: "899", 
+        features: ["فحص شامل", "تقرير مفصل", "ضمان الفحص", "فحص كمبيوتر", "تقييم السعر"]
+      }
+    ],
+    superlux: [
+      {
+        title: "الباقة الأساسية",
+        price: "899",
+        features: ["فحص شامل", "تقرير مفصل", "ضمان الفحص"]
+      },
+      {
+        title: "الباقة المتقدمة", 
+        price: "999",
+        features: ["فحص شامل", "تقرير مفصل", "ضمان الفحص", "فحص كمبيوتر"]
+      },
+      {
+        title: "الباقة الشاملة",
+        price: "1099", 
+        features: ["فحص شامل", "تقرير مفصل", "ضمان الفحص", "فحص كمبيوتر", "تقييم السعر"]
+      }
     ]
-    // Add other category prices similarly
   };
 
   return (
@@ -61,7 +128,7 @@ export default function Prices() {
       <Header />
       <div className={styles.container}>
         <div className={styles.header}>
-          <h1 className="text-4xl font-bold">الباقات</h1>
+          <h1 className="text-4xl font-bold">الاسعار</h1>
         </div>
         <div className={styles.priceSection}>
           <div className={styles.categoryList}>

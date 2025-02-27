@@ -1,6 +1,6 @@
 .container {
   font-family: var(--font_cairo);
-  color: var(--color_text_default);
+  color: black;
   direction: rtl;
   min-height: 100vh;
   padding: 2rem;
@@ -22,16 +22,16 @@
 .container {
   min-height: 100vh;
   padding-top: 6rem;
-  background: var(--color_background_default);
+  background-color: #999A9E;
   direction: rtl;
   font-family: var(--font_cairo), sans-serif;
 }
 
 .header {
-  background-color: var(--color_primary_default);
+  background-color: #999A9E;
   padding: 2rem;
   border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px none;
   margin-bottom: 2rem;
   color: var(--color_primary_contrast_default);
   text-align: center;
