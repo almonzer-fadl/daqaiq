@@ -1,6 +1,7 @@
 "use client"; // Ensures this component is treated as a Client Component
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const Footer = () => {
     return (
@@ -70,18 +71,18 @@ const Footer = () => {
                     <div className="link">شهادة الضريبة</div>
                 </div>
             </div>
-            <div className="services">
-                <div className="service-column">
-                    <div className="service">خدماتنا</div>
-                    <div className="service">مواقعنا</div>
-                    <div className="service">الأسئلة الشائعة</div>
-                </div>
-                <div className="service-column">
-                    <div className="service">المدونة</div>
-                    <div className="service">من نحن</div>
-                    <div className="service">تواصل معنا</div>
-                </div>
+            <div className="services mb-1">
+               <div className="service-column">
+                 <Link href="/services" className="link text-white no-underline">خدماتنا</Link>
+                 <Link href="/location" className="link text-white no-underline">موقعنا</Link>
+                 <Link href="/faq" className="link text-white no-underline">الأسئلة الشائعة</Link>
             </div>
+            <div className="service-column">
+                <Link href="/prices" className="link text-white no-underline">الأسعار</Link>
+                 <Link href="/about" className="link text-white no-underline">من نحن</Link>
+                 <Link href="/contact" className="link text-white no-underline">تواصل معنا</Link>
+             </div>
+                 </div>
             <div className="company-info">
                 <div className="description">
                    <p> نقدم خدمات فحص وصيانة السيارات بسرعة ودقة، باستخدام أحدث التقنيات وفريق متخصص لضمان أفضل أداء لسيارتك. دقة في دقائق – لأن وقتك ثمين!</p>
@@ -143,11 +144,30 @@ const Footer = () => {
                 .services {
                     width: 100%;
                     max-width: 1200px;
-                    margin: 3px auto; /* Further reduced margin */
+                    margin: 3px auto;
                     display: flex;
                     justify-content: center;
-                    gap: 5px; /* Further reduced gap */
+                    gap: 5px;
                     flex-wrap: wrap;
+                }
+
+                .service-column {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+                }
+
+                .service-column div a {
+                    color: white;
+                    text-decoration: none;
+                    font-family: Cairo;
+                    font-size: 14px;
+                    font-weight: 400;
+                    line-height: 1;
+                }
+
+                .service-column div a:hover {
+                    color: rgb(196, 196, 196);
                 }
 
                 .company-info {
@@ -225,6 +245,19 @@ const Footer = () => {
                     text-decoration: none; /* Add this line to remove underline */
                 }
 
+                .service-column .link {
+                    color: white;
+                    text-decoration: none;
+                    font-family: Cairo;
+                    font-size: 14px;
+                    font-weight: 400;
+                    line-height: 1;
+                }
+
+                .service-column .link:hover {
+                    color: rgb(196, 196, 196);
+                }
+
                 .icon {
                     display: flex;
                     justify-content: center;
@@ -287,6 +320,7 @@ const Footer = () => {
                 .text-block p {
                     font-size: 14px; /* Added for consistent text sizing */
                 }
+                    
             `}</style>
         </footer>
     );

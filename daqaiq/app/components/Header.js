@@ -52,17 +52,7 @@ function Header() { // Define the Header functional component
             {/* Dropdown menu items */}
             <li><Link href="/">الرئيسية</Link></li>
             <li><Link href="/about">من نحن</Link></li>
-            <li>
-              <a onClick={toggleSubmenu}>خدماتنا</a>
-              {/* Submenu toggle */}
-              {isSubmenuOpen && (
-                <ul className="p-2">
-                  {/* Submenu items */}
-                  <li><a>Submenu 1</a></li>
-                  <li><a>Submenu 2</a></li>
-                </ul>
-              )}
-            </li>
+            <li><Link href="/services">خدماتنا</Link></li>
             <li><Link href="/prices">الأسعار</Link></li>
             <li><Link href="/location">موقعنا</Link></li>
             <li><Link href="/contact">تواصل معنا</Link></li>
@@ -80,17 +70,7 @@ function Header() { // Define the Header functional component
           <li><Link href="/contact">تواصل معنا</Link></li>
           <li><Link href="/location">موقعنا</Link></li>
           <li><Link href="/prices">الأسعار</Link></li>
-          <li>
-            <a onClick={toggleSubmenu}>خدماتنا</a>
-            {/* Submenu toggle */}
-            {isSubmenuOpen && (
-              <ul className="p-2">
-                {/* Submenu items */}
-                <li><Link href="/services/1">Submenu 1</Link></li>
-                <li><Link href="/services/2">Submenu 2</Link></li>
-              </ul>
-            )}
-          </li>
+          <li><Link href="/services">خدماتنا</Link></li>
           <li><Link href="/about">من نحن</Link></li>
           <li><Link href="/">الرئيسية</Link></li>
         </ul>
