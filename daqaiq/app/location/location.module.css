@@ -1,44 +1,119 @@
+:root {
+  --font_cnJDE0_default: "Cairo";
+  --color_text_default: black;
+  --color_surface_default: rgba(255, 255, 255, 1);
+  --color_cnSmU_default: rgba(35, 25, 23, 1);
+  --color_cnSmb_default: rgba(255, 255, 255, 1);
+  --color_cnSmm_default: rgba(216, 194, 188, 1);
+  --color_cnSmc_default: rgba(255, 248, 246, 1);
+  --color_cnSsW_default: rgba(248, 249, 255, 1);
+}
+
 .container {
-    min-height: 100vh;
-    padding-top: 6rem;
-    background: var(--background);
+  -webkit-locale: "ar";
+  direction: rtl;
+  min-height: 100vh;
+  padding: 6rem 15rem;
+  margin: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+  box-sizing: inherit;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-text-size-adjust: 100%;
+  background: #999A9E;
+  font-family: var(--font_cnJDE0_default, "Cairo");
+
+  @media screen and (max-width: 768px) {
+    padding: 8rem 1rem 6rem;
   }
-  
-  .header {
-    background-color: var(--primary-color);
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-    color: white;
-    text-align: center;
-  }
-  
+}
+
+.header {
+  background-color: #999A9E;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px none;
+  margin-bottom: 2rem;
+  color: var(--color_text_default);
+  text-align: right;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #FFFFFF;
+  border-radius: 1rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.infoSection {
+  background-color: #FFFFFF;
+  padding: 2.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+  text-align: right;
+  color: var(--color_text_default);
+}
+
+.infoSection h2 {
+  color: var(--color_cnSmU_default);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.infoSection p {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.mapSection {
+  height: 400px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: #FFFFFF;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+@media (min-width: 768px) {
   .content {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    grid-template-columns: 1fr 1fr;
   }
-  
-  .infoSection {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .mapSection {
-    height: 400px;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  @media (min-width: 768px) {
-    .content {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
+}
+
+.workingHours {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color_cnSmm_default);
+}
+
+.workingHours h3 {
+  color: var(--color_cnSmU_default);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.workingHours p {
+  margin-bottom: 0.25rem;
+}
+
+.contactInfo {
+  margin-top: 1.5rem;
+}
+
+.contactInfo a {
+  color: var(--color_cnSmU_default);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.contactInfo a:hover {
+  color: var(--color_cnSmV_default);
+}

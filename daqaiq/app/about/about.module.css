@@ -1,45 +1,76 @@
+.root {
+  -webkit-locale: "ar";
+  direction: rtl;
+  --font_default: "Lato";
+  --font_cairo: "Cairo";
+  --font_montserrat: "Montserrat";
+  --font_opensans: "Open Sans";
+  --font_roboto: "Roboto";
+  --color_text_default: rgba(9, 23, 71, 1);
+  --color_text_default_rgb: 9,23,71;
+  --color_alert_default: rgba(250, 181, 21, 1);
+  --color_primary_default: rgba(2, 5, 211, 1);
+  --color_surface_default: rgba(255, 255, 255, 1);
+  --color_background_default: rgba(255, 255, 255, 0);
+  --color_primary_contrast_default: rgba(255, 255, 255, 1);
+}
+
+.base {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+  box-sizing: inherit;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-text-size-adjust: 100%;
+}
+
 .container {
-    min-height: 100vh;
-    padding-top: 6rem;
-    background: var(--background);
-  }
-  
-  .header {
-    background-color: var(--primary-color);
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-    color: white;
-    text-align: center;
-  }
-  
+  min-height: 100vh;
+  padding-top: 6rem;
+  background: var(--color_background_default);
+  direction: rtl;
+  font-family: var(--font_cairo), sans-serif;
+}
+
+.header {
+  background-color: var(--color_primary_default);
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  color: var(--color_primary_contrast_default);
+  text-align: center;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.textSection {
+  background-color: var(--color_surface_default);
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.imageSection {
+  position: relative;
+  height: 400px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
   .content {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    grid-template-columns: 1fr 1fr;
   }
-  
-  .textSection {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .imageSection {
-    position: relative;
-    height: 400px;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  @media (min-width: 768px) {
-    .content {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
+}

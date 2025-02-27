@@ -1,42 +1,75 @@
 .container {
-    min-height: 100vh;
-    padding-top: 6rem;
-    background: var(--background);
+  -webkit-locale: "ar";
+  direction: rtl;
+  min-height: 100vh;
+  padding: 6rem 15rem;
+  background: #999A9E;
+  font-family: var(--font_cnJDE0_default, "Cairo");
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-text-size-adjust: 100%;
+  box-sizing: inherit;
+
+  @media screen and (max-width: 768px) {
+      padding: 8rem 1rem 6rem;
   }
-  
-  .header {
-    background-color: var(--primary-color);
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-    color: white;
-    text-align: center;
-  }
-  
-  .faqContainer {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-  
-  .faqItem {
-    background-color: white;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .question {
-    padding: 1rem;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--primary-color);
-  }
-  
-  .answer {
-    padding: 1rem;
-    border-top: 1px solid #e2e8f0;
-  }
+}
+
+.header {
+  background-color: #999A9E;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+  color: black;
+  text-align: right;
+}
+
+.faqContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: var(--font_cnJDE0_default, "Cairo");
+}
+
+.faqItem {
+  background-color: var(--color_surface_default);
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color_cnSmm_default);
+}
+
+.question {
+  padding: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color_text_default);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.question:hover {
+  background-color: var(--color_cnSsW_default);
+}
+
+.answer {
+  padding: 1.5rem;
+  border-top: 1px solid var(--color_cnSmm_default);
+  color: var(--color_text_default);
+  background-color: var(--color_cnSmc_default);
+  text-align: right;
+}
+
+/* Add these CSS variables to your :root */
+:root {
+  --font_cnJDE0_default: "Cairo";
+  --color_text_default: rgba(9, 23, 71, 1);
+  --color_surface_default: rgba(255, 255, 255, 1);
+  --color_cnSmU_default: rgba(35, 25, 23, 1);
+  --color_cnSmb_default: rgba(255, 255, 255, 1);
+  --color_cnSmm_default: rgba(216, 194, 188, 1);
+  --color_cnSmc_default: rgba(255, 248, 246, 1);
+  --color_cnSsW_default: rgba(248, 249, 255, 1);
+}
