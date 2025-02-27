@@ -1,20 +1,12 @@
-.root {
-  -webkit-locale: "ar";
+.container {
+  font-family: var(--font_cairo);
+  color: var(--color_text_default);
   direction: rtl;
-  --font_default: "Lato";
-  --font_cairo: "Cairo";
-  --font_montserrat: "Montserrat";
-  --font_opensans: "Open Sans";
-  --font_roboto: "Roboto";
-  --color_text_default: rgba(9, 23, 71, 1);
-  --color_text_default_rgb: 9,23,71;
-  --color_alert_default: rgba(250, 181, 21, 1);
-  --color_primary_default: rgba(2, 5, 211, 1);
-  --color_surface_default: rgba(255, 255, 255, 1);
-  --color_background_default: rgba(255, 255, 255, 0);
-  --color_primary_contrast_default: rgba(255, 255, 255, 1);
+  min-height: 100vh;
+  padding: 2rem;
 }
 
+/* Remove :root section and use variables from globals.css */
 .base {
   margin: 0;
   padding: 0;

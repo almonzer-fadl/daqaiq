@@ -9,6 +9,16 @@
   --secondary-color: #E88213;
   -webkit-locale: "ar";
   direction: ltr;
+  --font_default: "Lato";
+  --font_cairo: "Cairo";
+  --font_montserrat: "Montserrat";
+  --font_opensans: "Open Sans";
+  --font_roboto: "Roboto";
+  --color_text_default: rgba(9, 23, 71, 1);
+  --color_alert_default: rgba(250, 181, 21, 1);
+  --color_primary_default: black;
+  --color_surface_default: rgba(255, 255, 255, 1);
+  --color_background_default: rgba(255, 255, 255, 0);
 }
 
 @media (prefers-color-scheme: dark) {

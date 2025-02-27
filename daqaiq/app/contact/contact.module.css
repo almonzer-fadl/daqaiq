@@ -79,13 +79,12 @@
 }
 
 /* Add these CSS variables to your :root */
-:root {
-    --font_cnJDE0_default: "Cairo";
-    --color_cnSmU_default: rgba(35, 25, 23, 1);
-    --color_cnSmV_default: rgba(250, 181, 21, 1);
-    --color_cnSmb_default: rgba(255, 255, 255, 1);
-    --color_cnSmm_default: rgba(216, 194, 188, 1);
-    --color_text_default: rgba(9, 23, 71, 1);
-    --color_surface_default: rgba(255, 255, 255, 1);
-    --color_alert_default: rgba(250, 181, 21, 1);
-}
+.container {
+    font-family: var(--font_cairo);
+    color: var(--color_text_default);
+    direction: rtl;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+  
+  /* Remove :root section and use variables from globals.css */

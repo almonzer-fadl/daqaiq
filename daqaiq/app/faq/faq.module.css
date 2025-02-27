@@ -62,14 +62,10 @@
   text-align: right;
 }
 
-/* Add these CSS variables to your :root */
-:root {
-  --font_cnJDE0_default: "Cairo";
-  --color_text_default: rgba(9, 23, 71, 1);
-  --color_surface_default: rgba(255, 255, 255, 1);
-  --color_cnSmU_default: rgba(35, 25, 23, 1);
-  --color_cnSmb_default: rgba(255, 255, 255, 1);
-  --color_cnSmm_default: rgba(216, 194, 188, 1);
-  --color_cnSmc_default: rgba(255, 248, 246, 1);
-  --color_cnSsW_default: rgba(248, 249, 255, 1);
+.container {
+  font-family: var(--font_cairo);
+  color: var(--color_text_default);
+  direction: rtl;
+  min-height: 100vh;
+  padding: 2rem;
 }
