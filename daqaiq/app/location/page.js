@@ -14,14 +14,14 @@ export default function Location() {
         </div>
         <div className={styles.content}>
           <div className={styles.infosection}>
-            <h2 className="text-2xl font-bold text-primary text-right">العنوان</h2>
+            <h2 className="text-2xl font-bold text-black text-right">العنوان</h2>
             <p className="text-lg text-right">
               المملكة العربية السعودية، الرياض
               <br />
               شارع الرئيسي، مبنى رقم 123
             </p>
             <div className="space-y-2 text-right">
-              <p className="text-primary font-bold">ساعات العمل:</p>
+              <p className="text-black font-bold">ساعات العمل:</p>
               <p>السبت - الخميس: 9 صباحاً - 9 مساءً</p>
               <p>الجمعة: مغلق</p>
             </div>

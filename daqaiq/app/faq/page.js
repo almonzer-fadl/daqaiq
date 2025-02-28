@@ -13,7 +13,7 @@ const FAQItem = ({ question, answer }) => {
         className={styles.question}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="text-lg font-semibold text-primary">{question}</span>
+        <span className="text-lg font-semibold text-black">{question}</span>
         <span className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>▼</span>
       </button>
       {isOpen && (

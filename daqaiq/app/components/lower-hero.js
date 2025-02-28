@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import Image from 'next/image';
-import herolower from '@/public/herolower.jpeg'; // Correctly import the image
+import herolower from '@/public/herolower.jpg'; // Correctly import the image
 
 const LowerHero = () => {
     return (
@@ -14,8 +14,10 @@ const LowerHero = () => {
                         alt="Inspection Technology"
                         layout="responsive" // Use responsive layout
                         objectFit="cover" // Use cover for object fit
-                        width={430} // Set width
-                        height={440} // Set height
+                        width={500} // Increased width
+                        height={520} // Increased height
+                        quality={100} // Added for better image quality
+                        priority // Added to load image with priority
                     />
                 </div>
                 <div className="text-container">
@@ -59,22 +61,20 @@ const LowerHero = () => {
                 }
                 .container {
                     display: flex;
-                    flex-direction: row;
-                    justify-content: center; // Changed from space-between to center
+                    flex-direction: row-reverse; // Changed to row-reverse to put image on right
+                    justify-content: space-between;
                     align-items: center;
                     margin: 0 auto 50px;
-                    gap: 0px; // Added to remove gap between elements
-                    max-width: 1200px; /* Add max-width to contain the content */
+                    max-width: 1200px;
                     width: 100%;
-                    padding: 0 20px; /* Add padding for smaller screens */
+                    padding: 0 20px;
                 }
                 .text-container {
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
                     max-width: 498px;
-                    margin-right: 20px; // Added margin for spacing
-                    padding: 0 20px; // Added padding instead of margin
+                    padding: 0 20px;
                 }
                 .text-block {
                     margin-bottom: 30px;
@@ -99,12 +99,13 @@ const LowerHero = () => {
                 }
                 .image-container {
                     position: relative;
-                    width: 430px;
-                    height: 440px;
+                    width: 500px; // Increased from 430px
+                    height: 520px; // Increased from 440px
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    margin: 0; // Removed all margins
+                    margin-left: 40px; // Added margin to separate from text
+                    flex-shrink: 0; // Prevent image from shrinking
                 }
                 @media (max-width: 768px) {
                     .container {
@@ -116,6 +117,7 @@ const LowerHero = () => {
                         width: 100%;
                         height: auto;
                         margin: 0; // Removed all margins
+                        margin-bottom: 20px;
                     }
                     .text-container {
                         margin: 0; // Removed all margins
@@ -125,7 +127,7 @@ const LowerHero = () => {
                 @media (min-width: 769px) {
                     .container {
                         flex-direction: row-reverse;
-                        gap: 0; // Ensure no gap in desktop view
+                        gap: 40px; // Added gap between image and text
                     }
                 }
             `}</style>

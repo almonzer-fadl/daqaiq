@@ -32,7 +32,7 @@
   padding: 2rem;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px none;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   color: var(--color_primary_contrast_default);
   text-align: center;
 }
@@ -44,10 +44,11 @@
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  margin-top: 0;
 }
 
 .textSection {
-  background-color: var(--color_surface_default);
+  background-color: white;
   padding: 2rem;
   border-radius: 0.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

@@ -1,0 +1,80 @@
+.container {
+    direction: ltr;
+    min-height: 100vh;
+    padding-top: 6rem;
+    background-color: #999A9E ;
+    font-family: var(--font_cairo);
+  }
+  
+  .content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .title {
+    text-align: center;
+    color: black;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+  }
+  
+  .servicesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+  }
+  
+  .serviceCard {
+    background-color: var(--color_surface_default);
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .serviceCard:hover {
+    transform: translateY(-5px);
+  }
+  
+  .serviceIcon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .serviceTitle {
+    color: var(--color_text_default);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .serviceDescription {
+    color: var(--color_text_default);
+    margin-bottom: 1.5rem;
+  }
+  
+  .serviceLink {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color_primary_default);
+    color: var(--color_surface_default);
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .serviceLink:hover {
+    background-color: var(--color_text_default);
+  }
+  
+  @media (max-width: 768px) {
+    .servicesGrid {
+      grid-template-columns: 1fr;
+    }
+    
+    .content {
+      padding: 1rem;
+    }
+  }

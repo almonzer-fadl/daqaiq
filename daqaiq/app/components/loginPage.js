@@ -15,7 +15,7 @@ const LoginPage = ({ onClose }) => { // Define the LoginPage functional componen
                     <h2>تسجيل الدخول</h2>
                     <form>
                         <div className="form-group">
-                            <input type="text" id="username" name="username" placeholder="رقم الجوال" required />
+                            <input type="text" id="username" name="username" placeholder=" رقم الجوال او الايميل" required />
                         </div>
                         <div className="form-group">
                             <input type="password" id="password" name="password" placeholder="كلمة المرور" required />

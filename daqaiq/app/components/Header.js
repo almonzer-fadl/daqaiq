@@ -77,10 +77,10 @@ function Header() { // Define the Header functional component
       </div>
       <div className="navbar-end flex items-center">
         {/* Navbar end section */}
-        <a className="ml-2" href='#'>
+        <Link className="ml-2" href='/'>
           <Image src={logoImg} alt="Logo" width={100} height={100} />
           {/* Logo image */}
-        </a>
+        </Link>
       </div>
       {showPopup && <LoginPage onClose={handleCloseClick} />}
       {/* Render the LoginPage component if showPopup is true */}
