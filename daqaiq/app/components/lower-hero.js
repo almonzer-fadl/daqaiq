@@ -1,7 +1,6 @@
 "use client";
 import React from 'react';
 import Image from 'next/image';
-import herolower from '/herolower.jpg'; // Correctly import the image
 
 const LowerHero = () => {
     return (
@@ -10,7 +9,7 @@ const LowerHero = () => {
             <div className="container">
                 <div className="image-container">
                     <Image 
-                        src={herolower} // Use the imported image
+                        src="/images/herolower.jpg"
                         alt="Inspection Technology"
                         layout="responsive" // Use responsive layout
                         objectFit="cover" // Use cover for object fit

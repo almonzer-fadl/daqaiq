@@ -18,7 +18,7 @@ const Customers = () => {
         },
         {
             url: "https://daqaiq.com/",
-            img: "./logo.png/",
+            img: "/images/logo.png",
             alt: "دقائق"
         },
         {
@@ -28,7 +28,7 @@ const Customers = () => {
         },
         {
             url: "https://daqaiq.com/",
-            img: "./logo.png",
+            img: "/images/logo.png",
             alt: "دقائق"
         },
         {
@@ -38,7 +38,7 @@ const Customers = () => {
         },
         {
             url: "https://daqaiq.com/",
-            img: "./logo.png",
+            img: "/images/logo.png",
             alt: "عبداللطيف جميل"
         }
     ];
