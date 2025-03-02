@@ -3,7 +3,6 @@
 import { useState } from 'react'; // Import useState hook from React
 import Image from 'next/image'; // Import Image component from Next.js
 import Link from 'next/link'; // Import Link component from Next.js
-import logoImg from '@/public/logo.png'; // Import logo image
 import LoginPage from './loginPage'; // Import the LoginPage component
 
 function Header() { // Define the Header functional component
@@ -78,7 +77,13 @@ function Header() { // Define the Header functional component
       <div className="navbar-end flex items-center">
         {/* Navbar end section */}
         <Link className="ml-2" href='/'>
-          <Image src={logoImg} alt="Logo" width={100} height={100} />
+          <Image 
+            src="/images/logo.png" 
+            alt="دقائق"
+            width={100} 
+            height={100}
+            priority
+          />
           {/* Logo image */}
         </Link>
       </div>

@@ -4,7 +4,7 @@ const WINDOW_MS = 60000; // 1 minute
 const MAX_REQUESTS = 100; // per window
 const store = new Map();
 
-export async function POST(request: Request) {
+export async function POST(request) {
   try {
     const { ip } = await request.json();
     const now = Date.now();

@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import Image from 'next/image';
-import herolower from '@/public/herolower.jpg'; // Correctly import the image
+import herolower from '/herolower.jpg'; // Correctly import the image
 
 const LowerHero = () => {
     return (
