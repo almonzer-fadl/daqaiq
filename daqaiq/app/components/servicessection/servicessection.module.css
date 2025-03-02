@@ -1,61 +1,101 @@
 .container {
     direction: ltr;
-    min-height: 100vh;
-    padding-top: 6rem;
-    background-color: #999A9E ;
+    padding: 2rem 2rem 0.5rem;
+    width: 100%;
+    background-color: #999A9E;
     font-family: var(--font_cairo);
-  }
-  
-  .content {
+}
+
+.content {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
-  }
-  
-  .title {
+    padding: 2rem 2rem 0.5rem;
+}
+
+.title {
     text-align: center;
     color: black;
     font-size: 2.5rem;
+    font-size: 2rem;
+    font-weight: bold;
     margin-bottom: 3rem;
-  }
-  
-  .servicesGrid {
+    margin-bottom: 2rem;
+    color: #252525;
+    font-family: 'Cairo';
+}
+
+.servicesGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     padding: 1rem;
-  }
-  
-  .serviceCard {
+}
+
+.servicesContainer {
+    width: 100%;
+    overflow-x: auto;
+    padding: 1rem 0 0.5rem;
+    scrollbar-width: thin;
+    -ms-overflow-style: none;
+    scrollbar-color: #e88213 transparent;
+}
+
+.servicesRow {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0.5rem;
+    min-width: min-content;
+}
+
+.serviceCard {
     background-color: var(--color_surface_default);
     border-radius: 1rem;
     padding: 2rem;
+    flex: 0 0 300px;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
-  }
-  
-  .serviceCard:hover {
+    transition: transform 0.2s ease;
+}
+
+.serviceCard:hover {
     transform: translateY(-5px);
-  }
-  
-  .serviceIcon {
+}
+
+.serviceIcon {
     font-size: 3rem;
+    font-size: 2rem;
     margin-bottom: 1rem;
-  }
-  
-  .serviceTitle {
+    text-align: center;
+}
+
+.serviceTitle {
     color: var(--color_text_default);
     font-size: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: bold;
     margin-bottom: 1rem;
-  }
-  
-  .serviceDescription {
+    margin-bottom: 0.5rem;
+    text-align: center;
+    color: #252525;
+    font-family: 'Cairo';
+}
+
+.serviceDescription {
     color: var(--color_text_default);
     margin-bottom: 1.5rem;
-  }
-  
-  .serviceLink {
+    text-align: center;
+    color: #666;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-family: 'Cairo';
+}
+
+.serviceLink {
     display: inline-block;
     padding: 0.75rem 1.5rem;
     background-color: var(--color_primary_default);
@@ -63,18 +103,43 @@
     text-decoration: none;
     border-radius: 0.5rem;
     transition: background-color 0.3s ease;
-  }
-  
-  .serviceLink:hover {
+}
+
+.serviceLink:hover {
     background-color: var(--color_text_default);
-  }
-  
-  @media (max-width: 768px) {
-    .servicesGrid {
-      grid-template-columns: 1fr;
+}
+
+/* Custom scrollbar styling */
+.servicesContainer::-webkit-scrollbar {
+    height: 6px;
+    display: block;
+}
+
+.servicesContainer::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.servicesContainer::-webkit-scrollbar-thumb {
+    background: #e88213;
+    border-radius: 10px;
+}
+
+.servicesContainer::-webkit-scrollbar-thumb:hover {
+    background: #c66f10;
+}
+
+.servicesContainer::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem 1rem 0.5rem;
     }
     
     .content {
-      padding: 1rem;
+        padding: 1rem 1rem 0.5rem;
     }
-  }
+}
