@@ -36,4 +36,4 @@ export async function POST(req) {
       { status: 500 }
     );
   }
-}
+} // Add this closing brace
