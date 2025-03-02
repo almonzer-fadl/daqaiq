@@ -24,6 +24,29 @@ const services = [
     description: "معاينة السيارة في موقعها قبل الشراء",
     icon: "🔍",
     link: "/inspection"
+    
+  },
+  {
+    id: 4,
+    title: "فحص السيارات",
+    description: "فحص شامل للسيارة قبل الشراء مع تقرير مفصل",
+    icon: "🚗",
+    link: "/prices"
+  },
+  {
+    id: 5,
+    title: "تقييم السيارات",
+    description: "تقييم سعر السيارة حسب حالتها وسعر السوق",
+    icon: "💰",
+    link: "/evaluation"
+  },
+  {
+    id: 6,
+    title: "خدمة المعاينة",
+    description: "معاينة السيارة في موقعها قبل الشراء",
+    icon: "🔍",
+    link: "/inspection"
+    
   }
 ];
 
@@ -39,9 +62,6 @@ export default function Services() {
               <div className={styles.serviceIcon}>{service.icon}</div>
               <h2 className={styles.serviceTitle}>{service.title}</h2>
               <p className={styles.serviceDescription}>{service.description}</p>
-              <a href={service.link} className={styles.serviceLink}>
-                المزيد من التفاصيل
-              </a>
             </div>
           ))}
         </div>

@@ -36,9 +36,6 @@ export default function Services() {
               <div className={styles.serviceIcon}>{service.icon}</div>
               <h2 className={styles.serviceTitle}>{service.title}</h2>
               <p className={styles.serviceDescription}>{service.description}</p>
-              <a href={service.link} className={styles.serviceLink}>
-                المزيد من التفاصيل
-              </a>
             </div>
           ))}
         </div>

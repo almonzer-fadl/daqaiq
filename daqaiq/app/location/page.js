@@ -3,8 +3,13 @@ import React from 'react';
 import styles from './location.module.css';
 import Header from '../components/Header';
 import Footer from '../components/footer';
+import Image from 'next/image';
 
 export default function Location() {
+  const handleMapClick = () => {
+    window.open('https://maps.app.goo.gl/2K7jBtSmDNpmc4no7', '_blank');
+  };
+
   return (
     <main className="min-h-screen bg-white">
       <Header />
@@ -27,8 +32,22 @@ export default function Location() {
             </div>
           </div>
           <div className={styles.mapsection}>
-            {/* Add your map component here */}
-            <div className="w-full h-full rounded-lg">Map goes here</div>
+            <div 
+              onClick={handleMapClick} 
+              style={{ cursor: 'pointer' }}
+            >
+              <Image
+                src="/map-preview.png"
+                alt="موقعنا على الخريطة"
+                width={600}
+                height={400}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: '8px'
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
