@@ -12,8 +12,24 @@ const geistMono = Geist_Mono({ // Define the Geist Mono font
 });
 
 export const metadata = { // Define metadata for the application
-  title: "دقائق - دقه في دقائق", // Set the title of the application
-  description: "دقائق - دقه في دقائق", // Set the description of the application
+  title: 'دقائق - فحص سيارات',
+  description: 'نفحص سيارتك بكل عناية ودقة',
+  keywords: 'دقائق - دقه في دقائق ,فحص سيارات, صيانة سيارات, دقائق',
+  metadatabase: {
+    viewport: 'width=device-width, initial-scale=1',
+    robots: 'index, follow',
+    title: {
+      template: '%s | دقائق',
+      default: 'دقائق - خدمات فحص السيارات',
+    },
+    description: 'خدمات فحص السيارات في المملكة العربية السعودية',
+    openGraph: {
+      type: 'website',
+      locale: 'ar_SA',
+      url: 'https://yourdomain.com',
+      siteName: 'دقائق',
+    }
+  }
 };
 
 export default function RootLayout({ children }) { // Define the RootLayout functional component

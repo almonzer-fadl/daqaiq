@@ -1,8 +1,44 @@
 "use client"; // Ensures this component is treated as a Client Component
 
+import { useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import React from 'react'; // Import React library
 
 const LoginPage = ({ onClose }) => { // Define the LoginPage functional component with onClose prop
+    const router = useRouter();
+    const [credentials, setCredentials] = useState({
+        email: '',
+        password: ''
+    });
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError('');
+
+        try {
+            const result = await signIn('credentials', {
+                email: credentials.email,
+                password: credentials.password,
+                redirect: false
+            });
+
+            if (result.error) {
+                setError('خطأ في البريد الإلكتروني أو كلمة المرور');
+            } else {
+                router.push('/dashboard');
+                onClose();
+            }
+        } catch (error) {
+            setError('حدث خطأ في تسجيل الدخول');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div className="login-page-container">
             {/* Main container for the login page */}
@@ -13,18 +49,47 @@ const LoginPage = ({ onClose }) => { // Define the LoginPage functional componen
                 </div>
                 <div className="login-form">
                     <h2>تسجيل الدخول</h2>
-                    <form>
+                    {error && <div className="error-message">{error}</div>}
+                    <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <input type="text" id="username" name="username" placeholder=" رقم الجوال او الايميل" required />
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                placeholder="البريد الإلكتروني" 
+                                value={credentials.email}
+                                onChange={(e) => setCredentials({
+                                    ...credentials,
+                                    email: e.target.value
+                                })}
+                                required 
+                            />
                         </div>
                         <div className="form-group">
-                            <input type="password" id="password" name="password" placeholder="كلمة المرور" required />
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                placeholder="كلمة المرور" 
+                                value={credentials.password}
+                                onChange={(e) => setCredentials({
+                                    ...credentials,
+                                    password: e.target.value
+                                })}
+                                required 
+                            />
                         </div>
                         <div className="form-group">
                             <input type="checkbox" id="remember" />
                             <label htmlFor="remember">تذكرني</label>
                         </div>
-                        <button type="submit" className="login-button">تسجيل الدخول</button>
+                        <button 
+                            type="submit" 
+                            className="login-button"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'جاري التحميل...' : 'تسجيل الدخول'}
+                        </button>
                     </form>
                     <button className="close-button" onClick={onClose}>إغلاق</button>
                 </div>
@@ -119,6 +184,18 @@ const LoginPage = ({ onClose }) => { // Define the LoginPage functional componen
                     cursor: pointer;
                     font-family: Cairo;
                     margin-top: 10px;
+                }
+                .error-message {
+                    color: #d62755;
+                    margin-bottom: 1rem;
+                    text-align: center;
+                    font-family: Cairo;
+                    font-size: 14px;
+                }
+
+                .login-button:disabled {
+                    background-color: #ccc;
+                    cursor: not-allowed;
                 }
             `}</style>
         </div>
