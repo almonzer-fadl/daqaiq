@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export function middleware(request) {
   // Set this to true to enable maintenance mode
-  const MAINTENANCE_MODE = false;
+  const MAINTENANCE_MODE = true;
   
   // Add paths that should be accessible during maintenance
   const allowedPaths = [
