@@ -10,7 +10,7 @@ import Servicessection from "./components/servicessection/servicessection";
 
 export default function Home() { // Define the Home functional component
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="page-transition min-h-screen flex flex-col">
       {/* Main container with flex layout */}
       <Header /> {/* Render the Header component */}
       <main className="flex-grow">
