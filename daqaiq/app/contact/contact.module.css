@@ -4,7 +4,7 @@
     align-items: center;
     min-height: 100vh;
     padding: 2rem;
-    background: #999A9E;
+    background: #e2e9f5;
     font-family: var(--font_cairo);
     direction: rtl;
 }
@@ -15,7 +15,7 @@
     color: var(--color_text_default);
     width: 100%;
     max-width: 1200px;
-    background-color: #999A9E;
+    background-color: #e2e9f5;
     padding: 2rem;
     border-radius: 0.5rem;
 }
@@ -29,14 +29,6 @@
     margin: 0 auto;
 }
 
-.formContainer {
-    flex: 2;
-    background-color: var(--color_surface_default);
-    padding: 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    color: var(--color_text_default);
-}
 
 .infoContainer {
     flex: 1;
@@ -72,19 +64,6 @@
 .infoText {
     font-size: 1rem;
     line-height: 1.5;
-}
-
-.form {
-    background-color: var(--color_surface_default);
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    color: var(--color_text_default);
-}
-
-.formGroup {
-    margin-bottom: 1.5rem;
-    text-align: right;
 }
 
 .input, .textarea {

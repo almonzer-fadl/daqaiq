@@ -49,43 +49,6 @@ export default function Contact() {
         </div>
         <div className={styles.contentWrapper}>
           <div className={styles.formcontainer}>
-            <form className={styles.form} onSubmit={checkForm}>
-              <div>
-                <label className="block text-right mb-2 text-black font-bold">الاسم</label>
-                <input
-                  type="text"
-                  className={styles.input}
-                  placeholder="أدخل اسمك"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-right mb-2 text-black font-bold">البريد الإلكتروني</label>
-                <input
-                  type="email"
-                  className={styles.input}
-                  placeholder="أدخل بريدك الإلكتروني"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-right mb-2 text-black font-bold">الرسالة</label>
-                <textarea
-                  className={styles.input}
-                  rows="4"
-                  placeholder="اكتب رسالتك هنا"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                ></textarea>
-              </div>
-              <button
-                type="submit"
-                className={styles.button}>
-                إرسال
-              </button>
-            </form>
           </div>
           <div className={styles.infoContainer}>
             <h2 className={styles.infoTitle}>معلومات التواصل</h2>

@@ -3,7 +3,6 @@
 import { useState } from 'react'; // Import useState hook from React
 import Image from 'next/image'; // Import Image component from Next.js
 import Link from 'next/link'; // Import Link component from Next.js
-import LoginPage from './loginPage'; // Import the LoginPage component
 
 function Header() { // Define the Header functional component
   const [isSubmenuOpen, setIsSubmenuOpen] = useState(false); // State for submenu visibility
@@ -52,14 +51,11 @@ function Header() { // Define the Header functional component
             <li><Link href="/">الرئيسية</Link></li>
             <li><Link href="/about">من نحن</Link></li>
             <li><Link href="/services">خدماتنا</Link></li>
-            <li><Link href="/prices">الأسعار</Link></li>
             <li><Link href="/location">موقعنا</Link></li>
             <li><Link href="/contact">تواصل معنا</Link></li>
             <li><Link href="/faq">الأسئلة الشائعة</Link></li>
           </ul>
         </div>
-        <button className="btn btn-ghost text-xl ml-2" onClick={handleLoginClick}>الدخول</button>
-        {/* Login button */}
       </div>
       <div className="navbar-center hidden lg:flex flex-grow justify-center">
         {/* Navbar center section for larger screens */}
@@ -68,7 +64,6 @@ function Header() { // Define the Header functional component
           <li><Link href="/faq">الأسئلة الشائعة</Link></li>
           <li><Link href="/contact">تواصل معنا</Link></li>
           <li><Link href="/location">موقعنا</Link></li>
-          <li><Link href="/prices">الأسعار</Link></li>
           <li><Link href="/services">خدماتنا</Link></li>
           <li><Link href="/about">من نحن</Link></li>
           <li><Link href="/">الرئيسية</Link></li>

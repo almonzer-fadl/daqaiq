@@ -1,13 +1,11 @@
 import { NextResponse } from 'next/server';
 
 export function middleware(request) {
-  // Get maintenance mode from environment variable
+  // Keep only maintenance mode logic
   const MAINTENANCE_MODE = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true';
   
-  // Add paths that should be accessible during maintenance
   const allowedPaths = [
     '/maintenance',
-    '/api/health',
     '/favicon.ico',
     '/_next',
     '/images',
@@ -19,15 +17,6 @@ export function middleware(request) {
     const url = request.nextUrl.clone();
     url.pathname = '/maintenance';
     return NextResponse.rewrite(url);
-  }
-
-  // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith('/dashboard')) {
-    const token = request.cookies.get('token');
-    
-    if (!token) {
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
   }
   
   return NextResponse.next();

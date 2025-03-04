@@ -14,7 +14,7 @@ const Loading = () => {
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(153, 154, 158, 0.9);
+          background: #e2e9f5;
           display: flex;
           justify-content: center;
           align-items: center;

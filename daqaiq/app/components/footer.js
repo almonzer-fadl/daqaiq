@@ -111,8 +111,7 @@ const Footer = () => {
             </div>
             <style jsx>{`
                 .footer {
-                    background-color: rgb(0, 49, 69);
-                    width: 100%;
+                    background-color: #013376;
                     padding: 3px 3%; /* Further reduced padding */
                     display: flex;
                     flex-direction: column;
