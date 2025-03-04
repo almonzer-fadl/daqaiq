@@ -82,8 +82,6 @@ function Header() { // Define the Header functional component
           {/* Logo image */}
         </Link>
       </div>
-      {showPopup && <LoginPage onClose={handleCloseClick} />}
-      {/* Render the LoginPage component if showPopup is true */}
     </div>
   );
 }
