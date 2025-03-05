@@ -6,10 +6,52 @@ import Footer from '../components/footer';
 
 const serviceCategories = {
   Offers: {
-    title: "خدمات الفحص",
+    title: "العروض",
     services: [
       {
         id: 1,
+        title: "فحص شامل",
+        description: "فحص شامل للسيارة مع تقرير مفصل",
+        icon: "🚗",
+        link: "/prices"
+      },
+      {
+        id: 2,
+        title: "فحص شامل",
+        description: "فحص شامل للسيارة مع تقرير مفصل",
+        icon: "🚗",
+        link: "/prices"
+      },
+      {
+        id: 3,
+        title: "فحص شامل",
+        description: "فحص شامل للسيارة مع تقرير مفصل",
+        icon: "🚗",
+        link: "/prices"
+      },
+      {
+        id: 4,
+        title: "فحص شامل",
+        description: "فحص شامل للسيارة مع تقرير مفصل",
+        icon: "🚗",
+        link: "/prices"
+      },
+      {
+        id: 5,
+        title: "فحص شامل",
+        description: "فحص شامل للسيارة مع تقرير مفصل",
+        icon: "🚗",
+        link: "/prices"
+      },
+      {
+        id: 6,
+        title: "فحص شامل",
+        description: "فحص شامل للسيارة مع تقرير مفصل",
+        icon: "🚗",
+        link: "/prices"
+      },
+      {
+        id: 7,
         title: "فحص شامل",
         description: "فحص شامل للسيارة مع تقرير مفصل",
         icon: "🚗",
@@ -28,6 +70,48 @@ const serviceCategories = {
         icon: "🚗",
         link: "/prices"
       },
+      {
+        id: 2,
+        title: "فحص شامل",
+        description: "فحص شامل للسيارة مع تقرير مفصل",
+        icon: "🚗",
+        link: "/prices"
+      },
+      {
+        id: 3,
+        title: "فحص شامل",
+        description: "فحص شامل للسيارة مع تقرير مفصل",
+        icon: "🚗",
+        link: "/prices"
+      },
+      {
+        id: 4,
+        title: "فحص شامل",
+        description: "فحص شامل للسيارة مع تقرير مفصل",
+        icon: "🚗",
+        link: "/prices"
+      },
+      {
+        id: 5,
+        title: "فحص شامل",
+        description: "فحص شامل للسيارة مع تقرير مفصل",
+        icon: "🚗",
+        link: "/prices"
+      },
+      {
+        id: 6,
+        title: "فحص شامل",
+        description: "فحص شامل للسيارة مع تقرير مفصل",
+        icon: "🚗",
+        link: "/prices"
+      },
+      {
+        id: 7,
+        title: "فحص شامل",
+        description: "فحص شامل للسيارة مع تقرير مفصل",
+        icon: "🚗",
+        link: "/prices"
+      },
       // Add more services (up to 7 per category)
     ]
   },
@@ -36,6 +120,48 @@ const serviceCategories = {
     services: [
       {
         id: 8,
+        title: "صيانة دورية",
+        description: "صيانة دورية شاملة للسيارة",
+        icon: "🔧",
+        link: "/maintenance"
+      },
+      {
+        id: 7,
+        title: "صيانة دورية",
+        description: "صيانة دورية شاملة للسيارة",
+        icon: "🔧",
+        link: "/maintenance"
+      },
+      {
+        id: 6,
+        title: "صيانة دورية",
+        description: "صيانة دورية شاملة للسيارة",
+        icon: "🔧",
+        link: "/maintenance"
+      },
+      {
+        id: 5,
+        title: "صيانة دورية",
+        description: "صيانة دورية شاملة للسيارة",
+        icon: "🔧",
+        link: "/maintenance"
+      },
+      {
+        id: 4,
+        title: "صيانة دورية",
+        description: "صيانة دورية شاملة للسيارة",
+        icon: "🔧",
+        link: "/maintenance"
+      },
+      {
+        id: 3,
+        title: "صيانة دورية",
+        description: "صيانة دورية شاملة للسيارة",
+        icon: "🔧",
+        link: "/maintenance"
+      },
+      {
+        id: 2,
         title: "صيانة دورية",
         description: "صيانة دورية شاملة للسيارة",
         icon: "🔧",
@@ -70,7 +196,6 @@ export default function Services() {
         />
       </div>
       <div className={styles.content}>
-        <h1 className={styles.title}>خدماتنا</h1>
         {Object.entries(serviceCategories).map(([key, category]) => (
           <div key={key} className={styles.categorySection}>
             <div className={styles.categoryHeader}>

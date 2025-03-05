@@ -13,6 +13,7 @@
 }
 
 .searchBar {
+  direction: rtl;
   width: 100%;
   padding: 1rem 1.5rem;
   border: 2px solid #e88213;
@@ -33,6 +34,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  direction: rtl;
 }
 
 .categorySection {
@@ -54,6 +56,7 @@
 }
 
 .viewAllButton {
+  direction: rtl;
   padding: 0.5rem 1rem;
   background-color: #e88213;
   color: white;
@@ -69,6 +72,7 @@
 }
 
 .servicesContainer {
+  direction: rtl;
   width: 100%;
   overflow-x: auto;
   padding: 1rem 0 0.5rem;
@@ -92,6 +96,17 @@
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  flex: 0 0 200px; /* Changed from 300px to 200px to make it narrower */
+  height: 300px; /* Added height to make it taller */
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .serviceCard:hover {
@@ -100,6 +115,8 @@
 
 .serviceIcon {
   font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-size: 3rem; /* Increased from 2.5rem to make the icon larger */
   margin-bottom: 1rem;
 }
 
@@ -115,6 +132,12 @@
   font-size: 0.9rem;
   line-height: 1.5;
   font-family: 'Cairo';
+  color: #666;
+  font-size: 0.85rem; /* Slightly reduced from 0.9rem */
+  line-height: 1.4;
+  font-family: 'Cairo';
+  flex-grow: 1; /* This will make the description take up available space */
+  overflow: hidden; /* In case the content is too long */
 }
 
 /* Custom scrollbar styling */
@@ -155,5 +178,7 @@
   
   .serviceCard {
     flex: 0 0 250px;
+    flex: 0 0 180px; /* Even narrower on mobile */
+    height: 280px; /* Slightly shorter on mobile */
   }
 }
