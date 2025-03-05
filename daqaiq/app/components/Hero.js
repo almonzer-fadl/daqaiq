@@ -24,19 +24,24 @@ const Hero = () => {
     return (
         <div className="hero-container">                                                        
             <div className="hero-image">
-                {slides.map((slide, index) => (
-                    <Image
-                        key={index}
-                        src={slide}
-                        alt={`Hero ${index + 1}`}
-                        layout="fill"
-                        objectFit="cover"
-                        style={{
-                            opacity: index === currentSlide ? 1 : 0,
-                            transition: 'opacity 0.5s ease-in-out'
-                        }}
-                    />
-                ))}
+                <div className="slider-container">
+                    {slides.map((slide, index) => (
+                        <div
+                            key={index}
+                            className="slide"
+                            style={{
+                                transform: `translateX(${(index - currentSlide) * 100}%)`,
+                            }}
+                        >
+                            <Image
+                                src={slide}
+                                alt={`Hero ${index + 1}`}
+                                fill
+                                style={{ objectFit: 'contain' }}
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
             <div className="hero-text-container">
                 <h1>دقائق دقه في دقائق</h1>
@@ -50,11 +55,16 @@ const Hero = () => {
                 .hero-container {
                     display: flex;
                     align-items: center;
-                    margin: 40px 0;
                     z-index: 4;
                     flex-direction: row;
                     height: 400px;
                     overflow: hidden;
+                    margin-top: 100px  
+                    margin-bottom: 0;
+                    padding-bottom: 0;
+
+                    }
+
                 }
                 .hero-image {
                     flex: 1;
@@ -62,7 +72,23 @@ const Hero = () => {
                     margin-left: 20px;
                     z-index: 10;
                     position: relative;
+                    height: 150%;
+                    overflow: hidden;
+                    margin-top: 100px 
+                }
+                .slider-container {
+                    display: flex;
                     height: 100%;
+                    width: 100%;
+                    position: relative;
+                }
+                .slide {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 70%;
+                    transition: transform 0.5s ease-in-out;
                 }
                 .hero-text-container {
                     flex: 2;
@@ -124,20 +150,48 @@ const Hero = () => {
                     text-align: center;
                 }
                 @media (max-width: 768px) {
-                    .hero-container {
-                        flex-direction: column;
-                        align-items: center;
-                        margin-top: 60px;
-                        margin-left: 0px;
-                        height: auto;
-                    }
-                    .hero-image {
-                        margin-right: 0;
-                        margin-bottom: 20px;
-                        height: 200px;
-                        width: 100%;
-                    }
-                }
+                .hero-container {
+                flex-direction: column;
+                align-items: center;
+                height: 80vh;
+                width: 100vw;
+                margin-top: 90px;
+                margin-bottom: 0px;
+                padding-bottom: 0;
+                 }
+                .hero-image {
+                    margin: 0;
+                    width: 100%;
+                    height: 100vh; /* Full height of the screen */
+                     overflow: hidden;
+                     position: relative;
+                     margin-bottom: 0px;
+                     padding-bottom: 0;
+                   }
+    .slider-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        position: relative;
+    }
+    .slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%; /* Full screen height */
+        transition: transform 0.5s ease-in-out;
+    }
+    .slide img {
+        object-fit: cover; /* Ensures the image fully covers the screen */
+        width: 100%;
+        height: 100%;
+    }
+    .hero-text-container {
+        display: none; /* Hides text for better mobile UX */
+    }
+}
+
             `}</style>
         </div>
     );
