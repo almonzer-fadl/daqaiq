@@ -5,7 +5,7 @@ import Image from 'next/image';
 const LowerHero = () => {
     return (
         <div>
-            <div className="top-banner"></div>
+            
             <div className="container">
                 <div className="image-container">
                     <Image 
@@ -39,25 +39,7 @@ const LowerHero = () => {
                 </div>
             </div>
             <style jsx>{`
-                .top-banner {
-                    background-color: rgb(255, 90, 39);
-                    box-shadow: rgb(170, 170, 170) 2px 2px 4px 0px;
-                    overflow: visible;
-                    justify-content: center;
-                    border-radius: 5px;
-                    opacity: 1;
-                    align-self: center;
-                    min-width: 300px;
-                    max-width: 300px;
-                    order: 2;
-                    min-height: 10px;
-                    max-height: 10px;
-                    height: 10px;
-                    flex-grow: 1;
-                    width: 300px;
-                    margin: 0 auto 20px; /* Center the div and add margin */
-                    z-index: 6;
-                }
+                
                 .container {
                     display: flex;
                     flex-direction: row-reverse; // Changed to row-reverse to put image on right

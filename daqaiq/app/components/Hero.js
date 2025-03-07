@@ -37,7 +37,7 @@ const Hero = () => {
                                 src={slide}
                                 alt={`Hero ${index + 1}`}
                                 fill
-                                style={{ objectFit: 'contain' }}
+                                style={{ objectFit: 'cover' }}
                             />
                         </div>
                     ))}
@@ -56,15 +56,13 @@ const Hero = () => {
                     display: flex;
                     align-items: center;
                     z-index: 4;
-                    flex-direction: row;
+                    flex-direction: row-reverse;
                     height: 400px;
                     overflow: hidden;
-                    margin-top: 100px  
-                    margin-bottom: 0;
+                    margin-top: 100px;
+                    margin-bottom: 2rem;
                     padding-bottom: 0;
-
-                    }
-
+                    background-image: url('/images/herobg.jpg');
                 }
                 .hero-image {
                     flex: 1;
@@ -72,9 +70,9 @@ const Hero = () => {
                     margin-left: 20px;
                     z-index: 10;
                     position: relative;
-                    height: 150%;
+                    height: 100%;
+                    width: 50%; // Set width to 50% of the container
                     overflow: hidden;
-                    margin-top: 100px 
                 }
                 .slider-container {
                     display: flex;
@@ -87,11 +85,11 @@ const Hero = () => {
                     top: 0;
                     left: 0;
                     width: 100%;
-                    height: 70%;
+                    height: 100%;
                     transition: transform 0.5s ease-in-out;
                 }
                 .hero-text-container {
-                    flex: 2;
+                    flex: 1;
                     z-index: 5;
                     text-align: center;
                     padding: 20px;
@@ -99,13 +97,13 @@ const Hero = () => {
                 .hero-text-container h1 {
                     font-family: Cairo;
                     font-size: 24px;
-                    color: #252525;
+                    color: white;
                     margin: 15px 0;
                 }
                 .hero-text-container p {
                     font-family: Cairo;
                     font-size: 14px;
-                    color: #252525;
+                    color: white;
                     margin: 15px 0;
                 }
                 .hero-buttons {
@@ -150,48 +148,45 @@ const Hero = () => {
                     text-align: center;
                 }
                 @media (max-width: 768px) {
-                .hero-container {
-                flex-direction: column;
-                align-items: center;
-                height: 80vh;
-                width: 100vw;
-                margin-top: 90px;
-                margin-bottom: 0px;
-                padding-bottom: 0;
-                 }
-                .hero-image {
-                    margin: 0;
-                    width: 100%;
-                    height: 100vh; /* Full height of the screen */
-                     overflow: hidden;
-                     position: relative;
-                     margin-bottom: 0px;
-                     padding-bottom: 0;
-                   }
-    .slider-container {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        position: relative;
-    }
-    .slide {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%; /* Full screen height */
-        transition: transform 0.5s ease-in-out;
-    }
-    .slide img {
-        object-fit: cover; /* Ensures the image fully covers the screen */
-        width: 100%;
-        height: 100%;
-    }
-    .hero-text-container {
-        display: none; /* Hides text for better mobile UX */
-    }
-}
-
+                    .hero-container {
+                        flex-direction: column;
+                        align-items: center;
+                        height: 60vh; // Set to 60% of the viewport height
+                        width: 100vw;
+                        margin-top: 90px;
+                        margin-bottom: 2rem;
+                        padding-bottom: 0;
+                    }
+                    .hero-image {
+                        margin: 0;
+                        width: 100%; // Fill the width
+                        height: 100%; // Fill the height
+                        overflow: hidden;
+                        position: relative;
+                    }
+                    .slider-container {
+                        width: 100%; 
+                        height: 90%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .slide {
+                        position: absolute;
+                        top: 5%;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                    }
+                    .slide img {
+                        object-fit: contain;
+                        width: 100%;
+                        height: 100%;
+                    }
+                    .hero-text-container {
+                        display: none; // Hide text on mobile
+                    }
+                }
             `}</style>
         </div>
     );
