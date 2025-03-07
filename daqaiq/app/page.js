@@ -4,7 +4,7 @@ import Hero from "./components/Hero"; // Import Hero component
 import Footer from "./components/footer";
 import LowerHero from "./components/lower-hero";
 import Servicessection from "./components/servicessection/servicessection";
-
+import Categories from "./components/categories/categories";
 
 export default function Home() { // Define the Home functional component
   return (
@@ -14,6 +14,7 @@ export default function Home() { // Define the Home functional component
       <main className="flex-grow">
         {/* Main content area with flex-grow to fill the remaining space */}
         <Hero />
+        <Categories />
         <Servicessection />
         <LowerHero />
       </main>
