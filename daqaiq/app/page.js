@@ -2,7 +2,6 @@ import Image from "next/image"; // Import Image component from Next.js
 import Header from "./components/Header"; // Import Header component
 import Hero from "./components/Hero"; // Import Hero component
 import Footer from "./components/footer";
-import LowerHero from "./components/lower-hero";
 import Servicessection from "./components/servicessection/servicessection";
 import Categories from "./components/categories/categories";
 
@@ -16,7 +15,6 @@ export default function Home() { // Define the Home functional component
         <Hero />
         <Categories />
         <Servicessection />
-        <LowerHero />
       </main>
       <Footer /> {/* Render the Footer component */}
     </div>
