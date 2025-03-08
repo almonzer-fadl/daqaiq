@@ -1,9 +1,9 @@
 
 .container {
     min-height: 80vh;
-    background-color: #e2e9f5;
+    background-color: #ffffff;
     font-family: var(--font_cairo);
-    margin-top: -20px;
+    margin-top: 20px;
   }
   
   .title{

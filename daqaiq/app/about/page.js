@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import styles from './about.module.css';
-import Header from '../components/Header';
+import Header from '../../Old Files/Header';
 import Footer from '../components/footer';
 
 export default function About() {

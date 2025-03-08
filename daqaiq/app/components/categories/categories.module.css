@@ -1,55 +1,77 @@
-.categoriesContainer {
-    width: 100%;
-    overflow: hidden;
-    padding: 20px 0;
-  }
-  
-  .categoriesCarousel {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-  }
-  
-  .categoriesCarousel::-webkit-scrollbar { 
-    display: none;  /* WebKit */
-  }
-  
-  .categoryItem {
-    flex: 0 0 auto;
-    width: 150px;
-    height: 150px;
-    margin-right: 15px;
-    scroll-snap-align: start;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .categoryImage {
-    width: 80%;
-    height: 80%;
-    object-fit: contain;
-  }
-  
-  .categoryName {
-    margin-top: 10px;
-    font-size: 14px;
-    text-align: center;
-    color: #333;
-  }
-  
-  @media (max-width: 768px) {
-    .categoryItem {
-      width: 120px;
-      height: 120px;
-    }
-  }
+/* styles/globals.css */
+
+/* Basic reset and body styling */
+body {
+  background-color: #f3f4f6; /* Light background for the page */
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Styling for carousel */
+.carousel {
+  max-width: 1200px; /* Max width of the carousel */
+  margin: 0 auto;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+/* Card styling */
+.card {
+  transition: transform 0.3s ease-in-out;
+  background-color: white; /* White background for cards */
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+  transform: scale(1.05); /* Slight zoom effect when hovering */
+}
+
+.card-body h3 {
+  font-size: 1.25rem;
+  color: #333;
+  font-weight: 600; /* Slightly bolder text */
+  margin-top: 1rem; /* Add space above the title */
+}
+
+/* Figure styling */
+figure {
+  padding: 2rem;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* Image styling */
+img {
+  border-radius: 10px;
+  object-fit: cover; /* Ensures the image scales correctly */
+  width: 100%;
+  height: auto;
+}
+
+/* Button styling */
+.btn-circle {
+  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background for navigation buttons */
+  border-radius: 50%;
+  padding: 0.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-circle:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Navigation buttons */
+.absolute {
+  display: flex;
+  justify-content: space-between;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  padding: 0 2rem;
+}

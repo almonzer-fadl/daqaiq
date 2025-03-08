@@ -1,0 +1,18 @@
+.mainContent {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.contentContainer {
+  width: 100%;
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
+@media (max-width: 768px) {
+  .contentContainer {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
