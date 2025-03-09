@@ -1,8 +1,11 @@
 "use client";
 import { useState } from 'react';
 import styles from './services.module.css';
-import Header from '../../Old Files/Header';
+import Headertop from '../components/headertop';
+import Navbar from "../components/navbar";
+import Navlinks from "../components/navlinks";
 import Footer from '../components/footer';
+
 
 const serviceCategories = {
   Offers: {
@@ -185,7 +188,9 @@ export default function Services() {
 
   return (
     <main className={styles.container}>
-      <Header />
+      <Headertop />
+      <Navbar />
+      <Navlinks />
       <div className={styles.searchContainer}>
         <input
           type="text"

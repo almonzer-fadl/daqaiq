@@ -1,13 +1,17 @@
 "use client";
 import React from 'react';
 import styles from './about.module.css';
-import Header from '../../Old Files/Header';
+import Headertop from "../components/headertop";
+import Navbar from "../components/navbar";
+import Navlinks from "../components/navlinks";
 import Footer from '../components/footer';
 
 export default function About() {
   return (
     <main className= "min-h-screen">
-      <Header />
+      <Headertop />
+      <Navbar />
+      <Navlinks />
       <div className={styles.container}>
         <div className={styles.header}>
         <h1 className="text-4xl font-bold text-center mb-8">من نحن؟</h1>

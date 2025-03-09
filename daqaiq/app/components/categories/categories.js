@@ -1,34 +1,67 @@
-import React from 'react';
+"use client";
+import React, { useState, useRef, useEffect } from "react";
+import styles from "./categories.module.css";
+import Link from "next/link";
+import Image from "next/image";
+
+const categoriesData = [
+  { image: "/Icons/battery.svg", name: "Brand 1" },
+  { image: "/Icons/carwash.svg", name: "Brand 2" },
+  { image: "/Icons/electricalservice.svg", name: "Brand 3" },
+  { image: "/Icons/engine.svg", name: "Brand 4" },
+  { image: "/Icons/gearstick.svg", name: "Brand 5" },
+  { image: "/Icons/oit.svg", name: "Brand 6" },
+  { image: "/Icons/piston.svg", name: "Brand 7" },
+  { image: "/Icons/reperation.svg", name: "Brand 8" },
+  { image: "/Icons/suspension.svg", name: "Brand 9" },
+  { image: "/Icons/tire.svg", name: "Brand 10" },
+];
 
 const Categories = () => {
-  const categories = [
-    { image: 'https://via.placeholder.com/150', name: 'Category 1' },
-    { image: 'https://via.placeholder.com/150', name: 'Category 2' },
-    { image: 'https://via.placeholder.com/150', name: 'Category 3' },
-    { image: 'https://via.placeholder.com/150', name: 'Category 4' },
-    { image: 'https://via.placeholder.com/150', name: 'Category 5' },
-    { image: 'https://via.placeholder.com/150', name: 'Category 6' },
-    { image: 'https://via.placeholder.com/150', name: 'Category 7' },
-    { image: 'https://via.placeholder.com/150', name: 'Category 8' },
-  ];
+  const categoriesRef = useRef(null);
+
+  const scrollCategories = (direction) => {
+    if (categoriesRef.current) {
+      const scrollAmount = 200; // Adjust scroll distance per click
+      categoriesRef.current.scrollBy({
+        left: direction === "next" ? scrollAmount : -scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
-    <div className="carousel rounded-box relative shadow-xl p-4 mt-8">
-      {categories.map((category, index) => (
-        <div key={index} className="carousel-item">
-          <div className="card bg-base-100 shadow-2xl mx-2">
-            <figure className="px-10 pt-10">
-              <img src={category.image} alt={category.name} className="rounded-xl" />
-            </figure>
-            <div className="card-body items-center text-center">
-              <h3 className="card-title">{category.name}</h3>
-            </div>
+    <div className={styles.categoriesContainer}>
+      <div className={styles.categoriesCard}>
+        <div className={styles.categoriesWrapper}>
+          <button
+            className={`${styles.arrowButton} ${styles.leftArrow}`}
+            onClick={() => scrollCategories("prev")}
+            aria-label="Previous slide"
+          >
+            <span className={styles.arrowIcon}>&lt;</span>
+          </button>
+          <div className={styles.categories} ref={categoriesRef}>
+            {categoriesData.map((category, index) => (
+              <Link
+                href={`/brands/${category.name.toLowerCase().replace(/\s+/g, "-")}`}
+                key={index}
+                className={styles.category}
+              >
+                <div className={styles.imageWrapper}>
+                  <Image src={category.image} alt={category.name} width={100} height={100} />
+                </div>
+              </Link>
+            ))}
           </div>
+          <button
+            className={`${styles.arrowButton} ${styles.rightArrow}`}
+            onClick={() => scrollCategories("next")}
+            aria-label="Next slide"
+          >
+            <span className={styles.arrowIcon}>&gt;</span>
+          </button>
         </div>
-      ))}
-      <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-        <button className="btn btn-circle">❮</button>
-        <button className="btn btn-circle">❯</button>
       </div>
     </div>
   );

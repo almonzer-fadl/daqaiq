@@ -18,7 +18,7 @@ const Hero = () => {
     }, 5000); // Change slide every 5 seconds
 
     return () => clearInterval(timer);
-  }, []);
+  }, );
 
   const goToSlide = (direction) => {
     setCurrentSlide((prevSlide) => {
@@ -40,8 +40,8 @@ const Hero = () => {
           <Image
             src={slide}
             alt={`Hero Slide ${index + 1}`}
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: "cover" }}
             priority
           />
         </div>

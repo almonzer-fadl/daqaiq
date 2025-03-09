@@ -1,7 +1,9 @@
 "use client";
 import React, { useState } from 'react';
 import styles from './faq.module.css';
-import Header from '../../Old Files/Header';
+import Headertop from "../components/headertop";
+import Navbar from "../components/navbar";
+import Navlinks from "../components/navlinks";
 import Footer from '../components/footer';
 
 const FAQItem = ({ question, answer }) => {
@@ -40,7 +42,9 @@ export default function FAQ() {
 
   return (
     <main className="min-h-screen bg-white">
-      <Header />
+      <Headertop />
+      <Navbar />
+      <Navlinks />
       <div className={styles.container}>
         <div className={styles.header}>
           <h1 className="text-4xl font-bold text-center mb-8">الأسئلة الشائعة</h1>

@@ -22,13 +22,13 @@
 .container {
   min-height: 100vh;
   padding-top: 6rem;
-  background-color: #e2e9f5;
+  background-color: #ffffff;
   direction: rtl;
   font-family: var(--font_cairo), sans-serif;
 }
 
 .header {
-  background-color: #e2e9f5;
+  background-color: #ffffff;
   padding: 2rem;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px none;

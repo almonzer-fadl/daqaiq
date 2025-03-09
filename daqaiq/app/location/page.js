@@ -1,7 +1,9 @@
 "use client";
 import React from 'react';
 import styles from './location.module.css';
-import Header from '../../Old Files/Header';
+import Headertop from "../components/headertop";
+import Navbar from "../components/navbar";
+import Navlinks from "../components/navlinks";
 import Footer from '../components/footer';
 import Image from 'next/image';
 
@@ -12,7 +14,9 @@ export default function Location() {
 
   return (
     <main className="min-h-screen bg-white">
-      <Header />
+      <Headertop />
+      <Navbar />
+      <Navlinks />
       <div className={styles.container}>
         <div className={styles.header}>
           <h1 className="text-4xl font-bold text-center mb-8">موقعنا</h1>

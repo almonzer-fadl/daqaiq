@@ -4,7 +4,7 @@
     align-items: center;
     min-height: 100vh;
     padding: 2rem;
-    background: #e2e9f5;
+    background: #ffffff;
     font-family: var(--font_cairo);
     direction: rtl;
 }
@@ -15,7 +15,7 @@
     color: var(--color_text_default);
     width: 100%;
     max-width: 1200px;
-    background-color: #e2e9f5;
+    background-color: #ffffff;
     padding: 2rem;
     border-radius: 0.5rem;
 }

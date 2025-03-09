@@ -14,7 +14,7 @@ const Loading = () => {
           left: 0;
           width: 100%;
           height: 100%;
-          background: #e2e9f5;
+          background: #ffffff;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -30,7 +30,7 @@ const Loading = () => {
         .car {
           position: absolute;
           font-size: 2rem;
-          animation: drive 2s infinite linear;
+          animation: drive 3s infinite linear;
         }
 
         @keyframes drive {

@@ -1,77 +1,108 @@
-/* styles/globals.css */
-
-/* Basic reset and body styling */
-body {
-  background-color: #f3f4f6; /* Light background for the page */
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Styling for carousel */
-.carousel {
-  max-width: 1200px; /* Max width of the carousel */
-  margin: 0 auto;
-  padding: 2rem;
+.categoriesContainer {
+  position: relative;
+  width: 100%;
   overflow: hidden;
+  flex-direction: row-reverse;
 }
 
-/* Card styling */
-.card {
-  transition: transform 0.3s ease-in-out;
-  background-color: white; /* White background for cards */
+.categoriesCard {
+  background: #fff;
+  padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  flex-direction: row-reverse;
 }
 
-.card:hover {
-  transform: scale(1.05); /* Slight zoom effect when hovering */
+.categoriesWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  flex-direction: row-reverse;
 }
 
-.card-body h3 {
-  font-size: 1.25rem;
-  color: #333;
-  font-weight: 600; /* Slightly bolder text */
-  margin-top: 1rem; /* Add space above the title */
+.categories {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+  white-space: nowrap;
+  padding: 10px;
+  flex-direction: row-reverse;
+  
 }
 
-/* Figure styling */
-figure {
-  padding: 2rem;
-  margin: 0;
+.categories::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome/Safari */
+}
+
+.category {
+  flex: 0 0 auto;
+  text-align: center;
+  cursor: pointer;
+  flex-direction: row-reverse;
+}
+
+.imageWrapper {
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
+  box-shadow: 3px 3px 3px 5px rgba(0, 0, 0, 0.226);
+  border-radius: 8px;
 }
 
-/* Image styling */
-img {
-  border-radius: 10px;
-  object-fit: cover; /* Ensures the image scales correctly */
-  width: 100%;
-  height: auto;
-}
-
-/* Button styling */
-.btn-circle {
-  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background for navigation buttons */
-  border-radius: 50%;
-  padding: 0.5rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.btn-circle:hover {
-  background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-}
-
-/* Navigation buttons */
-.absolute {
-  display: flex;
-  justify-content: space-between;
+.arrowButton {
+  position: absolute;
   top: 50%;
-  left: 0;
-  right: 0;
   transform: translateY(-50%);
-  padding: 0 2rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  z-index: 10;
+}
+
+.arrowButton:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.leftArrow {
+  left: 10px;
+}
+
+.rightArrow {
+  right: 10px;
+}
+
+.arrowIcon {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+@media (min-width: 768px) { 
+  .categoriesWrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    flex-direction: row;
+  }
+  .imageWrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 3px 3px 3px 5px rgba(0, 0, 0, 0.226);
+    border-radius: 8px;
+  }
 }
