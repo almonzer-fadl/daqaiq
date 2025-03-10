@@ -73,7 +73,6 @@ const Footer = () => {
             </div>
             <div className="services mb-1">
                <div className="service-column">
-                 <Link href="/services" className="link text-white no-underline">خدماتنا</Link>
                  <Link href="/location" className="link text-white no-underline">موقعنا</Link>
                  <Link href="/faq" className="link text-white no-underline">الأسئلة الشائعة</Link>
             </div>

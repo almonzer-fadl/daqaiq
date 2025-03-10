@@ -14,7 +14,6 @@ const Navlinks = () => {
               <li><Link href="/faq">الأسئلة الشائعة</Link></li>
               <li><Link href="/contact">تواصل معنا</Link></li>
               <li><Link href="/location">موقعنا</Link></li>
-              <li><Link href="/services">خدماتنا</Link></li>
               <li><Link href="/about">من نحن</Link></li>
             </ul>
           </div>

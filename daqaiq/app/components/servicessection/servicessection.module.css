@@ -1,165 +1,427 @@
-
 .container {
-    min-height: 80vh;
-    background-color: #ffffff;
-    font-family: var(--font_cairo);
-    margin-top: 20px;
+  min-height: 80vh;
+  background-color: #ffffff;
+  font-family: var(--font_cairo), sans-serif;
+  padding: 20px 0 40px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+  direction: rtl;
+}
+
+/* Category Section Styling */
+.categorySection {
+  margin-bottom: 40px;
+  position: relative;
+}
+
+/* Header Styling */
+.categoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.categoryTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  position: relative;
+  margin: 0;
+  padding-right: 15px;
+}
+
+.categoryTitle::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background-color: #f27a1a;
+  border-radius: 2px;
+}
+
+.viewAllButton {
+  color: #666;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.viewAllButton:hover {
+  color: #f27a1a;
+}
+
+.viewAllArrow {
+  margin-right: 5px;
+  font-size: 16px;
+}
+
+/* Slider Container */
+.sliderContainer {
+  position: relative;
+  margin: 0 -10px;
+  padding: 0 10px;
+}
+
+/* Services Container */
+.servicesContainer {
+  overflow-x: auto;
+  padding: 10px 0;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  position: relative;
+}
+
+.servicesContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.servicesRow {
+  display: flex;
+  gap: 16px;
+  padding: 0 40px;
+}
+
+/* Product Card Styling */
+.productCard {
+  width: 220px;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  flex-shrink: 0;
+}
+
+.productCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.productImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.productCard:hover .image {
+  transform: scale(1.05);
+}
+
+.wishlistButton {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 32px;
+  height: 32px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.wishlistButton:hover {
+  background-color: #f8f8f8;
+}
+
+.heartIcon {
+  color: #666;
+}
+
+.badgeWrapper {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.badgeText {
+  display: block;
+  padding: 0 2px;
+  line-height: 1.2;
+}
+
+.shippingBadge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #f27a1a;
+  color: white;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.shippingIcon {
+  font-size: 14px;
+}
+
+.productInfo {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background-color: white;
+}
+
+.productLink {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.productTitle {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 5px;
+  color: #333;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.productDescription {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 10px;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-height: 31px;
+}
+
+.ratingsRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 5px;
+}
+
+.rating {
+  display: flex;
+}
+
+.star {
+  color: #ffce00;
+  font-size: 14px;
+}
+
+.emptyStar {
+  color: #ddd;
+  font-size: 14px;
+}
+
+.reviewCount {
+  font-size: 12px;
+  color: #888;
+}
+
+.priceWrapper {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.discountPrice {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f27a1a;
+}
+
+.originalPrice {
+  font-size: 12px;
+  color: #888;
+  text-decoration: line-through;
+  margin-right: 5px;
+}
+
+.discountBadge {
+  background-color: #f27a1a;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+/* Arrow Button Styling */
+.arrowButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: white;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.arrowButton:hover {
+  background-color: #f27a1a;
+  color: white;
+}
+
+.leftArrow {
+  left: 10px;
+}
+
+.rightArrow {
+  right: 10px;
+}
+
+.arrowIcon {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .categoryTitle {
+    font-size: 20px;
+  }
+
+  .servicesRow {
+    gap: 12px;
+    padding: 0 20px;
+  }
+
+  .productCard {
+    width: 160px;
+  }
+
+  .productImageWrapper {
+    height: 160px;
+  }
+
+  .badgeWrapper {
+    width: 40px;
+    height: 40px;
+    font-size: 10px;
+  }
+
+  .productTitle {
+    font-size: 13px;
+  }
+
+  .productDescription {
+    font-size: 11px;
+    min-height: 28px;
+  }
+
+  .discountPrice {
+    font-size: 14px;
+  }
+
+  .arrowButton {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+  .servicesRow {
+    gap: 10px;
+    padding: 0 15px;
   }
   
-  .title{
-    font-size: 2.4rem;
-    color: #252525;
-    font-family: 'Cairo';
-    margin-bottom: 2rem;
-    text-align: center;
+  .productCard {
+    width: 140px;
   }
-  .content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    padding-top: 0;
-    direction: rtl;
+
+  .productImageWrapper {
+    height: 140px;
   }
-  
-  .categorySection {
-    margin-bottom: 2rem;
+
+  .badgeWrapper {
+    width: 36px;
+    height: 36px;
+    font-size: 9px;
   }
-  
-  .categoryHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    padding: 0 1rem;
+
+  .shippingBadge {
+    padding: 4px 6px;
+    font-size: 10px;
   }
   
   .categoryTitle {
-    font-size: 1.8rem;
-    color: #252525;
-    font-family: 'Cairo';
+    font-size: 18px;
   }
   
   .viewAllButton {
-    direction: rtl;
-    padding: 0.5rem 1rem;
-    background-color: #e88213;
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    font-family: 'Cairo';
-    transition: background-color 0.3s ease;
+    font-size: 12px;
   }
-  
-  .viewAllButton:hover {
-    background-color: #c66f10;
-  }
-  
-  .servicesContainer {
-    direction: rtl;
-    width: 100%;
-    overflow-x: auto;
-    padding: 1rem 0 0.5rem;
-    scrollbar-width: thin;
-    -ms-overflow-style: none;
-    scrollbar-color: #e88213 transparent;
-  }
-  
-  .servicesRow {
-    display: flex;
-    gap: 1.5rem;
-    padding: 0.5rem;
-    min-width: min-content;
-  }
-  
-  .serviceCard {
-    background-color: white;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    flex: 0 0 300px;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    background-color: white;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    flex: 0 0 200px; /* Changed from 300px to 200px to make it narrower */
-    height: 300px; /* Added height to make it taller */
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  
-  .serviceCard:hover {
-    transform: translateY(-5px);
-  }
-  
-  .serviceIcon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    font-size: 3rem; /* Increased from 2.5rem to make the icon larger */
-    margin-bottom: 1rem;
-  }
-  
-  .serviceTitle {
-    color: #252525;
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-    font-family: 'Cairo';
-  }
-  
-  .serviceDescription {
-    color: #666;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    font-family: 'Cairo';
-    color: #666;
-    font-size: 0.85rem; /* Slightly reduced from 0.9rem */
-    line-height: 1.4;
-    font-family: 'Cairo';
-    flex-grow: 1; /* This will make the description take up available space */
-    overflow: hidden; /* In case the content is too long */
-  }
-  
-  /* Custom scrollbar styling */
-  .servicesContainer::-webkit-scrollbar {
-    height: 6px;
-    display: block;
-  }
-  
-  .servicesContainer::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  .servicesContainer::-webkit-scrollbar-thumb {
-    background: #e88213;
-    border-radius: 10px;
-  }
-  
-  .servicesContainer::-webkit-scrollbar-thumb:hover {
-    background: #c66f10;
-  }
-  
-  /* Mobile Responsive */
-  @media (max-width: 768px) {
-    .content {
-      padding: 1rem;
-      padding-top: 0;
-      margin-top: -20px;
-    }
-    
-    .categoryHeader {
-      flex-direction: column;
-      gap: 1rem;
-      text-align: center;
-    }
-    
-    .serviceCard {
-      flex: 0 0 250px;
-      flex: 0 0 180px; /* Even narrower on mobile */
-      height: 280px; /* Slightly shorter on mobile */
-    }
-  }
+}

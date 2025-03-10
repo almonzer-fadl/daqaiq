@@ -1,37 +1,67 @@
+.categoriesSection {
+  width: 100%;
+  margin: 40px 0;
+  direction: rtl; /* Set the main direction to RTL for Arabic */
+  
+}
+
+.categoriesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 0 20px;
+}
+
+.sectionTitle {
+  font-size: 30px;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+}
+
+.seeAllLink {
+  color: #333;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+}
+
 .categoriesContainer {
   position: relative;
   width: 100%;
   overflow: hidden;
-  flex-direction: row-reverse;
+  padding: 0 5px 5px; /* Add slight padding to show container shadow */
 }
 
 .categoriesCard {
   background: #fff;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 20px 25px;
+  border-radius: 15px;
   position: relative;
   overflow: hidden;
-  flex-direction: row-reverse;
+  /* Enhanced shadow to make container pop from the page */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .categoriesWrapper {
   display: flex;
   align-items: center;
   position: relative;
-  flex-direction: row-reverse;
+  /* No need for explicit flex-direction since parent has direction: rtl */
 }
 
 .categories {
   display: flex;
-  gap: 20px;
+  gap: 24px; /* Increased gap between items */
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none; /* Hide scrollbar for Firefox */
   -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
   white-space: nowrap;
-  padding: 10px;
-  flex-direction: row-reverse;
-  
+  padding: 10px 5px;
+  /* In RTL layout, flex items will naturally flow right-to-left */
 }
 
 .categories::-webkit-scrollbar {
@@ -42,7 +72,7 @@
   flex: 0 0 auto;
   text-align: center;
   cursor: pointer;
-  flex-direction: row-reverse;
+  width: 130px; /* Slightly larger for more presence */
 }
 
 .imageWrapper {
@@ -51,58 +81,80 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 3px 3px 3px 5px rgba(0, 0, 0, 0.226);
-  border-radius: 8px;
+  /* Enhanced shadow for individual cards to pop from container */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  padding: 15px;
+  background-color: white;
+  min-height: 120px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* Subtle border to enhance definition against white background */
+  border: 1px solid rgba(0, 0, 0, 0.03);
 }
 
+.imageWrapper:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Arrow buttons adjusted for RTL layout and enhanced visually */
 .arrowButton {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: white;
   border: none;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   z-index: 10;
+  /* Enhanced shadow for buttons */
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
 .arrowButton:hover {
-  background-color: rgba(255, 255, 255, 1);
+  background-color: white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
+/* In RTL layout, these positions are flipped visually */
 .leftArrow {
-  left: 10px;
+  right: 10px; /* Appears on right side in RTL */
 }
 
 .rightArrow {
-  right: 10px;
+  left: 10px; /* Appears on left side in RTL */
 }
 
 .arrowIcon {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: bold;
+  line-height: 1;
+  color: #333;
 }
 
-@media (min-width: 768px) { 
-  .categoriesWrapper {
-    display: flex;
-    align-items: center;
-    position: relative;
-    flex-direction: row;
+/* For larger screens, ensure we maintain the RTL layout */
+@media (min-width: 768px) {
+  .categoriesSection {
+    max-width: 1200px;
+    margin: 40px auto;
   }
+  
   .imageWrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 3px 3px 3px 5px rgba(0, 0, 0, 0.226);
-    border-radius: 8px;
+    min-height: 140px;
+  }
+  
+  .category {
+    width: 150px;
+  }
+  
+  /* Larger container padding on desktop */
+  .categoriesCard {
+    padding: 25px 30px;
   }
 }
