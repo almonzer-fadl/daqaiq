@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Hero from "./components/Hero/Hero";
 import Footer from "./components/footer";
-import Servicessection from "./components/servicessection/servicessection";
+import ProductSlider from './components/ProductSlider ';
+import { carProducts } from './data/productData';
 import Categories from "./components/categories/categories";
 import Headertop from "./components/headertop";
 import Navbar from "./components/navbar";
@@ -18,7 +19,9 @@ export default function Home() {
         <div className={styles.contentContainer}>
           <Hero />
           <Categories />
-          <Servicessection />
+          <ProductSlider categoryData={carProducts.Offers} sectionId="car-products" />
+          <ProductSlider categoryData={carProducts.SpareParts} sectionId="spare-parts" />
+          <ProductSlider categoryData={carProducts.Accessories} sectionId="accessories" />
         </div>
       </main>
       <Footer />

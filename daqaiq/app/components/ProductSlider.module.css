@@ -335,11 +335,11 @@
 }
 
 .leftArrow {
-  left: 10px;
+  right: 10px; /* Changed from left: 10px */
 }
 
 .rightArrow {
-  right: 10px;
+  left: 10px; /* Changed from right: 10px */
 }
 
 .arrowIcon {
