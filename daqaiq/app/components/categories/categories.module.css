@@ -2,7 +2,7 @@
   width: 100%;
   margin: 40px 0;
   direction: rtl; /* Set the main direction to RTL for Arabic */
-  
+  padding: 0;
 }
 
 .categoriesHeader {
@@ -10,7 +10,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
-  padding: 0 20px;
+  padding: 0;
 }
 
 .sectionTitle {
@@ -31,18 +31,22 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  padding: 0 5px 5px; /* Add slight padding to show container shadow */
+  padding: 0; /* Remove padding to allow full width */
+  min-height: auto;
+  background-color: #ffffff;
+  font-family: var(--font_cairo), sans-serif;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 15px;
+  margin-bottom: 20px;
 }
 
 .categoriesCard {
   background: #fff;
-  padding: 20px 25px;
-  border-radius: 15px;
+  padding: 20px 0;
   position: relative;
   overflow: hidden;
-  /* Enhanced shadow to make container pop from the page */
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  width: 100%;
 }
 
 .categoriesWrapper {
@@ -60,7 +64,7 @@
   scrollbar-width: none; /* Hide scrollbar for Firefox */
   -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
   white-space: nowrap;
-  padding: 10px 5px;
+  padding: 10px 0;
   /* In RTL layout, flex items will naturally flow right-to-left */
 }
 
@@ -141,8 +145,10 @@
 /* For larger screens, ensure we maintain the RTL layout */
 @media (min-width: 768px) {
   .categoriesSection {
-    max-width: 1200px;
-    margin: 40px auto;
+    width: 100%;
+    max-width: 100%;
+    margin: 40px 0;
+    padding: 0;
   }
   
   .imageWrapper {
@@ -153,8 +159,9 @@
     width: 150px;
   }
   
-  /* Larger container padding on desktop */
+  /* Adjust container padding on desktop */
   .categoriesCard {
-    padding: 25px 30px;
+    padding: 20px 0;
+    width: 100%;
   }
 }
