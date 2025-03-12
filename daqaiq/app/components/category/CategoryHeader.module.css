@@ -1,0 +1,50 @@
+.header {
+  @apply flex justify-between items-center border-b border-gray-200 pb-4;
+}
+
+.info {
+  @apply flex flex-col gap-2;
+}
+
+.title {
+  @apply text-2xl font-semibold text-gray-900;
+}
+
+.count {
+  @apply text-sm text-gray-600;
+}
+
+.controls {
+  @apply flex items-center gap-4;
+}
+
+.sort {
+  @apply flex items-center gap-2;
+}
+
+.sortLabel {
+  @apply text-sm text-gray-600;
+}
+
+.sortSelect {
+  @apply text-sm border border-gray-300 rounded-md py-1 px-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .header {
+    @apply flex-col gap-4 items-start;
+  }
+
+  .controls {
+    @apply w-full;
+  }
+
+  .sort {
+    @apply w-full;
+  }
+
+  .sortSelect {
+    @apply flex-grow;
+  }
+} 

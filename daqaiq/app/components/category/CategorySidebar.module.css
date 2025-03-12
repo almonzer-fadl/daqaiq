@@ -1,0 +1,54 @@
+.sidebar {
+  @apply bg-white rounded-lg shadow-sm p-4 border border-gray-200;
+}
+
+.filterSection {
+  @apply border-b border-gray-200 py-4 last:border-b-0 last:pb-0 first:pt-0;
+}
+
+.sectionHeader {
+  @apply w-full flex justify-between items-center mb-3 text-right;
+}
+
+.sectionHeader h3 {
+  @apply text-sm font-semibold text-gray-900;
+}
+
+.expandIcon {
+  @apply text-lg text-gray-500;
+}
+
+.filterOptions {
+  @apply space-y-2;
+}
+
+.filterOption {
+  @apply flex items-center gap-2 cursor-pointer text-sm text-gray-700 hover:text-gray-900;
+}
+
+.checkbox {
+  @apply h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500;
+}
+
+.colorOption {
+  @apply flex items-center gap-2;
+}
+
+.colorSwatch {
+  @apply w-4 h-4 rounded-full border border-gray-300;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .sidebar {
+    @apply p-3;
+  }
+
+  .filterSection {
+    @apply py-3;
+  }
+
+  .filterOptions {
+    @apply grid grid-cols-2 gap-2 space-y-0;
+  }
+} 

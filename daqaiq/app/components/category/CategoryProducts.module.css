@@ -1,0 +1,82 @@
+.productsGrid {
+  @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4;
+}
+
+.productCard {
+  @apply bg-white rounded-lg overflow-hidden border border-gray-200 transition-transform hover:scale-[1.02] hover:shadow-lg;
+}
+
+.imageWrapper {
+  @apply relative aspect-[3/4] overflow-hidden;
+}
+
+.productImage {
+  @apply object-cover w-full h-full transition-transform hover:scale-105;
+}
+
+.discountBadge {
+  @apply absolute top-2 right-2 bg-red-500 text-white text-xs font-medium px-2 py-1 rounded;
+}
+
+.productInfo {
+  @apply p-3;
+}
+
+.productName {
+  @apply text-sm font-medium text-gray-900 mb-1 line-clamp-2;
+}
+
+.brandName {
+  @apply text-xs text-gray-600 mb-2;
+}
+
+.priceContainer {
+  @apply flex items-center gap-2 mb-2;
+}
+
+.currentPrice {
+  @apply text-sm font-semibold text-gray-900;
+}
+
+.originalPrice {
+  @apply text-xs text-gray-500 line-through;
+}
+
+.rating {
+  @apply flex items-center gap-1;
+}
+
+.stars {
+  @apply text-yellow-400 text-sm;
+}
+
+.reviewCount {
+  @apply text-xs text-gray-500;
+}
+
+.noResults {
+  @apply flex items-center justify-center h-64 text-gray-500 text-lg;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .productsGrid {
+    @apply grid-cols-2 gap-2;
+  }
+
+  .productInfo {
+    @apply p-2;
+  }
+
+  .productName {
+    @apply text-xs;
+  }
+
+  .currentPrice {
+    @apply text-xs;
+  }
+
+  .originalPrice {
+    @apply text-[10px];
+  }
+} 

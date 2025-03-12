@@ -1,0 +1,32 @@
+.categoryPage {
+  @apply max-w-[1400px] mx-auto px-4 py-6;
+}
+
+.categoryContent {
+  @apply flex gap-6 mt-6;
+}
+
+.sidebar {
+  @apply w-64 flex-shrink-0;
+}
+
+.productsArea {
+  @apply flex-grow;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .categoryContent {
+    @apply flex-col;
+  }
+
+  .sidebar {
+    @apply w-full;
+  }
+}
+
+@media (max-width: 640px) {
+  .categoryPage {
+    @apply px-2;
+  }
+} 

@@ -5,16 +5,16 @@ import Link from "next/link";
 import Image from "next/image";
 
 const categoriesData = [
-  { image: "/Icons/battery.svg", name: "Categorey 1" },
-  { image: "/Icons/carwash.svg", name: "Categorey 2" },
-  { image: "/Icons/electricalservice.svg", name: "Categorey 3" },
-  { image: "/Icons/engine.svg", name: "Categorey 4" },
-  { image: "/Icons/gearstick.svg", name: "Categorey 5" },
-  { image: "/Icons/oit.svg", name: "Categorey 6" },
-  { image: "/Icons/piston.svg", name: "Categorey 7" },
-  { image: "/Icons/reperation.svg", name: "Categorey 8" },
-  { image: "/Icons/suspension.svg", name: "Categorey 9" },
-  { image: "/Icons/tire.svg", name: "Categorey 10" },
+  { image: "/Icons/battery.svg", name: "Category 1" },
+  { image: "/Icons/carwash.svg", name: "Category 2" },
+  { image: "/Icons/electricalservice.svg", name: "Category 3" },
+  { image: "/Icons/engine.svg", name: "Category 4" },
+  { image: "/Icons/gearstick.svg", name: "Category 5" },
+  { image: "/Icons/oit.svg", name: "Category 6" },
+  { image: "/Icons/piston.svg", name: "Category 7" },
+  { image: "/Icons/reperation.svg", name: "Category 8" },
+  { image: "/Icons/suspension.svg", name: "Category 9" },
+  { image: "/Icons/tire.svg", name: "Category 10" },
 ];
 
 const Categories = () => {
@@ -38,7 +38,7 @@ const Categories = () => {
       {/* Header section with title and See All button */}
       <div className={styles.categoriesHeader}>
         <h2 className={styles.sectionTitle}>الفئات</h2>
-        <Link href="/Categorey" className={styles.seeAllLink}>
+        <Link href="/category" className={styles.seeAllLink}>
         جميع الفئات &gt;
         </Link>
       </div>
@@ -59,7 +59,7 @@ const Categories = () => {
             <div className={styles.categories} ref={categoriesRef}>
               {categoriesData.map((category, index) => (
                 <Link
-                  href={`/brands/${category.name.toLowerCase().replace(/\s+/g, "-")}`}
+                  href={`/category/${category.name.toLowerCase().replace(/\s+/g, "-")}`}
                   key={index}
                   className={styles.category}
                 >
