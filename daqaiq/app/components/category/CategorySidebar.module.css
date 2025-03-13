@@ -1,54 +1,184 @@
 .sidebar {
-  @apply bg-white rounded-lg shadow-sm p-4 border border-gray-200;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
 .filterSection {
-  @apply border-b border-gray-200 py-4 last:border-b-0 last:pb-0 first:pt-0;
+  border-bottom: 1px solid #eee;
+}
+
+.filterSection:last-child {
+  border-bottom: none;
 }
 
 .sectionHeader {
-  @apply w-full flex justify-between items-center mb-3 text-right;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  cursor: pointer;
+  background-color: white;
+  transition: background-color 0.2s;
+}
+
+.sectionHeader:hover {
+  background-color: #f9f9f9;
 }
 
 .sectionHeader h3 {
-  @apply text-sm font-semibold text-gray-900;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
 }
 
-.expandIcon {
-  @apply text-lg text-gray-500;
+.arrowDown, .arrowUp {
+  font-size: 12px;
+  color: #999;
+  transition: transform 0.2s;
 }
 
-.filterOptions {
-  @apply space-y-2;
+.arrowUp {
+  transform: rotate(180deg);
 }
 
-.filterOption {
-  @apply flex items-center gap-2 cursor-pointer text-sm text-gray-700 hover:text-gray-900;
+.sectionContent {
+  padding: 0 16px 16px;
+}
+
+.filterItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+}
+
+.filterItem:last-child {
+  margin-bottom: 0;
 }
 
 .checkbox {
-  @apply h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500;
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
 }
 
-.colorOption {
-  @apply flex items-center gap-2;
+.checkmark {
+  position: relative;
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  margin-right: 10px;
 }
 
-.colorSwatch {
-  @apply w-4 h-4 rounded-full border border-gray-300;
+.filterItem:hover .checkmark {
+  border-color: #f27a1a;
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
+.filterItem input:checked ~ .checkmark {
+  background-color: #f27a1a;
+  border-color: #f27a1a;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.filterItem input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.filterItem .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.sizeGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.sizeBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sizeBox:hover {
+  border-color: #f27a1a;
+  color: #f27a1a;
+}
+
+.selectedSize {
+  background-color: #f27a1a;
+  border-color: #f27a1a;
+  color: white;
+}
+
+.stars {
+  color: #f27a1a;
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+.ratingText {
+  font-size: 12px;
+  color: #666;
+}
+
+.applyFilters {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 16px 0;
+  background-color: #f27a1a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.applyFilters:hover {
+  background-color: #e06a0a;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
   .sidebar {
-    @apply p-3;
+    margin-bottom: 20px;
   }
-
-  .filterSection {
-    @apply py-3;
-  }
-
-  .filterOptions {
-    @apply grid grid-cols-2 gap-2 space-y-0;
+  
+  .applyFilters {
+    position: sticky;
+    bottom: 16px;
+    margin: 16px auto;
+    width: calc(100% - 32px);
   }
 } 

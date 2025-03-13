@@ -26,57 +26,41 @@ const colors = [
   { name: 'أخضر', value: 'green' },
 ];
 
-export default function CategorySidebar({ onFilterChange }) {
-  const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
-  const [selectedBrands, setSelectedBrands] = useState([]);
-  const [selectedSizes, setSelectedSizes] = useState([]);
-  const [selectedColors, setSelectedColors] = useState([]);
-  const [isExpanded, setIsExpanded] = useState({
+export default function CategorySidebar({ category }) {
+  const [expandedSections, setExpandedSections] = useState({
     price: true,
     brand: true,
     size: true,
     color: true,
+    rating: true,
+  });
+  
+  const [selectedFilters, setSelectedFilters] = useState({
+    price: [],
+    brand: [],
+    size: [],
+    color: [],
+    rating: null,
   });
 
   const handleFilterChange = (type, value) => {
-    let newSelected;
-    switch (type) {
-      case 'price':
-        newSelected = selectedPriceRanges.includes(value)
-          ? selectedPriceRanges.filter(item => item !== value)
-          : [...selectedPriceRanges, value];
-        setSelectedPriceRanges(newSelected);
-        break;
-      case 'brand':
-        newSelected = selectedBrands.includes(value)
-          ? selectedBrands.filter(item => item !== value)
-          : [...selectedBrands, value];
-        setSelectedBrands(newSelected);
-        break;
-      case 'size':
-        newSelected = selectedSizes.includes(value)
-          ? selectedSizes.filter(item => item !== value)
-          : [...selectedSizes, value];
-        setSelectedSizes(newSelected);
-        break;
-      case 'color':
-        newSelected = selectedColors.includes(value)
-          ? selectedColors.filter(item => item !== value)
-          : [...selectedColors, value];
-        setSelectedColors(newSelected);
-        break;
-    }
-
-    onFilterChange?.({
-      priceRanges: selectedPriceRanges,
-      brands: selectedBrands,
-      sizes: selectedSizes,
-      colors: selectedColors,
+    setSelectedFilters(prev => {
+      const newFilters = { ...prev };
+      
+      if (type === 'rating') {
+        newFilters.rating = value;
+      } else if (newFilters[type].includes(value)) {
+        newFilters[type] = newFilters[type].filter(item => item !== value);
+      } else {
+        newFilters[type] = [...newFilters[type], value];
+      }
+      
+      return newFilters;
     });
   };
 
   const toggleSection = (section) => {
-    setIsExpanded(prev => ({
+    setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
@@ -84,123 +68,127 @@ export default function CategorySidebar({ onFilterChange }) {
 
   return (
     <div className={styles.sidebar}>
-      {/* Price Range Filter */}
       <div className={styles.filterSection}>
-        <button 
-          className={styles.sectionHeader}
+        <div 
+          className={styles.sectionHeader} 
           onClick={() => toggleSection('price')}
         >
-          <h3>نطاق السعر</h3>
-          <span className={styles.expandIcon}>
-            {isExpanded.price ? '−' : '+'}
+          <h3>السعر</h3>
+          <span className={expandedSections.price ? styles.arrowUp : styles.arrowDown}>
+            ▼
           </span>
-        </button>
-        {isExpanded.price && (
-          <div className={styles.filterOptions}>
+        </div>
+        
+        {expandedSections.price && (
+          <div className={styles.sectionContent}>
             {priceRanges.map(range => (
-              <label key={range.id} className={styles.filterOption}>
+              <label key={range.id} className={styles.filterItem}>
                 <input
                   type="checkbox"
-                  checked={selectedPriceRanges.includes(range.id)}
+                  checked={selectedFilters.price.includes(range.id)}
                   onChange={() => handleFilterChange('price', range.id)}
                   className={styles.checkbox}
                 />
-                <span>{range.label}</span>
+                <span className={styles.checkmark}></span>
+                {range.label}
               </label>
             ))}
           </div>
         )}
       </div>
-
-      {/* Brand Filter */}
+      
       <div className={styles.filterSection}>
-        <button 
-          className={styles.sectionHeader}
+        <div 
+          className={styles.sectionHeader} 
           onClick={() => toggleSection('brand')}
         >
           <h3>الماركة</h3>
-          <span className={styles.expandIcon}>
-            {isExpanded.brand ? '−' : '+'}
+          <span className={expandedSections.brand ? styles.arrowUp : styles.arrowDown}>
+            ▼
           </span>
-        </button>
-        {isExpanded.brand && (
-          <div className={styles.filterOptions}>
+        </div>
+        
+        {expandedSections.brand && (
+          <div className={styles.sectionContent}>
             {brands.map(brand => (
-              <label key={brand} className={styles.filterOption}>
+              <label key={brand} className={styles.filterItem}>
                 <input
                   type="checkbox"
-                  checked={selectedBrands.includes(brand)}
+                  checked={selectedFilters.brand.includes(brand)}
                   onChange={() => handleFilterChange('brand', brand)}
                   className={styles.checkbox}
                 />
-                <span>{brand}</span>
+                <span className={styles.checkmark}></span>
+                {brand}
               </label>
             ))}
           </div>
         )}
       </div>
-
-      {/* Size Filter */}
+      
       <div className={styles.filterSection}>
-        <button 
-          className={styles.sectionHeader}
+        <div 
+          className={styles.sectionHeader} 
           onClick={() => toggleSection('size')}
         >
           <h3>المقاس</h3>
-          <span className={styles.expandIcon}>
-            {isExpanded.size ? '−' : '+'}
+          <span className={expandedSections.size ? styles.arrowUp : styles.arrowDown}>
+            ▼
           </span>
-        </button>
-        {isExpanded.size && (
-          <div className={styles.filterOptions}>
+        </div>
+        
+        {expandedSections.size && (
+          <div className={`${styles.sectionContent} ${styles.sizeGrid}`}>
             {sizes.map(size => (
-              <label key={size} className={styles.filterOption}>
-                <input
-                  type="checkbox"
-                  checked={selectedSizes.includes(size)}
-                  onChange={() => handleFilterChange('size', size)}
-                  className={styles.checkbox}
-                />
-                <span>{size}</span>
-              </label>
+              <div
+                key={size}
+                className={`${styles.sizeBox} ${selectedFilters.size.includes(size) ? styles.selectedSize : ''}`}
+                onClick={() => handleFilterChange('size', size)}
+              >
+                {size}
+              </div>
             ))}
           </div>
         )}
       </div>
-
-      {/* Color Filter */}
+      
       <div className={styles.filterSection}>
-        <button 
-          className={styles.sectionHeader}
-          onClick={() => toggleSection('color')}
+        <div 
+          className={styles.sectionHeader} 
+          onClick={() => toggleSection('rating')}
         >
-          <h3>اللون</h3>
-          <span className={styles.expandIcon}>
-            {isExpanded.color ? '−' : '+'}
+          <h3>التقييم</h3>
+          <span className={expandedSections.rating ? styles.arrowUp : styles.arrowDown}>
+            ▼
           </span>
-        </button>
-        {isExpanded.color && (
-          <div className={styles.filterOptions}>
-            {colors.map(color => (
-              <label key={color.value} className={styles.filterOption}>
+        </div>
+        
+        {expandedSections.rating && (
+          <div className={styles.sectionContent}>
+            {[5, 4, 3, 2, 1].map(rating => (
+              <label key={rating} className={styles.filterItem}>
                 <input
-                  type="checkbox"
-                  checked={selectedColors.includes(color.value)}
-                  onChange={() => handleFilterChange('color', color.value)}
+                  type="radio"
+                  name="rating"
+                  checked={selectedFilters.rating === rating}
+                  onChange={() => handleFilterChange('rating', rating)}
                   className={styles.checkbox}
                 />
-                <span className={styles.colorOption}>
-                  <span 
-                    className={styles.colorSwatch} 
-                    style={{ backgroundColor: color.value }}
-                  />
-                  {color.name}
+                <span className={styles.checkmark}></span>
+                <span className={styles.stars}>
+                  {'★'.repeat(rating)}
+                  {'☆'.repeat(5 - rating)}
                 </span>
+                <span className={styles.ratingText}>و أعلى</span>
               </label>
             ))}
           </div>
         )}
       </div>
+      
+      <button className={styles.applyFilters}>
+        تطبيق الفلاتر
+      </button>
     </div>
   );
 } 

@@ -1,7 +1,7 @@
 .categoriesSection {
   width: 100%;
   margin: 40px 0;
-  direction: rtl; /* Set the main direction to RTL for Arabic */
+  direction: rtl;
   padding: 0;
 }
 
@@ -31,7 +31,7 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  padding: 0; /* Remove padding to allow full width */
+  padding: 0;
   min-height: auto;
   background-color: #ffffff;
   font-family: var(--font_cairo), sans-serif;
@@ -53,30 +53,28 @@
   display: flex;
   align-items: center;
   position: relative;
-  /* No need for explicit flex-direction since parent has direction: rtl */
 }
 
 .categories {
   display: flex;
-  gap: 24px; /* Increased gap between items */
+  gap: 24px;
   overflow-x: auto;
   scroll-behavior: smooth;
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
-  -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   white-space: nowrap;
   padding: 10px 0;
-  /* In RTL layout, flex items will naturally flow right-to-left */
 }
 
 .categories::-webkit-scrollbar {
-  display: none; /* Hide scrollbar for Chrome/Safari */
+  display: none;
 }
 
 .category {
   flex: 0 0 auto;
   text-align: center;
   cursor: pointer;
-  width: 130px; /* Slightly larger for more presence */
+  width: 130px;
 }
 
 .imageWrapper {
@@ -85,14 +83,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  /* Enhanced shadow for individual cards to pop from container */
+  flex-direction: column;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   border-radius: 12px;
   padding: 15px;
   background-color: white;
   min-height: 120px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  /* Subtle border to enhance definition against white background */
   border: 1px solid rgba(0, 0, 0, 0.03);
 }
 
@@ -101,7 +98,41 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-/* Arrow buttons adjusted for RTL layout and enhanced visually */
+.categoryImage {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+  background-color: #f5f5f5;
+  padding: 0.5rem;
+}
+
+.placeholderImage {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  color: #666;
+  font-size: 2rem;
+  font-weight: bold;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+}
+
+.categoryName {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  color: #333;
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .arrowButton {
   position: absolute;
   top: 50%;
@@ -117,7 +148,6 @@
   cursor: pointer;
   transition: all 0.3s ease;
   z-index: 10;
-  /* Enhanced shadow for buttons */
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
@@ -126,13 +156,12 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* In RTL layout, these positions are flipped visually */
 .leftArrow {
-  right: 10px; /* Appears on right side in RTL */
+  right: 10px;
 }
 
 .rightArrow {
-  left: 10px; /* Appears on left side in RTL */
+  left: 10px;
 }
 
 .arrowIcon {
@@ -142,7 +171,6 @@
   color: #333;
 }
 
-/* For larger screens, ensure we maintain the RTL layout */
 @media (min-width: 768px) {
   .categoriesSection {
     width: 100%;
@@ -159,9 +187,8 @@
     width: 150px;
   }
   
-  /* Adjust container padding on desktop */
   .categoriesCard {
     padding: 20px 0;
     width: 100%;
   }
-}
+} 

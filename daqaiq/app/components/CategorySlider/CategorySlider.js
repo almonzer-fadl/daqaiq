@@ -1,23 +1,11 @@
 "use client";
 import React, { useRef } from "react";
-import styles from "./categories.module.css";
+import styles from "./CategorySlider.module.css";
 import Link from "next/link";
 import Image from "next/image";
+import { categories } from "../../data/categories";
 
-const categoriesData = [
-  { image: "/Icons/battery.svg", name: "Category 1" },
-  { image: "/Icons/carwash.svg", name: "Category 2" },
-  { image: "/Icons/electricalservice.svg", name: "Category 3" },
-  { image: "/Icons/engine.svg", name: "Category 4" },
-  { image: "/Icons/gearstick.svg", name: "Category 5" },
-  { image: "/Icons/oit.svg", name: "Category 6" },
-  { image: "/Icons/piston.svg", name: "Category 7" },
-  { image: "/Icons/reperation.svg", name: "Category 8" },
-  { image: "/Icons/suspension.svg", name: "Category 9" },
-  { image: "/Icons/tire.svg", name: "Category 10" },
-];
-
-const Categories = () => {
+const CategorySlider = () => {
   const categoriesRef = useRef(null);
 
   // Updated scroll function to work correctly with RTL layout
@@ -37,9 +25,9 @@ const Categories = () => {
     <div className={styles.categoriesSection}>
       {/* Header section with title and See All button */}
       <div className={styles.categoriesHeader}>
-        <h2 className={styles.sectionTitle}>الفئات</h2>
+        <h2 className={styles.sectionTitle}>تصفح الفئات</h2>
         <Link href="/category" className={styles.seeAllLink}>
-        جميع الفئات &gt;
+          جميع الفئات &gt;
         </Link>
       </div>
 
@@ -52,19 +40,32 @@ const Categories = () => {
               onClick={() => scrollCategories("prev")}
               aria-label="Previous slide"
             >
-              <span className={styles.arrowIcon}>&lt;</span>
+              <span className={styles.arrowIcon}>&#10094;</span>
             </button>
             
             {/* Categories container with RTL direction */}
             <div className={styles.categories} ref={categoriesRef}>
-              {categoriesData.map((category, index) => (
+              {categories.map((category) => (
                 <Link
-                  href={`/category/${category.name.toLowerCase().replace(/\s+/g, "-")}`}
-                  key={index}
+                  href={`/category/${category.slug}`}
+                  key={category.id}
                   className={styles.category}
                 >
                   <div className={styles.imageWrapper}>
-                    <Image src={category.image} alt={category.name} width={100} height={100} />
+                    {category.image ? (
+                      <Image 
+                        src={category.image} 
+                        alt={category.name} 
+                        width={100} 
+                        height={100}
+                        className={styles.categoryImage}
+                      />
+                    ) : (
+                      <div className={styles.placeholderImage}>
+                        {category.name.charAt(0)}
+                      </div>
+                    )}
+                    <span className={styles.categoryName}>{category.name}</span>
                   </div>
                 </Link>
               ))}
@@ -76,7 +77,7 @@ const Categories = () => {
               onClick={() => scrollCategories("next")}
               aria-label="Next slide"
             >
-              <span className={styles.arrowIcon}>&gt;</span>
+              <span className={styles.arrowIcon}>&#10095;</span>
             </button>
           </div>
         </div>
@@ -85,4 +86,4 @@ const Categories = () => {
   );
 };
 
-export default Categories;
+export default CategorySlider; 
