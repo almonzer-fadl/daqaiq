@@ -46,7 +46,7 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function CategoryPage({ params, searchParams, toggleFilterSidebar, isFilterOpen }) {
+export default async function CategoryPage({ params, searchParams }) {
   // Await params and searchParams to fix the Next.js error
   const resolvedParams = await Promise.resolve(params);
   const resolvedSearchParams = await Promise.resolve(searchParams);
@@ -63,8 +63,6 @@ export default async function CategoryPage({ params, searchParams, toggleFilterS
   const subcategorySlug = resolvedSearchParams?.subcategory;
   
   if (subcategorySlug) {
-    // In a real app, you would filter by subcategory here
-    // For now, we'll just use the same products
     const subcategory = category.subcategories.find(sub => sub.slug === subcategorySlug);
     if (subcategory) {
       // This is where you would filter products by subcategory
@@ -80,7 +78,6 @@ export default async function CategoryPage({ params, searchParams, toggleFilterS
             : category.name
           } 
           productCount={products.length}
-          toggleFilterSidebar={toggleFilterSidebar}
         />
         <div className={styles.categoryContent}>
           <aside className={`${styles.sidebar} ${styles.filterSidebar}`}>
