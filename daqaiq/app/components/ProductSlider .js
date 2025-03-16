@@ -3,13 +3,11 @@ import { useState, useRef, useEffect } from "react"
 import styles from "./ProductSlider.module.css"
 import Link from "next/link"
 import Image from "next/image"
-import ProductPage from "../ProductPage/ProductPage"
 
 export default function ProductSlider({ categoryData, sectionId }) {
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
-  const [selectedProduct, setSelectedProduct] = useState(null);
   
   // Function to handle scroll events and update arrow visibility
   const handleScroll = () => {
@@ -71,20 +69,6 @@ export default function ProductSlider({ categoryData, sectionId }) {
     });
   };
 
-  // Open product detail modal
-  const openProductDetail = (product) => {
-    setSelectedProduct(product);
-    // Disable body scroll when modal is open
-    document.body.style.overflow = "hidden";
-  };
-
-  // Close product detail modal
-  const closeProductDetail = () => {
-    setSelectedProduct(null);
-    // Re-enable body scroll
-    document.body.style.overflow = "auto";
-  };
-
   // Helper function to render star ratings
   const renderStars = (rating) => {
     const fullStars = Math.floor(rating);
@@ -139,22 +123,20 @@ export default function ProductSlider({ categoryData, sectionId }) {
               </button>
             )}
 
-            <div 
-              className={styles.servicesContainer} 
-              ref={scrollRef}
-            >
+            <div className={styles.servicesContainer} ref={scrollRef}>
               <div className={styles.servicesRow}>
                 {categoryData.services.map((product) => (
-                  <div 
+                  <Link 
                     key={product.id} 
+                    href={`/products/${product.id}`}
                     className={styles.productCard}
-                    onClick={() => openProductDetail(product)}
                   >
                     <div className={styles.productImageWrapper}>
                       <button 
                         className={styles.wishlistButton} 
                         aria-label="Add to wishlist"
                         onClick={(e) => {
+                          e.preventDefault(); // Prevent navigation
                           e.stopPropagation(); // Prevent card click event
                           // Handle wishlist logic here
                         }}
@@ -214,7 +196,7 @@ export default function ProductSlider({ categoryData, sectionId }) {
                         <span className={styles.discountBadge}>%{product.discountPercentage}</span>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -231,14 +213,6 @@ export default function ProductSlider({ categoryData, sectionId }) {
           </div>
         </div>
       </div>
-
-      {/* Product Detail Modal */}
-      {selectedProduct && (
-        <ProductPage 
-          product={selectedProduct} 
-          onClose={closeProductDetail} 
-        />
-      )}
     </section>
   );
 }
