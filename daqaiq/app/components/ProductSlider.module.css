@@ -1,12 +1,58 @@
 .container {
   min-height: auto;
-  background-color: #ffffff;
+  background: linear-gradient(135deg, #fef4eb 0%, #fcd8bb 50%, #ffad70 100%);
   font-family: var(--font_cairo), sans-serif;
-  padding: 10px 0;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  padding: 20px 0;
   border-radius: 15px;
   margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: translateZ(0);
+}
+
+/* First slider */
+.container:first-of-type {
+  background: #ffffff;
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px rgba(242, 122, 26, 0.2);
+}
+
+/* Middle slider - keep default styles */
+.container:nth-of-type(2) {
+  background: linear-gradient(135deg, #f27a1a 0%, #ffad70 50%, #fcd8bb 100%);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transform: scale(1);
+}
+
+/* Last slider */
+.container:last-of-type {
+  background: #ffffff;
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px rgba(184, 79, 10, 0.2);
+}
+
+/* Update text colors for better contrast on dark backgrounds */
+.container:first-of-type .categoryTitle,
+.container:first-of-type .viewAllButton,
+.container:last-of-type .categoryTitle,
+.container:last-of-type .viewAllButton {
+  color: #ffffff;
+}
+
+.container:first-of-type .categoryTitle::before,
+.container:last-of-type .categoryTitle::before {
+  background-color: #ffffff;
+}
+
+/* Keep middle slider text colors */
+.container:nth-of-type(2) .categoryTitle,
+.container:nth-of-type(2) .viewAllButton {
+  color: #333;
+}
+
+.container:nth-of-type(2) .categoryTitle::before {
+  background-color: #f27a1a;
 }
 
 .content {
@@ -14,6 +60,25 @@
   margin: 0 auto;
   padding: 0 15px;
   direction: rtl;
+  position: relative;
+  z-index: 1;
+}
+
+/* Add a subtle overlay pattern */
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                    linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.1) 75%),
+                    linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.1) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  opacity: 0.5;
 }
 
 /* Category Section Styling */
@@ -33,7 +98,7 @@
 .categoryTitle {
   font-size: 24px;
   font-weight: 700;
-  color: #333;
+  color: var(--color-N100);
   position: relative;
   margin: 0;
   padding-right: 15px;
@@ -47,12 +112,12 @@
   transform: translateY(-50%);
   width: 4px;
   height: 24px;
-  background-color: #f27a1a;
+  background-color: var(--color-N100);
   border-radius: 2px;
 }
 
 .viewAllButton {
-  color: #666;
+  color: var(--color-N100);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
@@ -62,7 +127,7 @@
 }
 
 .viewAllButton:hover {
-  color: #f27a1a;
+  color: var(--color-N200);
 }
 
 .viewAllArrow {

@@ -19,6 +19,12 @@
   --color_primary_default: black;
   --color_surface_default: rgba(255, 255, 255, 1);
   --color_background_default: rgba(255, 255, 255, 0);
+  /* Add Orange color palette */
+  --color-O100: #fef4eb;
+  --color-O200: #fcd8bb;
+  --color-O300: #ffad70;
+  --color-O400: #f27a1a;
+  --color-O500: #b84f0a;
 }
 
 @media (prefers-color-scheme: dark) {
