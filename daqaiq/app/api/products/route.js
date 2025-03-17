@@ -1,46 +1,80 @@
-import { connectToDatabase } from '../../lib/mongodb';
 import { NextResponse } from 'next/server';
+import mongoose from 'mongoose';
+import Product from '../../lib/models/Product';
+
+// Connect to MongoDB
+try {
+  if (!process.env.MONGODB_URI) {
+    throw new Error('MONGODB_URI is not defined in environment variables');
+  }
+  
+  mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('MongoDB connected successfully'))
+    .catch(err => console.error('MongoDB connection error:', err));
+} catch (error) {
+  console.error('MongoDB connection setup error:', error);
+}
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    
+    // Create new product
+    const product = await Product.create(body);
+    
+    return NextResponse.json(product, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to create product' },
+      { status: 500 }
+    );
+  }
+}
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const categorySlug = searchParams.get('categorySlug');
-    const limit = parseInt(searchParams.get('limit') || '12', 10);
+    const category = searchParams.get('category');
+    const subcategory = searchParams.get('subcategory');
+    const featured = searchParams.get('featured');
+    const limit = parseInt(searchParams.get('limit') || '50', 10);
     const skip = parseInt(searchParams.get('skip') || '0', 10);
     
-    const { db } = await connectToDatabase();
+    console.log('Checking database connection...');
+    console.log('Database name:', mongoose.connection.name);
+    console.log('Database host:', mongoose.connection.host);
+    console.log('Connection state:', mongoose.connection.readyState);
     
-    // Build query based on parameters
-    const query = {};
-    if (categorySlug) {
-      query.categorySlug = categorySlug;
+    let query = {};
+    
+    if (category) query.category = category;
+    if (subcategory) query.subcategory = subcategory;
+    if (featured) query.isFeatured = featured === 'true';
+    
+    console.log('Attempting to count documents...');
+    const totalCount = await Product.countDocuments(query);
+    console.log('Total products found:', totalCount);
+    
+    console.log('Attempting to fetch products...');
+    const products = await Product.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    
+    console.log('Products retrieved:', products.length);
+    
+    if (products.length > 0) {
+      console.log('First product:', JSON.stringify(products[0], null, 2));
+    } else {
+      console.log('No products found in database');
+      
+      // List all collections in the database
+      const collections = await mongoose.connection.db.listCollections().toArray();
+      console.log('Available collections:', collections.map(c => c.name));
     }
     
-    // Get total count for pagination
-    const totalCount = await db.collection('products').countDocuments(query);
-    
-    // Get products with pagination
-    const products = await db
-      .collection('products')
-      .find(query)
-      .skip(skip)
-      .limit(limit)
-      .toArray();
-    
-    // Format products to ensure consistent structure
-    const formattedProducts = products.map(product => ({
-      ...product,
-      _id: product._id.toString(), // Convert ObjectId to string
-      price: product.price || 0,
-      originalPrice: product.originalPrice || product.price,
-      discount: product.discount || 0,
-      rating: product.rating || 0,
-      reviewCount: product.reviewCount || 0,
-      images: product.images || []
-    }));
-    
     return NextResponse.json({
-      products: formattedProducts,
+      products,
       pagination: {
         total: totalCount,
         limit,
@@ -49,39 +83,9 @@ export async function GET(request) {
       }
     });
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error('Detailed error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch products' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(request) {
-  try {
-    const product = await request.json();
-    
-    // Validate required fields
-    if (!product.name || !product.slug) {
-      return NextResponse.json(
-        { error: 'Product name and slug are required' },
-        { status: 400 }
-      );
-    }
-    
-    const { db } = await connectToDatabase();
-    
-    // Insert the product
-    const result = await db.collection('products').insertOne(product);
-    
-    return NextResponse.json({
-      message: 'Product added successfully',
-      productId: result.insertedId.toString()
-    });
-  } catch (error) {
-    console.error('Error adding product:', error);
-    return NextResponse.json(
-      { error: 'Failed to add product' },
       { status: 500 }
     );
   }

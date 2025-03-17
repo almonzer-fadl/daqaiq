@@ -1,0 +1,39 @@
+.sidebar {
+  @apply bg-white rounded-lg shadow p-6;
+}
+
+.categoryLink {
+  @apply block transition-colors;
+}
+
+.categoryLink:hover {
+  @apply text-primary;
+}
+
+.categoryLink.active {
+  @apply text-primary font-semibold;
+}
+
+.subcategoryList {
+  @apply pl-4 space-y-1 border-l border-gray-200;
+}
+
+.subcategoryLink {
+  @apply block text-sm transition-colors;
+}
+
+.subcategoryLink:hover {
+  @apply text-primary;
+}
+
+.subcategoryLink.active {
+  @apply text-primary font-semibold;
+}
+
+.count {
+  @apply text-sm text-gray-500 ml-2;
+}
+
+.subcategoryCount {
+  @apply text-xs text-gray-500 ml-2;
+} 

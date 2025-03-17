@@ -1,20 +1,40 @@
-import { connectToDatabase } from '../../lib/mongodb';
-import CategorySidebar from '../../components/CategorySidebar';
-import ProductGridSection from '../../components/ProductGridSection';
+import { connectToDatabase } from '@/lib/mongodb';
+import CategorySidebar from '@/components/CategorySidebar';
+import ProductGridSection from '@/components/ProductGridSection';
 import { notFound } from 'next/navigation';
 
 async function getCategoryProducts(categorySlug, subcategorySlug = null) {
   try {
     const { db } = await connectToDatabase();
     
-    // Build query
-    const query = { categorySlug };
-    if (subcategorySlug) {
-      query.subcategorySlug = subcategorySlug;
+    // Build query based on whether we're looking for a category or subcategory
+    let query = {};
+    
+    // First check if the slug matches a subcategory
+    const productsAsSubcategory = await db.collection('products')
+      .find({ subcategory: categorySlug })
+      .toArray();
+    
+    // If found as subcategory, return those products
+    if (productsAsSubcategory.length > 0) {
+      console.log(`Found ${productsAsSubcategory.length} products with subcategory ${categorySlug}`);
+      return productsAsSubcategory.map(product => ({
+        ...product,
+        _id: product._id.toString()
+      }));
     }
+    
+    // If not found as subcategory, look for it as main category
+    query = { category: categorySlug };
+    if (subcategorySlug) {
+      query.subcategory = subcategorySlug;
+    }
+    
+    console.log('Fetching products with query:', query);
     
     // Get products
     const products = await db.collection('products').find(query).toArray();
+    console.log(`Found ${products.length} products for category ${categorySlug}`);
     
     // Format products
     return products.map(product => ({
@@ -31,47 +51,48 @@ async function getCategories() {
   try {
     const { db } = await connectToDatabase();
     
-    // Get distinct category slugs
-    const categorySlugs = await db.collection('products').distinct('categorySlug');
+    // Get all categories from the categories collection
+    const categories = await db.collection('categories').find({}).toArray();
+    console.log('Found categories:', categories.length);
     
-    // Get category details with product counts
-    const categories = await Promise.all(
-      categorySlugs.map(async (slug) => {
-        const count = await db.collection('products').countDocuments({ categorySlug: slug });
+    // Get product counts for each category
+    const categoriesWithCounts = await Promise.all(
+      categories.map(async (category) => {
+        // Count products where either category matches or subcategory matches
+        const count = await db.collection('products').countDocuments({
+          $or: [
+            { category: category.slug },
+            { subcategory: category.slug }
+          ]
+        });
+        console.log(`Category ${category.slug} has ${count} products`);
         
-        // Get subcategories for this category
-        const subcategorySlugs = await db.collection('products')
-          .distinct('subcategorySlug', { categorySlug: slug });
-        
-        // Get subcategory details with product counts
-        const subcategories = await Promise.all(
-          subcategorySlugs.map(async (subSlug) => {
-            if (!subSlug) return null;
-            
-            const subCount = await db.collection('products')
-              .countDocuments({ categorySlug: slug, subcategorySlug: subSlug });
-            
-            return {
-              slug: subSlug,
-              name: subSlug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
-              count: subCount
-            };
-          })
-        );
-        
-        // Filter out null subcategories
-        const filteredSubcategories = subcategories.filter(sub => sub !== null);
+        // Get subcategories if they exist
+        let subcategories = [];
+        if (category.subcategories && category.subcategories.length > 0) {
+          subcategories = await Promise.all(
+            category.subcategories.map(async (sub) => {
+              const subCount = await db.collection('products')
+                .countDocuments({ subcategory: sub.slug });
+              
+              return {
+                ...sub,
+                count: subCount
+              };
+            })
+          );
+        }
         
         return {
-          slug,
-          name: slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+          ...category,
+          _id: category._id.toString(),
           count,
-          subcategories: filteredSubcategories
+          subcategories
         };
       })
     );
     
-    return categories;
+    return categoriesWithCounts;
   } catch (error) {
     console.error('Error fetching categories:', error);
     return [];
@@ -79,24 +100,36 @@ async function getCategories() {
 }
 
 export async function generateMetadata({ params }) {
-  const categorySlug = params.slug;
-  const categoryName = categorySlug
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  const resolvedParams = await Promise.resolve(params);
+  const slug = resolvedParams.slug;
+  
+  const { db } = await connectToDatabase();
+  const category = await db.collection('categories').findOne({ slug });
+  
+  if (!category) {
+    return {
+      title: 'Category Not Found',
+      description: 'The requested category could not be found.'
+    };
+  }
   
   return {
-    title: `${categoryName} - Shop our Collection`,
-    description: `Browse our collection of ${categoryName.toLowerCase()} products.`,
+    title: `${category.name} - Shop our Collection`,
+    description: `Browse our collection of ${category.name.toLowerCase()} products.`,
   };
 }
 
 export default async function CategoryPage({ params, searchParams }) {
-  const categorySlug = params.slug;
-  const subcategorySlug = searchParams.subcategory;
+  const resolvedParams = await Promise.resolve(params);
+  const resolvedSearchParams = await Promise.resolve(searchParams);
   
-  const products = await getCategoryProducts(categorySlug, subcategorySlug);
-  const categories = await getCategories();
+  const categorySlug = resolvedParams.slug;
+  const subcategorySlug = resolvedSearchParams.subcategory;
+  
+  const [products, categories] = await Promise.all([
+    getCategoryProducts(categorySlug, subcategorySlug),
+    getCategories()
+  ]);
   
   // Find the current category
   const currentCategory = categories.find(cat => cat.slug === categorySlug);
@@ -104,8 +137,6 @@ export default async function CategoryPage({ params, searchParams }) {
   if (!currentCategory) {
     notFound();
   }
-  
-  const categoryName = currentCategory.name;
   
   // Find the current subcategory if applicable
   let subcategoryName = null;
@@ -116,7 +147,9 @@ export default async function CategoryPage({ params, searchParams }) {
     }
   }
   
-  const title = subcategoryName ? `${subcategoryName} - ${categoryName}` : categoryName;
+  const title = subcategoryName 
+    ? `${subcategoryName} - ${currentCategory.name}` 
+    : currentCategory.name;
   
   return (
     <div className="container mx-auto px-4 py-8">

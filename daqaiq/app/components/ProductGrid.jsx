@@ -21,7 +21,7 @@ export default function ProductGrid({ products }) {
         >
           <div className={styles.productImage}>
             <Image
-              src={product.images?.[0] || '/images/products/placeholder.jpg'}
+              src={product.images?.[0] || '/images/placeholder.jpg'}
               alt={product.name}
               fill
               className="object-cover"

@@ -24,53 +24,47 @@ export default function CategorySidebar({
   }
   
   return (
-    <div className="bg-white rounded-lg shadow p-4">
-      <h2 className="text-lg font-semibold mb-4">Categories</h2>
-      
-      <ul className="space-y-2">
-        {categories.map((category) => (
-          <li key={category.slug}>
-            <div className="flex flex-col">
+    <div className="bg-white rounded-lg shadow p-6">
+      <h2 className="text-xl font-semibold mb-4">Categories</h2>
+      <nav>
+        <ul className="space-y-2">
+          {categories.map((category) => (
+            <li key={category.slug} className="space-y-2">
               <Link
                 href={`/category/${category.slug}`}
-                className={`flex justify-between items-center py-2 px-3 rounded-md ${
-                  category.slug === currentCategorySlug
-                    ? 'bg-primary text-white font-medium'
-                    : 'hover:bg-gray-100'
+                className={`block hover:text-primary transition-colors ${
+                  currentCategorySlug === category.slug ? 'text-primary font-semibold' : 'text-gray-700'
                 }`}
               >
-                <span>{category.name}</span>
-                <span className="text-sm bg-gray-200 text-gray-700 px-2 py-1 rounded-full">
-                  {category.count}
-                </span>
+                {category.name}
+                {category.count > 0 && (
+                  <span className="text-sm text-gray-500 ml-2">({category.count})</span>
+                )}
               </Link>
               
-              {/* Show subcategories if this is the current category */}
-              {category.slug === currentCategorySlug && category.subcategories && category.subcategories.length > 0 && (
-                <ul className="ml-4 mt-2 space-y-1">
-                  {category.subcategories.map((subcategory) => (
-                    <li key={subcategory.slug}>
+              {category.subcategories && category.subcategories.length > 0 && (
+                <ul className="pl-4 space-y-1 border-l border-gray-200">
+                  {category.subcategories.map((sub) => (
+                    <li key={sub.slug}>
                       <Link
-                        href={`/category/${category.slug}?subcategory=${subcategory.slug}`}
-                        className={`flex justify-between items-center py-1.5 px-3 rounded-md ${
-                          subcategory.slug === currentSubcategorySlug
-                            ? 'bg-gray-200 font-medium'
-                            : 'hover:bg-gray-100'
+                        href={`/category/${category.slug}?subcategory=${sub.slug}`}
+                        className={`block text-sm hover:text-primary transition-colors ${
+                          currentSubcategorySlug === sub.slug ? 'text-primary font-semibold' : 'text-gray-600'
                         }`}
                       >
-                        <span>{subcategory.name}</span>
-                        <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
-                          {subcategory.count}
-                        </span>
+                        {sub.name}
+                        {sub.count > 0 && (
+                          <span className="text-xs text-gray-500 ml-2">({sub.count})</span>
+                        )}
                       </Link>
                     </li>
                   ))}
                 </ul>
               )}
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      </nav>
       
       {/* Price Range Filter */}
       <div className="mt-8">

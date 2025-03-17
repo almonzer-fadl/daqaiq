@@ -3,16 +3,21 @@
 import { useState, useEffect } from "react";
 import ProductGrid from "./ProductGrid";
 
-export default function ProductGridSection({ startRow = 0, numRows = 1 }) {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function ProductGridSection({ products: initialProducts, startRow = 0, numRows = 1 }) {
+  const [products, setProducts] = useState(initialProducts || []);
+  const [loading, setLoading] = useState(!initialProducts);
   const [error, setError] = useState(null);
-  
-  const productsPerRow = 5; // Updated to match the 5 columns in our grid
+
+  const productsPerRow = 5;
   const limit = numRows * productsPerRow;
   const skip = startRow * productsPerRow;
 
   useEffect(() => {
+    // If products were passed directly, don't fetch
+    if (initialProducts) {
+      return;
+    }
+
     async function fetchProducts() {
       try {
         setLoading(true);
@@ -25,16 +30,11 @@ export default function ProductGridSection({ startRow = 0, numRows = 1 }) {
           },
         });
         
-        console.log('Response status:', response.status);
-        
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error('API error response:', errorText);
-          throw new Error(`Failed to fetch products: ${response.status} ${errorText}`);
+          throw new Error(`Failed to fetch products: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('Products fetched:', data.products?.length || 0);
         setProducts(data.products || []);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -45,18 +45,16 @@ export default function ProductGridSection({ startRow = 0, numRows = 1 }) {
     }
 
     fetchProducts();
-  }, [limit, skip]);
+  }, [initialProducts, limit, skip]);
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {[...Array(limit)].map((_, index) => (
-            <div key={index} className="animate-pulse">
-              <div className="bg-gray-200 aspect-square rounded-lg"></div>
-            </div>
-          ))}
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        {[...Array(limit)].map((_, index) => (
+          <div key={index} className="animate-pulse">
+            <div className="bg-gray-200 aspect-square rounded-lg"></div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -77,14 +75,17 @@ export default function ProductGridSection({ startRow = 0, numRows = 1 }) {
 
   if (!products || products.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500">No products found. Make sure you have added products to your database.</p>
+      <div className="text-center py-12 bg-gray-50 rounded-lg">
+        <h2 className="text-xl font-semibold text-gray-700">No products found</h2>
+        <p className="mt-2 text-gray-500">
+          We couldn't find any products matching your criteria.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="space-y-8">
       <ProductGrid products={products} />
     </div>
   );
