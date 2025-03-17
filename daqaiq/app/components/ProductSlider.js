@@ -165,7 +165,7 @@ export default function ProductSlider({ categoryData, sectionId }) {
 
                       <div className={styles.productImage}>
                         <Image
-                          src={product.image || "/placeholder.svg"}
+                          src={product.image || "/images/products/placeholder.jpg"}
                           alt={product.title}
                           width={200}
                           height={200}

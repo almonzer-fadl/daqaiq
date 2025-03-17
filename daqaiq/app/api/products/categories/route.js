@@ -1,67 +1,7 @@
-import { connectToDatabase } from './mongodb';
+import { connectToDatabase } from '../../../lib/mongodb';
+import { NextResponse } from 'next/server';
 
-// Get all products
-export async function getProducts(limit = 12, skip = 0) {
-  try {
-    const { db } = await connectToDatabase();
-    const products = await db
-      .collection('products')
-      .find({})
-      .skip(skip)
-      .limit(limit)
-      .toArray();
-    
-    return products.map(product => ({
-      ...product,
-      _id: product._id.toString(),
-    }));
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    return [];
-  }
-}
-
-// Get products by category
-export async function getCategoryProducts(categorySlug) {
-  try {
-    const { db } = await connectToDatabase();
-    const products = await db
-      .collection('products')
-      .find({ categorySlug })
-      .toArray();
-    
-    return products.map(product => ({
-      ...product,
-      _id: product._id.toString(),
-    }));
-  } catch (error) {
-    console.error('Error fetching category products:', error);
-    return [];
-  }
-}
-
-// Get product by slug
-export async function getProductBySlug(slug) {
-  try {
-    const { db } = await connectToDatabase();
-    const product = await db.collection('products').findOne({ slug });
-    
-    if (!product) {
-      return null;
-    }
-    
-    return {
-      ...product,
-      _id: product._id.toString(),
-    };
-  } catch (error) {
-    console.error('Error fetching product:', error);
-    return null;
-  }
-}
-
-// Get categories with counts
-export async function getCategories() {
+export async function GET() {
   try {
     const { db } = await connectToDatabase();
     
@@ -105,9 +45,12 @@ export async function getCategories() {
       })
     );
     
-    return categories;
+    return NextResponse.json({ categories });
   } catch (error) {
     console.error('Error fetching categories:', error);
-    return [];
+    return NextResponse.json(
+      { error: 'Failed to fetch categories' },
+      { status: 500 }
+    );
   }
 } 

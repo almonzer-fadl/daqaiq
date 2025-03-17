@@ -1,94 +1,149 @@
-import { Suspense } from 'react';
+import { connectToDatabase } from '../../lib/mongodb';
+import CategorySidebar from '../../components/CategorySidebar';
+import ProductGridSection from '../../components/ProductGridSection';
 import { notFound } from 'next/navigation';
-import CategoryLayout from '../CategoryLayout';
-import CategorySidebar from '../../components/category/CategorySidebar.js';
-import CategoryProducts from '../../components/category/CategoryProducts.js';
-import CategoryHeader from '../../components/category/CategoryHeader.js';
-import Loading from '../../components/loading';
-import styles from '../../components/category/category.module.css';
-import { categories } from '../../data/categories';
 
-export async function generateMetadata({ params, searchParams }) {
-  // Await params and searchParams to fix the Next.js error
-  const resolvedParams = await Promise.resolve(params);
-  const resolvedSearchParams = await Promise.resolve(searchParams);
-  
-  const slug = resolvedParams.slug;
-  const category = categories.find(cat => cat.slug === slug);
-  
-  if (!category) {
-    return {
-      title: 'Category Not Found | Daqaiq',
-      description: 'The requested category could not be found.'
-    };
-  }
-  
-  const subcategorySlug = resolvedSearchParams?.subcategory;
-  let title = category.name;
-  
-  if (subcategorySlug) {
-    const subcategory = category.subcategories.find(sub => sub.slug === subcategorySlug);
-    if (subcategory) {
-      title = `${subcategory.name} - ${category.name}`;
+async function getCategoryProducts(categorySlug, subcategorySlug = null) {
+  try {
+    const { db } = await connectToDatabase();
+    
+    // Build query
+    const query = { categorySlug };
+    if (subcategorySlug) {
+      query.subcategorySlug = subcategorySlug;
     }
+    
+    // Get products
+    const products = await db.collection('products').find(query).toArray();
+    
+    // Format products
+    return products.map(product => ({
+      ...product,
+      _id: product._id.toString(),
+    }));
+  } catch (error) {
+    console.error('Error fetching category products:', error);
+    return [];
   }
+}
+
+async function getCategories() {
+  try {
+    const { db } = await connectToDatabase();
+    
+    // Get distinct category slugs
+    const categorySlugs = await db.collection('products').distinct('categorySlug');
+    
+    // Get category details with product counts
+    const categories = await Promise.all(
+      categorySlugs.map(async (slug) => {
+        const count = await db.collection('products').countDocuments({ categorySlug: slug });
+        
+        // Get subcategories for this category
+        const subcategorySlugs = await db.collection('products')
+          .distinct('subcategorySlug', { categorySlug: slug });
+        
+        // Get subcategory details with product counts
+        const subcategories = await Promise.all(
+          subcategorySlugs.map(async (subSlug) => {
+            if (!subSlug) return null;
+            
+            const subCount = await db.collection('products')
+              .countDocuments({ categorySlug: slug, subcategorySlug: subSlug });
+            
+            return {
+              slug: subSlug,
+              name: subSlug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+              count: subCount
+            };
+          })
+        );
+        
+        // Filter out null subcategories
+        const filteredSubcategories = subcategories.filter(sub => sub !== null);
+        
+        return {
+          slug,
+          name: slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+          count,
+          subcategories: filteredSubcategories
+        };
+      })
+    );
+    
+    return categories;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+}
+
+export async function generateMetadata({ params }) {
+  const categorySlug = params.slug;
+  const categoryName = categorySlug
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
   
   return {
-    title: `${title} | Daqaiq`,
-    description: category.description
+    title: `${categoryName} - Shop our Collection`,
+    description: `Browse our collection of ${categoryName.toLowerCase()} products.`,
   };
 }
 
-export async function generateStaticParams() {
-  return categories.map((category) => ({
-    slug: category.slug,
-  }));
-}
-
 export default async function CategoryPage({ params, searchParams }) {
-  // Await params and searchParams to fix the Next.js error
-  const resolvedParams = await Promise.resolve(params);
-  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const categorySlug = params.slug;
+  const subcategorySlug = searchParams.subcategory;
   
-  const slug = resolvedParams.slug;
-  const category = categories.find(cat => cat.slug === slug);
+  const products = await getCategoryProducts(categorySlug, subcategorySlug);
+  const categories = await getCategories();
   
-  if (!category) {
+  // Find the current category
+  const currentCategory = categories.find(cat => cat.slug === categorySlug);
+  
+  if (!currentCategory) {
     notFound();
   }
-
-  // Filter products by category slug and optionally by subcategory
-  let products = sampleProducts.filter(product => product.categorySlug === slug);
-  const subcategorySlug = resolvedSearchParams?.subcategory;
   
-  if (subcategorySlug) {
-    const subcategory = category.subcategories.find(sub => sub.slug === subcategorySlug);
+  const categoryName = currentCategory.name;
+  
+  // Find the current subcategory if applicable
+  let subcategoryName = null;
+  if (subcategorySlug && currentCategory.subcategories) {
+    const subcategory = currentCategory.subcategories.find(sub => sub.slug === subcategorySlug);
     if (subcategory) {
-      // This is where you would filter products by subcategory
+      subcategoryName = subcategory.name;
     }
   }
-
+  
+  const title = subcategoryName ? `${subcategoryName} - ${categoryName}` : categoryName;
+  
   return (
-    <CategoryLayout>
-      <div className={styles.categoryPage}>
-        <CategoryHeader 
-          categoryName={subcategorySlug 
-            ? category.subcategories.find(sub => sub.slug === subcategorySlug)?.name || category.name
-            : category.name
-          } 
-          productCount={products.length}
-        />
-        <div className={styles.categoryContent}>
-          <aside className={`${styles.sidebar} ${styles.filterSidebar}`}>
-            <CategorySidebar category={slug} />
-          </aside>
-          <main className={styles.productsArea}>
-            <Suspense fallback={<Loading />}>
-              <CategoryProducts products={products} />
-            </Suspense>
-          </main>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">{title}</h1>
+      
+      <div className="flex flex-col md:flex-row gap-8">
+        <div className="md:w-1/4">
+          <CategorySidebar 
+            categories={categories} 
+            currentCategorySlug={categorySlug}
+            currentSubcategorySlug={subcategorySlug}
+          />
+        </div>
+        
+        <div className="md:w-3/4">
+          {products.length > 0 ? (
+            <ProductGridSection products={products} />
+          ) : (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+              <h2 className="text-xl font-semibold text-gray-700">No products found</h2>
+              <p className="mt-2 text-gray-500">
+                We couldn't find any products in this category.
+              </p>
+            </div>
+          )}
         </div>
       </div>
-    </CategoryLayout>
+    </div>
   );
 } 
