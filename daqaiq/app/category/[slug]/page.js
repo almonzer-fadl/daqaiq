@@ -6,7 +6,6 @@ import CategoryProducts from '../../components/category/CategoryProducts.js';
 import CategoryHeader from '../../components/category/CategoryHeader.js';
 import Loading from '../../components/loading';
 import styles from '../../components/category/category.module.css';
-import { sampleProducts } from '../../data/sample-products';
 import { categories } from '../../data/categories';
 
 export async function generateMetadata({ params, searchParams }) {

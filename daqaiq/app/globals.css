@@ -1,6 +1,6 @@
-@tailwind base; /* Import Tailwind's base styles */
-@tailwind components; /* Import Tailwind's component styles */
-@tailwind utilities; /* Import Tailwind's utility styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #ffffff; /* Define the background color variable */
