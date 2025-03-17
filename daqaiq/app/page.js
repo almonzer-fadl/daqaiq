@@ -33,7 +33,7 @@ export default function Home() {
            {/* First two rows of products */}
            <ProductGridSection startRow={0} numRows={2} />
            
-          {/* Last slider */}
+          {/* Third Slider */}
           <ProductSlider categoryData={carProducts.Accessories} sectionId="accessories" />
           
           {/* Remaining rows of products */}
@@ -45,7 +45,7 @@ export default function Home() {
           {/* Remaining rows of products */}
           <ProductGridSection startRow={2} numRows={7} />
 
-          {/* Last slider */}
+          {/* Last Slider */}
           <ProductSlider categoryData={carProducts.Accessories} sectionId="accessories" />
 
           {/* Remaining rows of products */}

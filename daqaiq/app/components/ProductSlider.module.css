@@ -18,11 +18,19 @@
   box-shadow: 0 8px 25px rgba(242, 122, 26, 0.2);
 }
 
-/* Middle slider - keep default styles */
+/* Second slider - with gradient */
 .container:nth-of-type(2) {
   background: linear-gradient(135deg, #f27a1a 0%, #ffad70 50%, #fcd8bb 100%);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   transform: scale(1);
+}
+
+/* Third slider and beyond */
+.container:nth-of-type(3),
+.container:nth-of-type(n+4) {
+  background: #ffffff;
+  transform: scale(1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 /* Last slider */
@@ -32,26 +40,32 @@
   box-shadow: 0 8px 25px rgba(184, 79, 10, 0.2);
 }
 
-/* Update text colors for better contrast on dark backgrounds */
+/* Update text colors for better contrast */
 .container:first-of-type .categoryTitle,
-.container:first-of-type .viewAllButton,
-.container:last-of-type .categoryTitle,
-.container:last-of-type .viewAllButton {
-  color: #ffffff;
-}
-
-.container:first-of-type .categoryTitle::before,
-.container:last-of-type .categoryTitle::before {
-  background-color: #ffffff;
-}
-
-/* Keep middle slider text colors */
-.container:nth-of-type(2) .categoryTitle,
-.container:nth-of-type(2) .viewAllButton {
+.container:first-of-type .viewAllButton {
   color: #333;
 }
 
+/* Second slider text colors */
+.container:nth-of-type(2) .categoryTitle,
+.container:nth-of-type(2) .viewAllButton {
+  color: #ffffff;
+}
+
 .container:nth-of-type(2) .categoryTitle::before {
+  background-color: #ffffff;
+}
+
+/* Third slider and beyond text colors */
+.container:nth-of-type(3) .categoryTitle,
+.container:nth-of-type(3) .viewAllButton,
+.container:nth-of-type(n+4) .categoryTitle,
+.container:nth-of-type(n+4) .viewAllButton {
+  color: #333;
+}
+
+.container:nth-of-type(3) .categoryTitle::before,
+.container:nth-of-type(n+4) .categoryTitle::before {
   background-color: #f27a1a;
 }
 
