@@ -9,18 +9,22 @@ const localImages = [
   "/images/hero3.jpg",
 ];
 
-// Generate products once outside the component
-const MOCK_PRODUCTS = Array.from({ length: 120 }, (_, i) => ({
-  id: i + 1,
-  title: `Product ${i + 1}`,
-  image: localImages[i % localImages.length],
-}));
+function generateMockProducts(startIndex, count) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: startIndex + i + 1,
+    title: `Product ${startIndex + i + 1}`,
+    image: localImages[(startIndex + i) % localImages.length],
+  }));
+}
 
-export default function ProductGrid() {
+export default function ProductGridSection({ startRow = 0, numRows = 1 }) {
+  const productsPerRow = 3;
+  const products = generateMockProducts(startRow * productsPerRow, numRows * productsPerRow);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {MOCK_PRODUCTS.map((product) => (
+        {products.map((product) => (
           <Link
             href={`/products/${product.id}`}
             key={product.id}

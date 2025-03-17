@@ -10,7 +10,7 @@ import styles from './page.module.css'; // Import a CSS module for custom styles
 import { categories } from './data/categories';
 import Link from 'next/link';
 import CategorySlider from './components/CategorySlider/CategorySlider';
-import ProductGrid from './components/ProductGrid';
+import ProductGridSection from './components/ProductGridSection';
 
 export default function Home() {
   return (
@@ -26,9 +26,30 @@ export default function Home() {
           <CategorySlider />
           
           <ProductSlider categoryData={carProducts.Offers} sectionId="car-products" />
+          
+          
           <ProductSlider categoryData={carProducts.SpareParts} sectionId="spare-parts" />
+          
+           {/* First two rows of products */}
+           <ProductGridSection startRow={0} numRows={2} />
+           
+          {/* Last slider */}
           <ProductSlider categoryData={carProducts.Accessories} sectionId="accessories" />
-          <ProductGrid />
+          
+          {/* Remaining rows of products */}
+          <ProductGridSection startRow={2} numRows={6} />
+
+          {/* Category Slider Component */}
+          <CategorySlider />
+
+          {/* Remaining rows of products */}
+          <ProductGridSection startRow={2} numRows={7} />
+
+          {/* Last slider */}
+          <ProductSlider categoryData={carProducts.Accessories} sectionId="accessories" />
+
+          {/* Remaining rows of products */}
+          <ProductGridSection startRow={2} numRows={38} />
         </div>
       </main>
       <Footer />
