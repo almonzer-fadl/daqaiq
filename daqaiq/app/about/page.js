@@ -5,6 +5,7 @@ import Headertop from "../components/headertop";
 import Navbar from "../components/navbar";
 import Navlinks from "../components/navlinks";
 import Footer from '../components/footer';
+import Image from 'next/image';
 
 export default function About() {
   return (
@@ -25,9 +26,11 @@ export default function About() {
               </p>
             </div>
             <div className={styles.imagesection}>
-              <img
+              <Image
                 src="/about-image.jpg"
                 alt="About Us"
+                width={500}
+                height={300}
                 className="object-cover w-full h-full"
               />
             </div>

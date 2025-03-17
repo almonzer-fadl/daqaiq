@@ -90,19 +90,44 @@ const Footer = () => {
             </div>
             <div className="payment-methods">
                 <div className="payment-icon">
-                    <img src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fb964d3e6d165a571306324c2c0e36a50.cdn.bubble.io%2Ff1704876020494x314215901836736500%2Fmastercard.png?w=64&h=64&auto=compress&dpr=1.25&fit=max" alt="Mastercard" />
+                    <Image
+                        src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fb964d3e6d165a571306324c2c0e36a50.cdn.bubble.io%2Ff1704876020494x314215901836736500%2Fmastercard.png?w=64&h=64&auto=compress&dpr=1.25&fit=max"
+                        alt="Mastercard"
+                        width={64}
+                        height={64}
+                    />
                 </div>
                 <div className="payment-icon">
-                    <img src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fb964d3e6d165a571306324c2c0e36a50.cdn.bubble.io%2Ff1704876002797x964458829668657500%2Fmada.png?w=64&h=64&auto=compress&dpr=1.25&fit=max" alt="Mada" />
+                    <Image
+                        src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fb964d3e6d165a571306324c2c0e36a50.cdn.bubble.io%2Ff1704876002797x964458829668657500%2Fmada.png?w=64&h=64&auto=compress&dpr=1.25&fit=max"
+                        alt="Mada"
+                        width={64}
+                        height={64}
+                    />
                 </div>
                 <div className="payment-icon">
-                    <img src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fb964d3e6d165a571306324c2c0e36a50.cdn.bubble.io%2Ff1704875985340x184211040869700860%2Fvisa.png?w=64&h=64&auto=compress&dpr=1.25&fit=max" alt="Visa" />
+                    <Image
+                        src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fb964d3e6d165a571306324c2c0e36a50.cdn.bubble.io%2Ff1704875985340x184211040869700860%2Fvisa.png?w=64&h=64&auto=compress&dpr=1.25&fit=max"
+                        alt="Visa"
+                        width={64}
+                        height={64}
+                    />
                 </div>
                 <div className="payment-icon">
-                    <img src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fb964d3e6d165a571306324c2c0e36a50.cdn.bubble.io%2Ff1704876043214x376189721648559700%2Fsaso.png?w=64&h=64&auto=compress&dpr=1.25&fit=max" alt="Saso" />
+                    <Image
+                        src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fb964d3e6d165a571306324c2c0e36a50.cdn.bubble.io%2Ff1704876043214x376189721648559700%2Fsaso.png?w=64&h=64&auto=compress&dpr=1.25&fit=max"
+                        alt="Saso"
+                        width={64}
+                        height={64}
+                    />
                 </div>
                 <div className="payment-icon">
-                    <img src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fb964d3e6d165a571306324c2c0e36a50.cdn.bubble.io%2Ff1704876059386x205838921129571260%2Fiso.png?w=64&h=64&auto=compress&dpr=1.25&fit=max" alt="ISO" />
+                    <Image
+                        src="https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fb964d3e6d165a571306324c2c0e36a50.cdn.bubble.io%2Ff1704876059386x205838921129571260%2Fiso.png?w=64&h=64&auto=compress&dpr=1.25&fit=max"
+                        alt="ISO"
+                        width={64}
+                        height={64}
+                    />
                 </div>
             </div>
             <div className="footer-bottom">
