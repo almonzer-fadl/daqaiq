@@ -21,7 +21,13 @@ console.log('MongoDB URI:', redactedUri);
 console.log('MongoDB DB:', process.env.MONGODB_DB);
 
 const uri = process.env.MONGODB_URI;
-const options = {};
+const dbName = process.env.MONGODB_DB;
+
+const options = {
+  maxPoolSize: 10,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+};
 
 let client;
 let clientPromise;
@@ -31,23 +37,38 @@ if (process.env.NODE_ENV === 'development') {
   // is preserved across module reloads caused by HMR (Hot Module Replacement).
   if (!global._mongoClientPromise) {
     client = new MongoClient(uri, options);
-    global._mongoClientPromise = client.connect();
+    global._mongoClientPromise = client.connect()
+      .then(client => {
+        console.log('Connected to MongoDB database:', dbName);
+        return client;
+      })
+      .catch(error => {
+        console.error('Error connecting to MongoDB:', error);
+        throw error;
+      });
   }
   clientPromise = global._mongoClientPromise;
 } else {
   // In production mode, it's best to not use a global variable.
   client = new MongoClient(uri, options);
-  clientPromise = client.connect();
+  clientPromise = client.connect()
+    .then(client => {
+      console.log('Connected to MongoDB database:', dbName);
+      return client;
+    })
+    .catch(error => {
+      console.error('Error connecting to MongoDB:', error);
+      throw error;
+    });
 }
 
 export async function connectToDatabase() {
   try {
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB || 'daqaiq');
+    const db = client.db(dbName);
     
     // Test the connection
     await db.command({ ping: 1 });
-    console.log('Connected to MongoDB database:', db.databaseName);
     
     return { db, client };
   } catch (error) {

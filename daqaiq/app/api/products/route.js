@@ -1,29 +1,18 @@
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
-import Product from '../../lib/models/Product';
-
-// Connect to MongoDB
-try {
-  if (!process.env.MONGODB_URI) {
-    throw new Error('MONGODB_URI is not defined in environment variables');
-  }
-  
-  mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('MongoDB connected successfully'))
-    .catch(err => console.error('MongoDB connection error:', err));
-} catch (error) {
-  console.error('MongoDB connection setup error:', error);
-}
+import { connectToDatabase } from '@/lib/mongodb';
 
 export async function POST(request) {
   try {
+    const { db } = await connectToDatabase();
     const body = await request.json();
     
     // Create new product
-    const product = await Product.create(body);
+    const result = await db.collection('products').insertOne(body);
+    const product = await db.collection('products').findOne({ _id: result.insertedId });
     
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
+    console.error('Error creating product:', error);
     return NextResponse.json(
       { error: 'Failed to create product' },
       { status: 500 }
@@ -33,6 +22,7 @@ export async function POST(request) {
 
 export async function GET(request) {
   try {
+    const { db } = await connectToDatabase();
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const subcategory = searchParams.get('subcategory');
@@ -40,41 +30,26 @@ export async function GET(request) {
     const limit = parseInt(searchParams.get('limit') || '50', 10);
     const skip = parseInt(searchParams.get('skip') || '0', 10);
     
-    console.log('Checking database connection...');
-    console.log('Database name:', mongoose.connection.name);
-    console.log('Database host:', mongoose.connection.host);
-    console.log('Connection state:', mongoose.connection.readyState);
-    
     let query = {};
     
     if (category) query.category = category;
     if (subcategory) query.subcategory = subcategory;
     if (featured) query.isFeatured = featured === 'true';
     
-    console.log('Attempting to count documents...');
-    const totalCount = await Product.countDocuments(query);
-    console.log('Total products found:', totalCount);
+    const totalCount = await db.collection('products').countDocuments(query);
     
-    console.log('Attempting to fetch products...');
-    const products = await Product.find(query)
+    const products = await db.collection('products')
+      .find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
-    
-    console.log('Products retrieved:', products.length);
-    
-    if (products.length > 0) {
-      console.log('First product:', JSON.stringify(products[0], null, 2));
-    } else {
-      console.log('No products found in database');
-      
-      // List all collections in the database
-      const collections = await mongoose.connection.db.listCollections().toArray();
-      console.log('Available collections:', collections.map(c => c.name));
-    }
+      .limit(limit)
+      .toArray();
     
     return NextResponse.json({
-      products,
+      products: products.map(product => ({
+        ...product,
+        _id: product._id.toString()
+      })),
       pagination: {
         total: totalCount,
         limit,
@@ -83,7 +58,7 @@ export async function GET(request) {
       }
     });
   } catch (error) {
-    console.error('Detailed error:', error);
+    console.error('Error fetching products:', error);
     return NextResponse.json(
       { error: 'Failed to fetch products' },
       { status: 500 }
