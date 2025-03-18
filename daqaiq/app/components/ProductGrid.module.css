@@ -1,69 +1,52 @@
-.productGrid {
+.productsGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
-}
-
-@media (min-width: 640px) {
-  .productGrid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-  }
+  grid-template-columns: 1fr; /* Single column for mobile */
+  gap: 1rem;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 @media (min-width: 768px) {
-  .productGrid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .productGrid {
-    grid-template-columns: repeat(5, 1fr);
+  .productsGrid {
+    grid-template-columns: repeat(3, 1fr); /* Three columns for desktop */
+    gap: 1.5rem;
   }
 }
 
 .productCard {
   position: relative;
+  aspect-ratio: 16/9; /* Matches Trendyol's banner aspect ratio */
+  border-radius: 1rem;
   overflow: hidden;
-  border-radius: 0.5rem;
-  background-color: #f3f4f6;
-  transition: transform 0.3s ease;
-}
-
-.productCard:hover {
-  transform: scale(1.02);
+  background: linear-gradient(135deg, #051937, #004d7a); /* Dark blue gradient background */
+  cursor: pointer; /* Add cursor pointer */
+  display: block; /* Ensure Link works properly */
+  text-decoration: none; /* Remove default link styling */
 }
 
 .productImage {
   position: relative;
-  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
 }
 
+.productImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.productCard:hover img {
+  transform: scale(1.05);
+}
+
+/* Remove all text-related styles since we're only showing images */
+.productName,
+.price,
+.originalPrice,
 .discountBadge {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background-color: #ef4444;
-  color: white;
-  font-size: 0.75rem;
-  font-weight: bold;
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
-  z-index: 10;
-}
-
-.productName {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 0.5rem;
-  font-size: 0.875rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: none;
 } 

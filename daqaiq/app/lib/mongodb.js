@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb';
 // Check if MongoDB URI is defined
 if (!process.env.MONGODB_URI) {
   console.error('MONGODB_URI is not defined in environment variables');
-  throw new Error('Please add your Mongo URI to .env.local');
+  throw new Error('Please add your MongoDB URI to .env.local');
 }
 
 // Check if MongoDB database name is defined
@@ -21,10 +21,7 @@ console.log('MongoDB URI:', redactedUri);
 console.log('MongoDB DB:', process.env.MONGODB_DB);
 
 const uri = process.env.MONGODB_URI;
-const options = {
-  maxPoolSize: 10,
-  minPoolSize: 5,
-};
+const options = {};
 
 let client;
 let clientPromise;
@@ -34,15 +31,7 @@ if (process.env.NODE_ENV === 'development') {
   // is preserved across module reloads caused by HMR (Hot Module Replacement).
   if (!global._mongoClientPromise) {
     client = new MongoClient(uri, options);
-    global._mongoClientPromise = client.connect()
-      .then((client) => {
-        console.log('MongoDB connected successfully');
-        return client;
-      })
-      .catch((err) => {
-        console.error('MongoDB connection error:', err);
-        throw err;
-      });
+    global._mongoClientPromise = client.connect();
   }
   clientPromise = global._mongoClientPromise;
 } else {
@@ -60,9 +49,9 @@ export async function connectToDatabase() {
     await db.command({ ping: 1 });
     console.log('Connected to MongoDB database:', db.databaseName);
     
-    return { client, db };
+    return { db, client };
   } catch (error) {
-    console.error('Failed to connect to MongoDB:', error);
+    console.error('Error connecting to database:', error);
     throw error;
   }
 } 

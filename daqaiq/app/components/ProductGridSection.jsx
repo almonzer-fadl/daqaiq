@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ProductGrid from "./ProductGrid";
+import Image from "next/image";
+import Link from 'next/link';
+import styles from './ProductGrid.module.css';
 
 export default function ProductGridSection({ products: initialProducts, startRow = 0, numRows = 1 }) {
   const [products, setProducts] = useState(initialProducts || []);
   const [loading, setLoading] = useState(!initialProducts);
   const [error, setError] = useState(null);
 
-  const productsPerRow = 5;
+  const productsPerRow = 3;
   const limit = numRows * productsPerRow;
   const skip = startRow * productsPerRow;
 
@@ -35,6 +37,7 @@ export default function ProductGridSection({ products: initialProducts, startRow
         }
         
         const data = await response.json();
+        console.log('Fetched products:', data);
         setProducts(data.products || []);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -49,10 +52,10 @@ export default function ProductGridSection({ products: initialProducts, startRow
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {[...Array(limit)].map((_, index) => (
-          <div key={index} className="animate-pulse">
-            <div className="bg-gray-200 aspect-square rounded-lg"></div>
+      <div className={styles.productsGrid}>
+        {[...Array(3)].map((_, index) => (
+          <div key={index} className={`${styles.productCard} animate-pulse`}>
+            <div className="w-full h-full bg-gray-200"></div>
           </div>
         ))}
       </div>
@@ -77,16 +80,33 @@ export default function ProductGridSection({ products: initialProducts, startRow
     return (
       <div className="text-center py-12 bg-gray-50 rounded-lg">
         <h2 className="text-xl font-semibold text-gray-700">No products found</h2>
-        <p className="mt-2 text-gray-500">
-          We couldn't find any products matching your criteria.
-        </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <ProductGrid products={products} />
+    <div className={styles.productsGrid}>
+      {products.map(product => (
+        <Link 
+          href={`/products/${product.slug}`}
+          key={product._id}
+          className={styles.productCard}
+        >
+          <div className={styles.productImage}>
+            <Image
+              src={product.images?.[0] || '/placeholder.jpg'}
+              alt={product.name || ''}
+              fill
+              priority
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw"
+              onError={(e) => {
+                e.target.src = '/placeholder.jpg';
+              }}
+            />
+          </div>
+        </Link>
+      ))}
     </div>
   );
 } 

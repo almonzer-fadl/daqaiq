@@ -43,13 +43,13 @@ export default function Home() {
           <CategorySlider />
 
           {/* Remaining rows of products */}
-          <ProductGridSection startRow={2} numRows={7} />
+          <ProductGridSection startRow={6} numRows={7} />
 
           {/* Last Slider */}
           <ProductSlider categoryData={carProducts.Accessories} sectionId="accessories" />
 
           {/* Remaining rows of products */}
-          <ProductGridSection startRow={2} numRows={38} />
+          <ProductGridSection startRow={7} numRows={38} />
         </div>
       </main>
       <Footer />
