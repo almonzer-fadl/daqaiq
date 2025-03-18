@@ -5,6 +5,6 @@
       "@/*": ["./app/*"]
     }
   },
-  "include": ["app/**/*"],
+  "include": ["app/**/*", "scripts/insertCategories.js"],
   "exclude": ["node_modules"]
 }

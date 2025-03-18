@@ -1,18 +1,25 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "./CategorySlider.module.css";
 import Link from "next/link";
 import Image from "next/image";
-import { categories } from "../../data/categories";
 
 const CategorySlider = () => {
+  const [categories, setCategories] = useState([]);
   const categoriesRef = useRef(null);
 
-  // Updated scroll function to work correctly with RTL layout
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const response = await fetch('/api/categories');
+      const fetchedCategories = await response.json();
+      setCategories(fetchedCategories);
+    };
+
+    fetchCategories();
+  }, []);
+
   const scrollCategories = (direction) => {
     if (categoriesRef.current) {
-      // For RTL layout, we need to reverse the scroll direction
-      // because scrollLeft increases as you scroll right-to-left in RTL
       const scrollAmount = 200;
       categoriesRef.current.scrollBy({
         left: direction === "next" ? -scrollAmount : scrollAmount,
