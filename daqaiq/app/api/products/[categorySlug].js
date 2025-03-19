@@ -1,4 +1,4 @@
-import { getCategoryProducts } from '@/app/lib/data';
+import { getCategoryProducts } from '../../lib/data';
 
 export default async function handler(req, res) {
   const { categorySlug } = req.query;
