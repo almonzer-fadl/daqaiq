@@ -1,29 +1,57 @@
+import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
-export function middleware(request) {
-  // Keep only maintenance mode logic
-  const MAINTENANCE_MODE = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true';
-  
-  const allowedPaths = [
-    '/maintenance',
-    '/favicon.ico',
-    '/_next',
-    '/images',
-    '/static'
-  ];
+export default withAuth(
+  function middleware(req) {
+    const token = req.nextauth.token;
+    const path = req.nextUrl.pathname;
 
-  if (MAINTENANCE_MODE && 
-      !allowedPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/maintenance';
-    return NextResponse.rewrite(url);
+    // Public routes - accessible to everyone
+    const publicRoutes = [
+      '/',
+      '/auth/signin',
+      '/auth/register',
+      '/auth/verify',
+      '/auth/forgot-password',
+      '/products',
+      '/categories',
+      '/search',
+    ];
+
+    if (publicRoutes.includes(path)) {
+      return NextResponse.next();
+    }
+
+    // Protected routes based on user role
+    if (path.startsWith('/admin') && token?.role !== 'admin') {
+      return NextResponse.redirect(new URL('/auth/signin', req.url));
+    }
+
+    if (path.startsWith('/supplier') && token?.role !== 'supplier') {
+      return NextResponse.redirect(new URL('/auth/signin', req.url));
+    }
+
+    if (path.startsWith('/customer') && !token) {
+      return NextResponse.redirect(new URL('/auth/signin', req.url));
+    }
+
+    return NextResponse.next();
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => !!token,
+    },
   }
-  
-  return NextResponse.next();
-}
+);
 
+// Specify which routes should be protected
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/admin/:path*',
+    '/supplier/:path*',
+    '/customer/:path*',
+    '/profile/:path*',
+    '/orders/:path*',
+    '/cart/:path*',
   ],
 };
