@@ -3,10 +3,23 @@ import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '../../../../lib/mongodb';
 import Product from '../../../../lib/models/Product';
 import { authOptions } from '../../../auth/[...nextauth]/route';
-import { unlink } from 'fs/promises';
+import { unlink, writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
-export async function DELETE(req, context) {
+// Ensure uploads directory exists
+async function ensureUploadDir() {
+  const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'products');
+  try {
+    await mkdir(uploadDir, { recursive: true });
+  } catch (error) {
+    if (error.code !== 'EEXIST') {
+      throw error;
+    }
+  }
+}
+
+export async function DELETE(request, context) {
   try {
     // Check authentication and role
     const session = await getServerSession(authOptions);
@@ -19,7 +32,8 @@ export async function DELETE(req, context) {
     }
 
     // Get the ID from params
-    const id = context.params.id;
+    const params = await context.params;
+    const { id } = params;
 
     // Connect to database
     await connectToDatabase();
@@ -61,7 +75,7 @@ export async function DELETE(req, context) {
   }
 }
 
-export async function GET(req, context) {
+export async function GET(request, context) {
   try {
     // Check authentication and role
     const session = await getServerSession(authOptions);
@@ -74,7 +88,8 @@ export async function GET(req, context) {
     }
 
     // Get the ID from params
-    const id = context.params.id;
+    const params = await context.params;
+    const { id } = params;
 
     // Connect to database
     await connectToDatabase();
@@ -100,7 +115,7 @@ export async function GET(req, context) {
   }
 }
 
-export async function PUT(req, context) {
+export async function PUT(request, context) {
   try {
     // Check authentication and role
     const session = await getServerSession(authOptions);
@@ -113,10 +128,11 @@ export async function PUT(req, context) {
     }
 
     // Get the ID from params
-    const id = context.params.id;
+    const params = await context.params;
+    const { id } = params;
 
     // Get form data
-    const formData = await req.formData();
+    const formData = await request.formData();
     const productData = {};
 
     // Extract product data
@@ -147,20 +163,39 @@ export async function PUT(req, context) {
       return NextResponse.json({ message: 'Product not found' }, { status: 404 });
     }
 
-    // Handle image uploads
+    // Handle existing images
+    const existingImages = JSON.parse(formData.get('existingImages') || '[]');
+
+    // Delete removed images
+    const removedImages = product.images.filter(img => !existingImages.includes(img));
+    for (const imageUrl of removedImages) {
+      try {
+        const imagePath = path.join(process.cwd(), 'public', imageUrl);
+        await unlink(imagePath);
+      } catch (error) {
+        console.error('Error deleting image file:', error);
+      }
+    }
+
+    // Handle new image uploads
     const images = formData.getAll('images');
-    const imageUrls = [...product.images]; // Keep existing images
+    const imageUrls = [...existingImages];
 
-    for (const image of images) {
-      if (typeof image === 'object' && 'arrayBuffer' in image) {
-        const buffer = Buffer.from(await image.arrayBuffer());
-        const filename = `${uuidv4()}_${image.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-        const relativePath = `/uploads/products/${filename}`;
-        const fullPath = path.join(process.cwd(), 'public', relativePath);
+    if (images.length > 0) {
+      // Ensure upload directory exists
+      await ensureUploadDir();
 
-        // Ensure directory exists
-        await writeFile(fullPath, buffer);
-        imageUrls.push(relativePath);
+      // Process new images
+      for (const image of images) {
+        if (typeof image === 'object' && 'arrayBuffer' in image) {
+          const buffer = Buffer.from(await image.arrayBuffer());
+          const filename = `${uuidv4()}_${image.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+          const relativePath = `/uploads/products/${filename}`;
+          const fullPath = path.join(process.cwd(), 'public', relativePath);
+
+          await writeFile(fullPath, buffer);
+          imageUrls.push(relativePath);
+        }
       }
     }
 

@@ -3,20 +3,19 @@ import mongoose from 'mongoose';
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please provide a name'],
+    required: [true, 'Name is required'],
     trim: true,
   },
   email: {
     type: String,
-    required: [true, 'Please provide an email'],
+    required: [true, 'Email is required'],
     unique: true,
-    lowercase: true,
     trim: true,
+    lowercase: true,
   },
   password: {
     type: String,
-    required: [true, 'Please provide a password'],
-    minlength: [6, 'Password should be at least 6 characters'],
+    required: [true, 'Password is required'],
   },
   role: {
     type: String,
@@ -49,8 +48,12 @@ const userSchema = new mongoose.Schema({
   },
   verificationToken: String,
   resetPasswordToken: String,
-  resetPasswordExpire: Date,
+  resetPasswordExpires: Date,
   createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
     type: Date,
     default: Date.now,
   },
@@ -59,10 +62,13 @@ const userSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-// Create indexes for faster queries
-userSchema.index({ email: 1 });
-userSchema.index({ role: 1 });
+// Update timestamps on save
+userSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});
 
+// Don't create the model if it already exists
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 export default User; 

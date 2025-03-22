@@ -1,18 +1,28 @@
 import mongoose from 'mongoose';
 
+const variantSchema = new mongoose.Schema({
+  name: String,
+  values: [String],
+});
+
+const specificationSchema = new mongoose.Schema({
+  name: String,
+  value: String,
+});
+
 const productSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please provide a product name'],
+    required: [true, 'Product name is required'],
     trim: true,
   },
   description: {
     type: String,
-    required: [true, 'Please provide a product description'],
+    required: [true, 'Product description is required'],
   },
   price: {
     type: Number,
-    required: [true, 'Please provide a price'],
+    required: [true, 'Price is required'],
     min: [0, 'Price cannot be negative'],
   },
   compareAtPrice: {
@@ -25,48 +35,25 @@ const productSchema = new mongoose.Schema({
   },
   sku: {
     type: String,
-    trim: true,
-    sparse: true,
     unique: true,
-  },
-  barcode: {
-    type: String,
-    trim: true,
     sparse: true,
   },
+  barcode: String,
   quantity: {
     type: Number,
-    required: [true, 'Please provide quantity'],
+    required: [true, 'Quantity is required'],
     min: [0, 'Quantity cannot be negative'],
     default: 0,
   },
   category: {
     type: String,
-    required: [true, 'Please provide a category'],
-    trim: true,
+    required: [true, 'Category is required'],
   },
-  brand: {
-    type: String,
-    trim: true,
-  },
-  tags: [{
-    type: String,
-    trim: true,
-  }],
-  images: [{
-    type: String,
-  }],
-  variants: [{
-    name: String,
-    values: [String],
-    price: Number,
-    quantity: Number,
-    sku: String,
-  }],
-  specifications: [{
-    name: String,
-    value: String,
-  }],
+  brand: String,
+  tags: [String],
+  images: [String],
+  variants: [variantSchema],
+  specifications: [specificationSchema],
   status: {
     type: String,
     enum: ['draft', 'active', 'inactive'],
@@ -75,28 +62,22 @@ const productSchema = new mongoose.Schema({
   supplier: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
+    required: [true, 'Supplier is required'],
   },
-  rating: {
-    type: Number,
-    min: 0,
-    max: 5,
-    default: 0,
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
-  reviewCount: {
-    type: Number,
-    default: 0,
+  updatedAt: {
+    type: Date,
+    default: Date.now,
   },
-  salesCount: {
-    type: Number,
-    default: 0,
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
-}, {
-  timestamps: true,
+});
+
+// Update timestamps on save
+productSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
 });
 
 // Create indexes for faster queries
@@ -104,48 +85,8 @@ productSchema.index({ name: 'text', description: 'text' });
 productSchema.index({ category: 1 });
 productSchema.index({ supplier: 1 });
 productSchema.index({ status: 1 });
-productSchema.index({ sku: 1 });
-productSchema.index({ isDeleted: 1 });
 
-// Add a compound index for category and status
-productSchema.index({ category: 1, status: 1 });
-
-// Virtual for URL-friendly slug
-productSchema.virtual('slug').get(function() {
-  return this.name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-});
-
-// Method to check if product is in stock
-productSchema.methods.isInStock = function() {
-  return this.quantity > 0;
-};
-
-// Method to update stock
-productSchema.methods.updateStock = function(quantity) {
-  this.quantity += quantity;
-  return this.save();
-};
-
-// Method to check if product is on sale
-productSchema.methods.isOnSale = function() {
-  return this.compareAtPrice > this.price;
-};
-
-// Calculate discount percentage
-productSchema.virtual('discountPercentage').get(function() {
-  if (!this.compareAtPrice || this.compareAtPrice <= this.price) return 0;
-  return Math.round(((this.compareAtPrice - this.price) / this.compareAtPrice) * 100);
-});
-
-// Calculate profit margin
-productSchema.virtual('profitMargin').get(function() {
-  if (!this.cost || this.cost <= 0) return 0;
-  return Math.round(((this.price - this.cost) / this.price) * 100);
-});
-
+// Don't create the model if it already exists
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
 export default Product; 
