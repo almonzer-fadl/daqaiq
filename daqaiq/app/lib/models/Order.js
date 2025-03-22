@@ -1,59 +1,5 @@
 import mongoose from 'mongoose';
 
-const orderItemSchema = new mongoose.Schema({
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
-    required: true
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    min: 1
-  },
-  price: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  variant: {
-    type: String,
-    default: null
-  }
-});
-
-const shippingAddressSchema = new mongoose.Schema({
-  fullName: {
-    type: String,
-    required: true
-  },
-  addressLine1: {
-    type: String,
-    required: true
-  },
-  addressLine2: String,
-  city: {
-    type: String,
-    required: true
-  },
-  state: {
-    type: String,
-    required: true
-  },
-  postalCode: {
-    type: String,
-    required: true
-  },
-  country: {
-    type: String,
-    required: true
-  },
-  phone: {
-    type: String,
-    required: true
-  }
-});
-
 const orderSchema = new mongoose.Schema({
   orderNumber: {
     type: String,
@@ -70,23 +16,69 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  items: [orderItemSchema],
+  items: [{
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: 0
+    },
+    variant: {
+      type: String,
+      default: null
+    }
+  }],
   status: {
     type: String,
     enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
     default: 'pending'
   },
-  shippingAddress: shippingAddressSchema,
-  shippingMethod: {
-    type: String,
-    required: true
+  shippingAddress: {
+    fullName: {
+      type: String,
+      required: true
+    },
+    addressLine1: {
+      type: String,
+      required: true
+    },
+    addressLine2: String,
+    city: {
+      type: String,
+      required: true
+    },
+    state: {
+      type: String,
+      required: true
+    },
+    postalCode: {
+      type: String,
+      required: true
+    },
+    country: {
+      type: String,
+      required: true
+    },
+    phone: {
+      type: String,
+      required: true
+    }
   },
-  shippingCost: {
+  subtotal: {
     type: Number,
     required: true,
     min: 0
   },
-  subtotal: {
+  shippingCost: {
     type: Number,
     required: true,
     min: 0
@@ -101,18 +93,6 @@ const orderSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
-  paymentStatus: {
-    type: String,
-    enum: ['pending', 'paid', 'failed', 'refunded'],
-    default: 'pending'
-  },
-  paymentMethod: {
-    type: String,
-    required: true
-  },
-  notes: String,
-  trackingNumber: String,
-  estimatedDeliveryDate: Date,
   createdAt: {
     type: Date,
     default: Date.now
@@ -156,7 +136,5 @@ orderSchema.virtual('age').get(function() {
   return Math.floor((Date.now() - this.createdAt) / (1000 * 60 * 60 * 24));
 });
 
-// Don't create the model if it already exists
-const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
-
-export default Order; 
+// Ensure we don't create multiple models
+export default mongoose.models.Order || mongoose.model('Order', orderSchema); 

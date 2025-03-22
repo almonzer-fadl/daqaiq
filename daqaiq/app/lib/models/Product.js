@@ -1,83 +1,126 @@
 import mongoose from 'mongoose';
 
-const variantSchema = new mongoose.Schema({
-  name: String,
-  values: [String],
-});
-
-const specificationSchema = new mongoose.Schema({
-  name: String,
-  value: String,
-});
-
 const productSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Product name is required'],
-    trim: true,
+    required: true,
+    trim: true
   },
   description: {
     type: String,
-    required: [true, 'Product description is required'],
+    required: true
   },
   price: {
     type: Number,
-    required: [true, 'Price is required'],
-    min: [0, 'Price cannot be negative'],
+    required: true,
+    min: 0
   },
-  compareAtPrice: {
-    type: Number,
-    min: [0, 'Compare at price cannot be negative'],
-  },
-  cost: {
-    type: Number,
-    min: [0, 'Cost cannot be negative'],
-  },
-  sku: {
+  images: [{
     type: String,
-    unique: true,
-    sparse: true,
-  },
-  barcode: String,
-  quantity: {
-    type: Number,
-    required: [true, 'Quantity is required'],
-    min: [0, 'Quantity cannot be negative'],
-    default: 0,
-  },
+    required: true
+  }],
   category: {
     type: String,
-    required: [true, 'Category is required'],
-  },
-  brand: String,
-  tags: [String],
-  images: [String],
-  variants: [variantSchema],
-  specifications: [specificationSchema],
-  status: {
-    type: String,
-    enum: ['draft', 'active', 'inactive'],
-    default: 'draft',
+    required: true
   },
   supplier: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: [true, 'Supplier is required'],
+    required: true
+  },
+  stock: {
+    type: Number,
+    required: true,
+    min: 0,
+    default: 0
+  },
+  lowStockThreshold: {
+    type: Number,
+    required: true,
+    min: 0,
+    default: 10
+  },
+  variants: [{
+    name: String,
+    stock: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 0
+    },
+    lowStockThreshold: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 5
+    }
+  }],
+  stockHistory: [{
+    quantity: Number,
+    type: {
+      type: String,
+      enum: ['increase', 'decrease', 'adjustment'],
+      required: true
+    },
+    reason: String,
+    date: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  isActive: {
+    type: Boolean,
+    default: true
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now
   },
   updatedAt: {
     type: Date,
-    default: Date.now,
-  },
+    default: Date.now
+  }
 });
 
 // Update timestamps on save
 productSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   next();
+});
+
+// Method to check if stock is low
+productSchema.methods.isLowStock = function() {
+  return this.stock <= this.lowStockThreshold;
+};
+
+// Method to update stock
+productSchema.methods.updateStock = function(quantity, type, reason) {
+  const oldStock = this.stock;
+  
+  if (type === 'increase') {
+    this.stock += quantity;
+  } else if (type === 'decrease') {
+    if (this.stock < quantity) {
+      throw new Error('Insufficient stock');
+    }
+    this.stock -= quantity;
+  } else if (type === 'adjustment') {
+    this.stock = quantity;
+  }
+
+  this.stockHistory.push({
+    quantity: Math.abs(this.stock - oldStock),
+    type,
+    reason,
+    date: new Date()
+  });
+};
+
+// Virtual for low stock status
+productSchema.virtual('stockStatus').get(function() {
+  if (this.stock <= 0) return 'out_of_stock';
+  if (this.stock <= this.lowStockThreshold) return 'low_stock';
+  return 'in_stock';
 });
 
 // Create indexes for faster queries

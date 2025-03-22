@@ -4,6 +4,8 @@ import "./globals.css"; // Import global CSS styles
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Loading from './components/loading';  // lowercase 'loading'
+import { SessionProvider } from 'next-auth/react';
+import { Toaster } from 'react-hot-toast';
 
 const geistSans = Geist({ // Define the Geist Sans font
   variable: "--font-geist-sans", // Set the CSS variable for the font
@@ -36,15 +38,18 @@ export default function RootLayout({ children }) { // Define the RootLayout func
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {!isMaintenancePage && isLoading && <Loading />}
-        <div
-          style={{
-            opacity: isLoading && !isMaintenancePage ? 0 : 1,
-            transition: 'opacity 0.5s ease-in-out'
-          }}
-        >
-          {children}
-        </div>
+        <SessionProvider>
+          {!isMaintenancePage && isLoading && <Loading />}
+          <div
+            style={{
+              opacity: isLoading && !isMaintenancePage ? 0 : 1,
+              transition: 'opacity 0.5s ease-in-out'
+            }}
+          >
+            {children}
+          </div>
+          <Toaster position="bottom-left" />
+        </SessionProvider>
       </body>
     </html>
   );

@@ -1,0 +1,489 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { toast } from 'react-hot-toast';
+import Image from 'next/image';
+
+export default function SupplierProfile() {
+  const { data: session } = useSession();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  
+  const [formData, setFormData] = useState({
+    companyName: '',
+    contactName: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    country: '',
+    postalCode: '',
+    taxId: '',
+    businessType: '',
+    description: '',
+    website: '',
+    socialMedia: {
+      facebook: '',
+      twitter: '',
+      instagram: '',
+      linkedin: ''
+    },
+    bankInfo: {
+      accountName: '',
+      accountNumber: '',
+      bankName: '',
+      swiftCode: ''
+    }
+  });
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchProfile();
+    }
+  }, [session]);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch('/api/supplier/profile');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'فشل في جلب الملف الشخصي');
+      }
+
+      const profile = {
+        companyName: '',
+        contactName: '',
+        email: '',
+        phone: '',
+        address: '',
+        city: '',
+        state: '',
+        country: '',
+        postalCode: '',
+        taxId: '',
+        businessType: '',
+        description: '',
+        website: '',
+        socialMedia: {
+          facebook: '',
+          twitter: '',
+          instagram: '',
+          linkedin: ''
+        },
+        bankInfo: {
+          accountName: '',
+          accountNumber: '',
+          bankName: '',
+          swiftCode: ''
+        },
+        ...data.profile,
+        socialMedia: {
+          facebook: '',
+          twitter: '',
+          instagram: '',
+          linkedin: '',
+          ...(data.profile?.socialMedia || {})
+        },
+        bankInfo: {
+          accountName: '',
+          accountNumber: '',
+          bankName: '',
+          swiftCode: '',
+          ...(data.profile?.bankInfo || {})
+        }
+      };
+
+      setFormData(profile);
+      if (data.profile?.image) {
+        setImagePreview(data.profile.image);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setFormData(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+
+    try {
+      const formDataToSend = new FormData();
+      
+      Object.keys(formData).forEach(key => {
+        if (typeof formData[key] === 'object') {
+          formDataToSend.append(key, JSON.stringify(formData[key]));
+        } else {
+          formDataToSend.append(key, formData[key]);
+        }
+      });
+
+      if (profileImage) {
+        formDataToSend.append('image', profileImage);
+      }
+
+      const response = await fetch('/api/supplier/profile', {
+        method: 'PUT',
+        body: formDataToSend,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'فشل في تحديث الملف الشخصي');
+      }
+
+      toast.success('تم تحديث الملف الشخصي بنجاح');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error(error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div dir="rtl" className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-8">إعدادات الملف الشخصي</h1>
+      
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Profile Image */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-lg font-semibold mb-4">الصورة الشخصية</h2>
+          <div className="flex items-center space-x-6">
+            <div className="relative h-24 w-24">
+              {imagePreview ? (
+                <Image
+                  src={imagePreview}
+                  alt="الصورة الشخصية"
+                  fill
+                  className="rounded-full object-cover"
+                />
+              ) : (
+                <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center">
+                  <svg className="h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+              )}
+            </div>
+            <label className="block">
+              <span className="sr-only">اختر صورة شخصية</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="block w-full text-sm text-gray-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-blue-50 file:text-blue-700
+                  hover:file:bg-blue-100"
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* Company Information */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-lg font-semibold mb-4">معلومات الشركة</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">اسم الشركة</label>
+              <input
+                type="text"
+                name="companyName"
+                value={formData.companyName}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">اسم جهة الاتصال</label>
+              <input
+                type="text"
+                name="contactName"
+                value={formData.contactName}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">البريد الإلكتروني</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">رقم الهاتف</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Address */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-lg font-semibold mb-4">العنوان</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">عنوان الشارع</label>
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">المدينة</label>
+              <input
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">المنطقة/المحافظة</label>
+              <input
+                type="text"
+                name="state"
+                value={formData.state}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">الرمز البريدي</label>
+              <input
+                type="text"
+                name="postalCode"
+                value={formData.postalCode}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">الدولة</label>
+              <input
+                type="text"
+                name="country"
+                value={formData.country}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Business Information */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-lg font-semibold mb-4">معلومات العمل</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">الرقم الضريبي</label>
+              <input
+                type="text"
+                name="taxId"
+                value={formData.taxId}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">نوع العمل</label>
+              <select
+                name="businessType"
+                value={formData.businessType}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                <option value="">اختر النوع</option>
+                <option value="corporation">شركة مساهمة</option>
+                <option value="llc">شركة ذات مسؤولية محدودة</option>
+                <option value="partnership">شراكة</option>
+                <option value="soleProprietorship">مؤسسة فردية</option>
+              </select>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">وصف العمل</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                rows={4}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Online Presence */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-lg font-semibold mb-4">التواجد الإلكتروني</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">الموقع الإلكتروني</label>
+              <input
+                type="url"
+                name="website"
+                value={formData.website}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">فيسبوك</label>
+              <input
+                type="url"
+                name="socialMedia.facebook"
+                value={formData.socialMedia.facebook}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                dir="ltr"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">تويتر</label>
+              <input
+                type="url"
+                name="socialMedia.twitter"
+                value={formData.socialMedia.twitter}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                dir="ltr"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">لينكد إن</label>
+              <input
+                type="url"
+                name="socialMedia.linkedin"
+                value={formData.socialMedia.linkedin}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                dir="ltr"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Bank Information */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-lg font-semibold mb-4">المعلومات البنكية</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">اسم الحساب</label>
+              <input
+                type="text"
+                name="bankInfo.accountName"
+                value={formData.bankInfo.accountName}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">رقم الحساب</label>
+              <input
+                type="text"
+                name="bankInfo.accountNumber"
+                value={formData.bankInfo.accountNumber}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                dir="ltr"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">اسم البنك</label>
+              <input
+                type="text"
+                name="bankInfo.bankName"
+                value={formData.bankInfo.bankName}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">رمز SWIFT/BIC</label>
+              <input
+                type="text"
+                name="bankInfo.swiftCode"
+                value={formData.bankInfo.swiftCode}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                dir="ltr"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex justify-start">
+          <button
+            type="submit"
+            disabled={saving}
+            className={`px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+              saving ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            {saving ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+} 
