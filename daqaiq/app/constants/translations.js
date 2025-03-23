@@ -38,6 +38,15 @@ export const SUPPLIER_TRANSLATIONS = {
   orderTotal: 'المبلغ الإجمالي',
   shippingAddress: 'عنوان التوصيل',
   paymentMethod: 'طريقة الدفع',
+  all: 'جميع الطلبات',
+  pending: 'قيد الانتظار',
+  processing: 'قيد المعالجة',
+  shipped: 'تم الشحن',
+  delivered: 'تم التوصيل',
+  cancelled: 'ملغي',
+  createTestOrder: 'إنشاء طلب تجريبي',
+  loadMore: 'تحميل المزيد',
+  total: 'المجموع',
 
   // Analytics
   salesOverview: 'ملخص المبيعات',
@@ -58,6 +67,7 @@ export const SUPPLIER_TRANSLATIONS = {
   filter: 'تصفية',
   noData: 'لا توجد بيانات',
   confirm: 'تأكيد',
+  errorOccurred: 'حدث خطأ. الرجاء المحاولة مرة أخرى',
 
   // Status
   active: 'متاح',
@@ -71,6 +81,12 @@ export const SUPPLIER_TRANSLATIONS = {
   location: 'الموقع',
   reorderPoint: 'حد إعادة الطلب',
   inventoryReport: 'تقرير المخزون',
+  updateStock: 'تحديث المخزون',
+  currentStock: 'المخزون الحالي',
+  addStock: 'إضافة كمية',
+  removeStock: 'خصم كمية',
+  stockHistory: 'سجل المخزون',
+  stockUpdated: 'تم تحديث المخزون بنجاح',
 
   // Analytics Extended
   salesAnalytics: 'تحليل المبيعات',
@@ -86,5 +102,11 @@ export const SUPPLIER_TRANSLATIONS = {
   website: 'الموقع الإلكتروني',
   socialMedia: 'حسابات التواصل',
   accountStatus: 'حالة الحساب',
-  verificationStatus: 'حالة التوثيق'
+  verificationStatus: 'حالة التوثيق',
+
+  // Categories
+  selectCategory: 'اختر التصنيف',
+  electronics: 'إلكترونيات',
+  clothing: 'ملابس',
+  home: 'المنزل والحديقة'
 }; 

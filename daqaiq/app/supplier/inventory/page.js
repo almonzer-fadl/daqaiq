@@ -15,9 +15,11 @@ export default function InventoryManagement() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [bulkUpdateQuantity, setBulkUpdateQuantity] = useState('');
-  const [bulkUpdateType, setBulkUpdateType] = useState('increase');
-  const [editedProducts, setEditedProducts] = useState({});
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [stockAdjustment, setStockAdjustment] = useState({
+    quantity: '',
+    type: 'increase'
+  });
 
   useEffect(() => {
     if (session?.user) {
@@ -41,7 +43,7 @@ export default function InventoryManagement() {
       } else {
         setProducts((prev) => [...prev, ...data.products]);
       }
-      setHasMore(data.pagination.hasMore);
+      setHasMore(data.hasMore);
     } catch (error) {
       console.error('Error fetching inventory:', error);
       toast.error(t.errorOccurred);
@@ -50,23 +52,37 @@ export default function InventoryManagement() {
     }
   };
 
-  const handleStockUpdate = async (productId, adjustment) => {
+  const handleStockUpdate = async (productId) => {
     try {
+      if (!stockAdjustment.quantity) {
+        toast.error(t.enterQuantity);
+        return;
+      }
+
       const response = await fetch(`/api/supplier/inventory/${productId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(adjustment),
+        body: JSON.stringify({
+          quantity: parseInt(stockAdjustment.quantity),
+          type: stockAdjustment.type,
+          reason: `Manual ${stockAdjustment.type} by supplier`
+        }),
       });
 
-      if (!response.ok) throw new Error(t.errorOccurred);
-      
-      await fetchInventory(); // Refresh inventory data
-      toast.success(t.successUpdate);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || t.errorOccurred);
+      }
+
+      toast.success(t.stockUpdated);
+      setEditingProduct(null);
+      setStockAdjustment({ quantity: '', type: 'increase' });
+      fetchInventory();
     } catch (error) {
       console.error('Error updating stock:', error);
-      toast.error(t.errorUpdate);
+      toast.error(error.message);
     }
   };
 
@@ -77,16 +93,16 @@ export default function InventoryManagement() {
         return;
       }
 
-      if (!bulkUpdateQuantity) {
-        toast.error('Please enter a quantity');
+      if (!stockAdjustment.quantity) {
+        toast.error(t.enterQuantity);
         return;
       }
 
       const updates = selectedProducts.map(productId => ({
         productId,
-        quantity: parseInt(bulkUpdateQuantity),
-        type: bulkUpdateType,
-        reason: `Bulk ${bulkUpdateType} by supplier`
+        quantity: parseInt(stockAdjustment.quantity),
+        type: stockAdjustment.type,
+        reason: `Bulk ${stockAdjustment.type} by supplier`
       }));
 
       const response = await fetch('/api/supplier/inventory', {
@@ -105,7 +121,7 @@ export default function InventoryManagement() {
 
       toast.success('Bulk update completed successfully');
       setSelectedProducts([]);
-      setBulkUpdateQuantity('');
+      setStockAdjustment({ quantity: '', type: 'increase' });
       fetchInventory(); // Refresh the inventory list
     } catch (error) {
       console.error('Error performing bulk update:', error);
@@ -131,8 +147,8 @@ export default function InventoryManagement() {
   };
 
   const getStockStatusColor = (product) => {
-    if (product.stock <= 0) return 'bg-red-100 text-red-800';
-    if (product.stock <= product.lowStockThreshold) return 'bg-yellow-100 text-yellow-800';
+    if (product.quantity <= 0) return 'bg-red-100 text-red-800';
+    if (product.quantity <= product.lowStockThreshold) return 'bg-yellow-100 text-yellow-800';
     return 'bg-green-100 text-green-800';
   };
 
@@ -144,49 +160,6 @@ export default function InventoryManagement() {
       toast.error(`Failed to update ${results.failed.length} products`);
     }
     fetchInventory(); // Refresh the inventory list
-  };
-
-  const handleFieldUpdate = (productId, field, value) => {
-    setEditedProducts(prev => ({
-      ...prev,
-      [productId]: {
-        ...prev[productId],
-        [field]: value
-      }
-    }));
-  };
-
-  const handleSaveChanges = async (productId) => {
-    try {
-      const changes = editedProducts[productId];
-      if (!changes) return;
-
-      const response = await fetch(`/api/supplier/products/${productId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(changes),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update product');
-      }
-
-      toast.success('Product updated successfully');
-      // Clear the edited state for this product
-      setEditedProducts(prev => {
-        const newState = { ...prev };
-        delete newState[productId];
-        return newState;
-      });
-      
-      // Refresh the products list
-      fetchInventory();
-    } catch (error) {
-      console.error('Error updating product:', error);
-      toast.error(t.errorUpdate);
-    }
   };
 
   if (loading) {
@@ -227,22 +200,21 @@ export default function InventoryManagement() {
         <div className="bg-white p-4 rounded-lg shadow mb-6">
           <h2 className="text-lg font-semibold mb-4">{t.bulkUpdateSelectedProducts}</h2>
           <div className="flex flex-wrap gap-4">
+            <select
+              value={stockAdjustment.type}
+              onChange={(e) => setStockAdjustment(prev => ({ ...prev, type: e.target.value }))}
+              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="increase">{t.addStock}</option>
+              <option value="decrease">{t.removeStock}</option>
+            </select>
             <input
               type="number"
-              value={bulkUpdateQuantity}
-              onChange={(e) => setBulkUpdateQuantity(e.target.value)}
+              value={stockAdjustment.quantity}
+              onChange={(e) => setStockAdjustment(prev => ({ ...prev, quantity: e.target.value }))}
               placeholder={t.enterQuantity}
               className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <select
-              value={bulkUpdateType}
-              onChange={(e) => setBulkUpdateType(e.target.value)}
-              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="increase">{t.increase}</option>
-              <option value="decrease">{t.decrease}</option>
-              <option value="adjustment">{t.setTo}</option>
-            </select>
             <button
               onClick={handleBulkUpdate}
               className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
@@ -288,17 +260,11 @@ export default function InventoryManagement() {
                   />
                 </td>
                 <td className="px-6 py-4">
-                  <input
-                    type="text"
-                    defaultValue={product.name}
-                    onChange={(e) => handleFieldUpdate(product._id, 'name', e.target.value)}
-                    className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  <div className="text-sm font-medium text-gray-900">{product.name}</div>
                 </td>
                 <td className="px-6 py-4">
                   <textarea
                     defaultValue={product.description}
-                    onChange={(e) => handleFieldUpdate(product._id, 'description', e.target.value)}
                     className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     rows="2"
                   />
@@ -307,14 +273,12 @@ export default function InventoryManagement() {
                   <input
                     type="number"
                     defaultValue={product.price}
-                    onChange={(e) => handleFieldUpdate(product._id, 'price', e.target.value)}
                     className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </td>
                 <td className="px-6 py-4">
                   <select
                     defaultValue={product.category}
-                    onChange={(e) => handleFieldUpdate(product._id, 'category', e.target.value)}
                     className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="electronics">{t.electronics}</option>
@@ -327,8 +291,7 @@ export default function InventoryManagement() {
                 <td className="px-6 py-4">
                   <input
                     type="number"
-                    defaultValue={product.stock}
-                    onChange={(e) => handleFieldUpdate(product._id, 'stock', e.target.value)}
+                    defaultValue={product.quantity}
                     className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </td>
@@ -336,29 +299,57 @@ export default function InventoryManagement() {
                   <input
                     type="number"
                     defaultValue={product.lowStockThreshold}
-                    onChange={(e) => handleFieldUpdate(product._id, 'lowStockThreshold', e.target.value)}
                     className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </td>
                 <td className="px-6 py-4">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStockStatusColor(product)}`}>
-                    {product.stock <= 0 ? t.outOfStock : 
-                     product.stock <= product.lowStockThreshold ? t.lowStock : t.inStock}
+                    {product.quantity <= 0 ? t.outOfStock : 
+                     product.quantity <= product.lowStockThreshold ? t.lowStock : t.inStock}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button
-                    onClick={() => handleSaveChanges(product._id)}
-                    className="text-indigo-600 hover:text-indigo-900 mr-4"
-                  >
-                    {t.save}
-                  </button>
-                  <Link
-                    href={`/supplier/products/${product._id}`}
-                    className="text-blue-600 hover:text-blue-900"
-                  >
-                    {t.view}
-                  </Link>
+                  {editingProduct === product._id ? (
+                    <div className="flex items-center space-x-4">
+                      <select
+                        value={stockAdjustment.type}
+                        onChange={(e) => setStockAdjustment(prev => ({ ...prev, type: e.target.value }))}
+                        className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="increase">{t.addStock}</option>
+                        <option value="decrease">{t.removeStock}</option>
+                      </select>
+                      <input
+                        type="number"
+                        value={stockAdjustment.quantity}
+                        onChange={(e) => setStockAdjustment(prev => ({ ...prev, quantity: e.target.value }))}
+                        placeholder={t.enterQuantity}
+                        className="border border-gray-300 rounded-md px-2 py-1 w-20 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <button
+                        onClick={() => handleStockUpdate(product._id)}
+                        className="text-green-600 hover:text-green-900 text-sm font-medium"
+                      >
+                        {t.save}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingProduct(null);
+                          setStockAdjustment({ quantity: '', type: 'increase' });
+                        }}
+                        className="text-red-600 hover:text-red-900 text-sm font-medium"
+                      >
+                        {t.cancel}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setEditingProduct(product._id)}
+                      className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                    >
+                      {t.updateStock}
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -369,11 +360,17 @@ export default function InventoryManagement() {
       {hasMore && (
         <div className="mt-4 flex justify-center">
           <button
-            onClick={() => setPage((prev) => prev + 1)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+            onClick={() => setPage(prev => prev + 1)}
+            className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             {t.loadMore}
           </button>
+        </div>
+      )}
+
+      {products.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-500">{t.noData}</p>
         </div>
       )}
     </div>

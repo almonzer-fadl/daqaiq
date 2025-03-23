@@ -8,6 +8,8 @@ import { SUPPLIER_TRANSLATIONS as t } from '../../constants/translations';
 
 const Navigation = () => {
   const pathname = usePathname();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
     {
@@ -38,70 +40,103 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex flex-1">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href={SUPPLIER_ROUTES.dashboard} className="text-xl font-bold text-blue-600 hover:text-blue-700">
-                {t.supplierPortal}
-              </Link>
-            </div>
-            <div className="hidden sm:flex sm:space-x-0 sm:space-x-reverse sm:mr-8">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`inline-flex items-center px-4 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 ${
-                    pathname === item.href
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300'
-                  }`}
-                >
-                  <span className="ml-2">{item.icon}</span>
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-          
-          {/* Mobile menu button */}
-          <div className="flex items-center sm:hidden">
-            <button
-              type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-              aria-controls="mobile-menu"
-              aria-expanded="false"
-            >
-              <span className="sr-only">فتح القائمة</span>
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
+    <>
+      {/* Mobile Menu Button */}
+      <div className="lg:hidden fixed top-0 right-0 p-4 z-50">
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+        >
+          <span className="sr-only">{isMobileMenuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}</span>
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            {isMobileMenuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
       </div>
 
-      {/* Mobile menu */}
-      <div className="sm:hidden" id="mobile-menu">
-        <div className="pt-2 pb-3 space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`block py-2 px-4 text-base font-medium border-r-4 ${
-                pathname === item.href
-                  ? 'border-blue-500 text-blue-600 bg-blue-50'
-                  : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900'
-              }`}
-            >
-              <span className="inline-block ml-2">{item.icon}</span>
-              {item.label}
-            </Link>
-          ))}
+      {/* Sidebar for Desktop */}
+      <div className={`hidden lg:flex lg:flex-col fixed right-0 top-0 h-full bg-white shadow-lg transition-all duration-300 ease-in-out ${isSidebarOpen ? 'w-64' : 'w-20'}`}>
+        <div className="flex items-center justify-between p-4 border-b">
+          <Link href={SUPPLIER_ROUTES.dashboard} className={`text-xl font-bold text-blue-600 ${!isSidebarOpen && 'hidden'}`}>
+            {t.supplierPortal}
+          </Link>
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isSidebarOpen ? "M9 5l7 7-7 7" : "M15 19l-7-7 7-7"} />
+            </svg>
+          </button>
+        </div>
+        <nav className="flex-1 overflow-y-auto">
+          <div className="px-2 py-4 space-y-1">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors duration-200 ${
+                  pathname === item.href
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <span className="ml-3">{item.icon}</span>
+                {isSidebarOpen && <span className="mr-4">{item.label}</span>}
+              </Link>
+            ))}
+          </div>
+        </nav>
+      </div>
+
+      {/* Mobile Sidebar */}
+      <div className={`lg:hidden fixed inset-0 z-40 ${isMobileMenuOpen ? '' : 'hidden'}`}>
+        {/* Backdrop */}
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setIsMobileMenuOpen(false)}></div>
+
+        {/* Sidebar Panel */}
+        <div className="fixed inset-y-0 right-0 flex max-w-xs w-full bg-white shadow-xl">
+          <div className="w-64 flex flex-col h-full">
+            <div className="flex items-center justify-between p-4 border-b">
+              <Link href={SUPPLIER_ROUTES.dashboard} className="text-xl font-bold text-blue-600" onClick={() => setIsMobileMenuOpen(false)}>
+                {t.supplierPortal}
+              </Link>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <nav className="flex-1 overflow-y-auto">
+              <div className="px-2 py-4 space-y-1">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors duration-200 ${
+                      pathname === item.href
+                        ? 'bg-blue-50 text-blue-600'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <span className="ml-3">{item.icon}</span>
+                    <span className="mr-4">{item.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </nav>
+          </div>
         </div>
       </div>
-    </nav>
+    </>
   );
 };
 
