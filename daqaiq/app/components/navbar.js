@@ -3,9 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession, signOut } from "next-auth/react";
+import { CUSTOMER_ROUTES, AUTH_URLS } from "../config/urls";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showAuthDropdown, setShowAuthDropdown] = useState(false);
+  const { data: session } = useSession();
 
   const handleSearchClick = () => {
     if (searchQuery) {
@@ -21,10 +25,15 @@ const Navbar = () => {
     }
   };
 
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: '/' });
+    setShowAuthDropdown(false);
+  };
+
   return (
     <div className="navbar bg-base-100 shadow-md px-6 py-3 flex flex-row-reverse justify-between items-center">
       {/* Logo */}
-      <Link href="/" className="text-2xl font-bold text-primary">
+      <Link href={CUSTOMER_ROUTES.home} className="text-2xl font-bold text-primary">
         <Image
           src="/images/logo.png"
           alt="Daqaiq Logo"
@@ -52,11 +61,63 @@ const Navbar = () => {
       </div>
 
       {/* User Actions */}
-      <div className="flex gap-4">
-        <Link href="/login" className="hover:text-primary">👤</Link>
-        <Link href="/cart" className="hover:text-primary">🛒</Link>
-        <Link href="/wishlist" className="hover:text-primary">❤️</Link>
-        <Link href="/help" className="hover:text-primary">🎧</Link>
+      <div className="flex gap-4 items-center">
+        {/* Auth Dropdown */}
+        <div className="relative">
+          <button
+            className="hover:text-primary focus:outline-none"
+            onClick={() => setShowAuthDropdown(!showAuthDropdown)}
+            onBlur={() => setTimeout(() => setShowAuthDropdown(false), 200)}
+          >
+            👤
+          </button>
+          {showAuthDropdown && (
+            <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+              <div className="py-1" role="menu">
+                {session ? (
+                  <>
+                    <Link
+                      href={CUSTOMER_ROUTES.profile}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      الملف الشخصي
+                    </Link>
+                    <Link
+                      href={CUSTOMER_ROUTES.orders}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      طلباتي
+                    </Link>
+                    <button
+                      onClick={handleSignOut}
+                      className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      تسجيل الخروج
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href={AUTH_URLS.signin}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      تسجيل الدخول
+                    </Link>
+                    <Link
+                      href={AUTH_URLS.signup}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      حساب جديد
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+        <Link href={CUSTOMER_ROUTES.cart} className="hover:text-primary">🛒</Link>
+        <Link href={CUSTOMER_ROUTES.wishlist} className="hover:text-primary">❤️</Link>
+        <Link href={CUSTOMER_ROUTES.help} className="hover:text-primary">🎧</Link>
       </div>
 
       <style jsx>{`

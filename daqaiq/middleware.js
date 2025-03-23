@@ -20,9 +20,28 @@ function middleware(request) {
     '/products',
     '/categories',
     '/search',
+    '/about',
+    '/contact',
+    '/faq',
+    '/help',
+    '/cart',
+    '/wishlist',
   ];
 
-  if (publicRoutes.includes(url.pathname)) {
+  // Protected customer routes that require authentication
+  const protectedCustomerRoutes = [
+    '/profile',
+    '/orders',
+    '/checkout',
+  ];
+
+  // Check if the current route is protected for customers
+  const isProtectedCustomerRoute = protectedCustomerRoutes.some(route => 
+    url.pathname.startsWith(route)
+  );
+
+  // Allow public routes
+  if (publicRoutes.includes(url.pathname) || !isProtectedCustomerRoute) {
     return NextResponse.next();
   }
 
@@ -53,12 +72,12 @@ function middleware(request) {
 
   if (url.pathname.startsWith('/supplier')) {
     // Redirect supplier routes to subdomain
-    return NextResponse.redirect(
-      `https://supplier.${hostname}${url.pathname.replace('/supplier', '')}`
-    );
+    const supplierUrl = new URL(url.pathname.replace('/supplier', ''), SUPPLIER_URL);
+    return NextResponse.redirect(supplierUrl);
   }
 
-  if (url.pathname.startsWith('/customer') && !token) {
+  // Handle protected customer routes
+  if (isProtectedCustomerRoute && !token) {
     return NextResponse.redirect(new URL('/auth/signin', url));
   }
 
@@ -67,7 +86,15 @@ function middleware(request) {
 
 export default withAuth(middleware, {
   callbacks: {
-    authorized: ({ token }) => !!token,
+    authorized: ({ token, req }) => {
+      // Allow all requests to public routes
+      if (req.nextUrl.pathname.startsWith('/api/auth')) {
+        return true;
+      }
+      
+      // For protected routes, require a token
+      return !!token;
+    },
   },
 });
 
@@ -77,10 +104,9 @@ export const config = {
     // Protected routes
     '/admin/:path*',
     '/supplier/:path*',
-    '/customer/:path*',
     '/profile/:path*',
     '/orders/:path*',
-    '/cart/:path*',
+    '/checkout/:path*',
     // Match all paths except static files and api
     '/((?!api|_next/static|_next/image|favicon.ico|auth).*)',
   ],

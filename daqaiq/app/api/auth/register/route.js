@@ -9,7 +9,7 @@ export async function POST(req) {
   try {
     const { name, email, password, role = 'customer' } = await req.json();
 
-    // Validate input
+    // Validate required fields
     if (!name || !email || !password) {
       return NextResponse.json(
         { error: 'Please provide all required fields' },
@@ -40,7 +40,7 @@ export async function POST(req) {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
-        { error: 'User with this email already exists' },
+        { error: 'Email already registered' },
         { status: 400 }
       );
     }
@@ -48,8 +48,8 @@ export async function POST(req) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
+    // Create verification token only for suppliers
+    const verificationToken = role === 'supplier' ? crypto.randomBytes(32).toString('hex') : null;
 
     // Create new user
     const user = await User.create({
@@ -58,18 +58,38 @@ export async function POST(req) {
       password: hashedPassword,
       role,
       verificationToken,
+      // Set isVerified to true for customers, false for suppliers
+      isVerified: role === 'customer',
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
 
-    // Send verification email
-    await sendVerificationEmail(user.email, verificationToken);
+    // Send verification email only for suppliers
+    if (role === 'supplier' && verificationToken) {
+      await sendVerificationEmail(email, verificationToken);
+    }
 
-    return NextResponse.json({
-      message: 'Registration successful. Please check your email to verify your account.',
-      userId: user._id,
-    }, { status: 201 });
+    // Remove password from response
+    const userWithoutPassword = {
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      isVerified: user.isVerified
+    };
+
+    return NextResponse.json(
+      {
+        message: role === 'supplier' 
+          ? 'Registration successful. Please verify your email.'
+          : 'Registration successful. You can now sign in.',
+        user: userWithoutPassword
+      },
+      { status: 201 }
+    );
 
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Registration Error:', error);
     return NextResponse.json(
       { error: 'Something went wrong during registration' },
       { status: 500 }
