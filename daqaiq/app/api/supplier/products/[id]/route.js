@@ -115,110 +115,87 @@ export async function GET(request, context) {
   }
 }
 
-export async function PUT(request, context) {
+export async function PUT(request, { params }) {
   try {
-    // Check authentication and role
     const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    
+    if (!session || session.user.role !== 'supplier') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (session.user.role !== 'supplier') {
-      return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
-    }
-
-    // Get the ID from params
-    const params = await context.params;
-    const { id } = params;
-
-    // Get form data
     const formData = await request.formData();
-    const productData = {};
-
-    // Extract product data
-    for (const [key, value] of formData.entries()) {
-      if (key === 'images') continue;
-      if (key === 'variants' || key === 'specifications') {
-        productData[key] = JSON.parse(value);
-      } else {
-        productData[key] = value;
+    const productId = params.id;
+    
+    // Create a basic updates object for fields other than images
+    const updates = {};
+    
+    // Process basic text fields
+    ['name', 'description', 'status', 'category'].forEach(field => {
+      if (formData.has(field)) {
+        updates[field] = formData.get(field);
       }
-    }
-
-    // Process tags
-    if (productData.tags) {
-      productData.tags = productData.tags.split(',').map(tag => tag.trim());
-    }
-
-    // Connect to database
-    await connectToDatabase();
-
-    // Find the product
-    const product = await Product.findOne({
-      _id: id,
-      supplier: session.user.id,
     });
-
-    if (!product) {
-      return NextResponse.json({ message: 'Product not found' }, { status: 404 });
-    }
-
-    // Handle existing images
-    const existingImages = JSON.parse(formData.get('existingImages') || '[]');
-
-    // Delete removed images
-    const removedImages = product.images.filter(img => !existingImages.includes(img));
-    for (const imageUrl of removedImages) {
-      try {
-        const imagePath = path.join(process.cwd(), 'public', imageUrl);
-        await unlink(imagePath);
-      } catch (error) {
-        console.error('Error deleting image file:', error);
+    
+    // Process numeric fields
+    ['price', 'quantity'].forEach(field => {
+      if (formData.has(field)) {
+        updates[field] = Number(formData.get(field));
       }
+    });
+    
+    // Process main image if uploaded
+    const mainImage = formData.get('image');
+    if (mainImage && mainImage instanceof Blob) {
+      // In a real application, upload the image to a storage service
+      // For now we'll use a data URL approach for demonstration
+      const arrayBuffer = await mainImage.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const base64Image = buffer.toString('base64');
+      const mimeType = mainImage.type;
+      updates.image = `data:${mimeType};base64,${base64Image}`;
     }
-
-    // Handle new image uploads
-    const images = formData.getAll('images');
-    const imageUrls = [...existingImages];
-
-    if (images.length > 0) {
-      // Ensure upload directory exists
-      await ensureUploadDir();
-
-      // Process new images
-      for (const image of images) {
-        if (typeof image === 'object' && 'arrayBuffer' in image) {
-          const buffer = Buffer.from(await image.arrayBuffer());
-          const filename = `${uuidv4()}_${image.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-          const relativePath = `/uploads/products/${filename}`;
-          const fullPath = path.join(process.cwd(), 'public', relativePath);
-
-          await writeFile(fullPath, buffer);
-          imageUrls.push(relativePath);
+    
+    // Process additional images if uploaded
+    const additionalImageFiles = formData.getAll('additionalImages');
+    if (additionalImageFiles.length > 0) {
+      updates.additionalImages = [];
+      
+      for (const file of additionalImageFiles) {
+        if (file instanceof Blob) {
+          // Convert each image to a data URL
+          const arrayBuffer = await file.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+          const base64Image = buffer.toString('base64');
+          const mimeType = file.type;
+          updates.additionalImages.push(`data:${mimeType};base64,${base64Image}`);
         }
       }
     }
-
-    // Update product data
-    productData.images = imageUrls;
-    productData.updatedAt = new Date();
-
+    
+    await connectToDatabase();
+    
     // Update the product
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id,
-      { $set: productData },
-      { new: true }
+    const product = await Product.findOneAndUpdate(
+      { _id: productId, supplier: session.user.id },
+      { $set: updates },
+      { new: true, runValidators: true }
     );
-
-    return NextResponse.json({
+    
+    if (!product) {
+      return NextResponse.json(
+        { error: 'Product not found or not owned by this supplier' },
+        { status: 404 }
+      );
+    }
+    
+    return NextResponse.json({ 
       message: 'Product updated successfully',
-      product: updatedProduct
+      product
     });
-
   } catch (error) {
     console.error('Error updating product:', error);
     return NextResponse.json(
-      { message: 'Error updating product', error: error.message },
+      { error: error.message || 'Internal server error' },
       { status: 500 }
     );
   }

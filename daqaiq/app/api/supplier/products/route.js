@@ -3,63 +3,68 @@ import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '../../../lib/mongodb';
 import Product from '../../../lib/models/Product';
 import { authOptions } from '../../auth/[...nextauth]/route';
-import { writeFile } from 'fs/promises';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req) {
   try {
     // Check authentication and role
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     if (session.user.role !== 'supplier') {
-      return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Get form data
     const formData = await req.formData();
-    const productData = {};
+    const productData = {
+      supplier: session.user.id,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
 
-    // Extract product data
-    for (const [key, value] of formData.entries()) {
-      if (key === 'images') continue;
-      if (key === 'variants' || key === 'specifications') {
-        productData[key] = JSON.parse(value);
-      } else {
-        productData[key] = value;
+    // Process basic text fields
+    ['name', 'description', 'status', 'category'].forEach(field => {
+      if (formData.has(field)) {
+        productData[field] = formData.get(field);
+      }
+    });
+    
+    // Process numeric fields
+    ['price', 'quantity'].forEach(field => {
+      if (formData.has(field)) {
+        productData[field] = Number(formData.get(field));
+      }
+    });
+
+    // Process main image if uploaded
+    const mainImage = formData.get('image');
+    if (mainImage && mainImage instanceof Blob) {
+      // Convert the image to a data URL for storage
+      const arrayBuffer = await mainImage.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const base64Image = buffer.toString('base64');
+      const mimeType = mainImage.type;
+      productData.image = `data:${mimeType};base64,${base64Image}`;
+    }
+    
+    // Process additional images if uploaded
+    const additionalImageFiles = formData.getAll('additionalImages');
+    if (additionalImageFiles.length > 0) {
+      productData.additionalImages = [];
+      
+      for (const file of additionalImageFiles) {
+        if (file instanceof Blob) {
+          // Convert each image to a data URL
+          const arrayBuffer = await file.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+          const base64Image = buffer.toString('base64');
+          const mimeType = file.type;
+          productData.additionalImages.push(`data:${mimeType};base64,${base64Image}`);
+        }
       }
     }
-
-    // Process tags
-    if (productData.tags) {
-      productData.tags = productData.tags.split(',').map(tag => tag.trim());
-    }
-
-    // Handle image uploads
-    const images = formData.getAll('images');
-    const imageUrls = [];
-
-    for (const image of images) {
-      if (typeof image === 'object' && 'arrayBuffer' in image) {
-        const buffer = Buffer.from(await image.arrayBuffer());
-        const filename = `${uuidv4()}_${image.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
-        const relativePath = `/uploads/products/${filename}`;
-        const fullPath = path.join(process.cwd(), 'public', relativePath);
-
-        // Ensure directory exists
-        await writeFile(fullPath, buffer);
-        imageUrls.push(relativePath);
-      }
-    }
-
-    // Add additional fields
-    productData.images = imageUrls;
-    productData.supplier = session.user.id;
-    productData.createdAt = new Date();
-    productData.updatedAt = new Date();
 
     // Connect to database
     await connectToDatabase();
@@ -75,7 +80,7 @@ export async function POST(req) {
   } catch (error) {
     console.error('Error creating product:', error);
     return NextResponse.json(
-      { message: 'Error creating product', error: error.message },
+      { error: error.message || 'Internal server error' },
       { status: 500 }
     );
   }
@@ -86,11 +91,11 @@ export async function GET(req) {
     // Check authentication and role
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     if (session.user.role !== 'supplier') {
-      return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Connect to database
@@ -105,7 +110,7 @@ export async function GET(req) {
   } catch (error) {
     console.error('Error fetching products:', error);
     return NextResponse.json(
-      { message: 'Error fetching products', error: error.message },
+      { error: error.message || 'Internal server error' },
       { status: 500 }
     );
   }

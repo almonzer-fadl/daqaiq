@@ -83,16 +83,12 @@ export async function PUT(request) {
     // Process image if provided
     const image = formData.get('image');
     if (image && image instanceof Blob) {
-      try {
-        // For now, using a placeholder. In production, you'd upload to S3 or similar
-        // const imageUrl = await uploadToS3(image, `supplier-${session.user.id}`);
-        // updates.image = imageUrl;
-        
-        // Using a public URL for demonstration
-        updates.image = 'https://via.placeholder.com/150';
-      } catch (error) {
-        console.error('Error uploading image:', error);
-      }
+      // Convert the image to a data URL for storage
+      const arrayBuffer = await image.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const base64Image = buffer.toString('base64');
+      const mimeType = image.type;
+      updates.image = `data:${mimeType};base64,${base64Image}`;
     }
 
     await connectToDatabase();
