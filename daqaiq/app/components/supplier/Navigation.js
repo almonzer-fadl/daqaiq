@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SUPPLIER_ROUTES } from '@/app/config/urls';
-import { SUPPLIER_TRANSLATIONS as t } from '@/app/constants/translations';
+import { SUPPLIER_ROUTES } from '../../config/urls';
+import { SUPPLIER_TRANSLATIONS as t } from '../../constants/translations';
 
 const Navigation = () => {
   const pathname = usePathname();
