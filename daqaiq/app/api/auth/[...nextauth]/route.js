@@ -54,11 +54,18 @@ export const authOptions = {
             isVerified: user.isVerified,
           };
         } catch (error) {
+          console.error('Auth Error:', error);
           throw new Error(error.message);
         }
       }
     })
   ],
+  pages: {
+    signIn: '/auth/signin',
+    signOut: '/auth/signout',
+    error: '/auth/error',
+    verifyRequest: '/auth/verify-request',
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -77,16 +84,12 @@ export const authOptions = {
       return session;
     }
   },
-  pages: {
-    signIn: '/auth/signin',
-    error: '/auth/error',
-    verifyRequest: '/auth/verify-request',
-  },
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === 'development',
 };
 
 const handler = NextAuth(authOptions);

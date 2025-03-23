@@ -92,13 +92,25 @@ export async function POST(req) {
     // Send verification email (but don't wait for it)
     sendVerificationEmail(email, verificationToken).catch(console.error);
 
-    return NextResponse.json({
-      message: 'Registration successful. You can now sign in.',
-      userId: user._id,
-    }, { status: 201 });
+    // Remove password from response
+    const userWithoutPassword = {
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      storeName: user.storeName,
+      storeAddress: user.storeAddress,
+      isVerified: user.isVerified
+    };
+
+    return NextResponse.json(
+      { message: 'Supplier registered successfully', user: userWithoutPassword },
+      { status: 201 }
+    );
 
   } catch (error) {
-    console.error('Supplier registration error:', error);
+    console.error('Registration Error:', error);
     return NextResponse.json(
       { error: 'Something went wrong during registration' },
       { status: 500 }

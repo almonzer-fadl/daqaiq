@@ -55,3 +55,43 @@ export const config = {
     '/cart/:path*',
   ],
 };
+
+export function middleware(request) {
+  const url = request.nextUrl;
+  const hostname = request.headers.get('host');
+
+  // Check if it's the supplier subdomain
+  const isSupplierDomain = hostname.startsWith('supplier.');
+
+  // Handle supplier subdomain
+  if (isSupplierDomain) {
+    // Remove /supplier from the path if it exists
+    if (url.pathname.startsWith('/supplier')) {
+      url.pathname = url.pathname.replace('/supplier', '');
+    }
+
+    // Ensure all paths are prefixed with /supplier internally
+    if (!url.pathname.startsWith('/supplier') && url.pathname !== '/') {
+      url.pathname = `/supplier${url.pathname}`;
+    }
+
+    return NextResponse.rewrite(url);
+  }
+
+  // Handle main domain
+  if (url.pathname.startsWith('/supplier')) {
+    // Redirect to supplier subdomain
+    return NextResponse.redirect(
+      `https://supplier.${hostname}${url.pathname.replace('/supplier', '')}`
+    );
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    // Match all paths except static files and api
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
+};
