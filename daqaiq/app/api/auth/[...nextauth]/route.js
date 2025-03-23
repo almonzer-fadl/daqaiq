@@ -32,10 +32,10 @@ export const authOptions = {
             throw new Error(`Invalid ${credentials.role} credentials`);
           }
 
-          // If supplier, check verification status
-          if (user.role === 'supplier' && !user.isVerified) {
-            throw new Error('Please verify your email before signing in');
-          }
+          // Remove verification check for suppliers
+          // if (user.role === 'supplier' && !user.isVerified) {
+          //   throw new Error('Please verify your email before signing in');
+          // }
 
           const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
           
