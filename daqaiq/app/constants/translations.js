@@ -1,22 +1,22 @@
 export const SUPPLIER_TRANSLATIONS = {
   // Navigation
-  supplierPortal: 'بوابة المورد',
-  dashboard: 'لوحة التحكم',
+  supplierPortal: 'منصة الموردين',
+  dashboard: 'الرئيسية',
   products: 'المنتجات',
   orders: 'الطلبات',
   inventory: 'المخزون',
-  analytics: 'التحليلات',
-  profile: 'الملف الشخصي',
-  signOut: 'تسجيل الخروج',
+  analytics: 'الإحصائيات',
+  profile: 'الحساب',
+  signOut: 'تسجيل خروج',
 
   // Dashboard
-  welcomeBack: 'مرحباً بعودتك',
+  welcomeBack: 'أهلاً بك',
   totalSales: 'إجمالي المبيعات',
   totalOrders: 'إجمالي الطلبات',
-  pendingOrders: 'الطلبات المعلقة',
+  pendingOrders: 'الطلبات قيد المعالجة',
   completedOrders: 'الطلبات المكتملة',
-  viewDetails: 'عرض التفاصيل',
-  recentOrders: 'آخر الطلبات',
+  viewDetails: 'التفاصيل',
+  recentOrders: 'أحدث الطلبات',
   viewAll: 'عرض الكل',
 
   // Products
@@ -25,9 +25,9 @@ export const SUPPLIER_TRANSLATIONS = {
   deleteProduct: 'حذف المنتج',
   productName: 'اسم المنتج',
   productDescription: 'وصف المنتج',
-  productPrice: 'سعر المنتج',
-  productCategory: 'فئة المنتج',
-  productStock: 'المخزون',
+  productPrice: 'السعر',
+  productCategory: 'التصنيف',
+  productStock: 'الكمية المتوفرة',
   productStatus: 'الحالة',
 
   // Orders
@@ -35,20 +35,20 @@ export const SUPPLIER_TRANSLATIONS = {
   orderDate: 'تاريخ الطلب',
   orderStatus: 'حالة الطلب',
   customerName: 'اسم العميل',
-  orderTotal: 'إجمالي الطلب',
-  shippingAddress: 'عنوان الشحن',
+  orderTotal: 'المبلغ الإجمالي',
+  shippingAddress: 'عنوان التوصيل',
   paymentMethod: 'طريقة الدفع',
 
   // Analytics
-  salesOverview: 'نظرة عامة على المبيعات',
+  salesOverview: 'ملخص المبيعات',
   monthlyRevenue: 'الإيرادات الشهرية',
-  topProducts: 'أفضل المنتجات',
-  salesByCategory: 'المبيعات حسب الفئة',
+  topProducts: 'المنتجات الأكثر مبيعاً',
+  salesByCategory: 'المبيعات حسب التصنيف',
 
   // Common
-  loading: 'جاري التحميل...',
+  loading: 'جارٍ التحميل...',
   error: 'حدث خطأ',
-  success: 'تم بنجاح',
+  success: 'تمت العملية بنجاح',
   save: 'حفظ',
   cancel: 'إلغاء',
   delete: 'حذف',
@@ -59,28 +59,32 @@ export const SUPPLIER_TRANSLATIONS = {
   noData: 'لا توجد بيانات',
   confirm: 'تأكيد',
 
-  // New additions from the code block
-  productStatus: 'حالة المنتج',
-  active: 'نشط',
-  inactive: 'غير نشط',
+  // Status
+  active: 'متاح',
+  inactive: 'غير متاح',
   draft: 'مسودة',
   published: 'منشور',
+  
+  // Inventory
   restockDate: 'تاريخ إعادة التخزين',
   supplier: 'المورد',
   location: 'الموقع',
-  reorderPoint: 'نقطة إعادة الطلب',
+  reorderPoint: 'حد إعادة الطلب',
   inventoryReport: 'تقرير المخزون',
-  salesAnalytics: 'تحليلات المبيعات',
-  customerInsights: 'تحليلات العملاء',
+
+  // Analytics Extended
+  salesAnalytics: 'تحليل المبيعات',
+  customerInsights: 'تحليل العملاء',
   revenueGrowth: 'نمو الإيرادات',
   averageOrderValue: 'متوسط قيمة الطلب',
-  salesByCategory: 'المبيعات حسب الفئة',
-  yearToDate: 'المبيعات منذ بداية العام',
-  contactName: 'اسم جهة الاتصال',
+  yearToDate: 'المبيعات السنوية',
+
+  // Profile
+  contactName: 'اسم المسؤول',
   taxId: 'الرقم الضريبي',
-  businessType: 'نوع النشاط التجاري',
+  businessType: 'نوع النشاط',
   website: 'الموقع الإلكتروني',
-  socialMedia: 'وسائل التواصل الاجتماعي',
+  socialMedia: 'حسابات التواصل',
   accountStatus: 'حالة الحساب',
-  verificationStatus: 'حالة التحقق'
+  verificationStatus: 'حالة التوثيق'
 }; 

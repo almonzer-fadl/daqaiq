@@ -6,8 +6,8 @@ import { SUPPLIER_TRANSLATIONS as t } from '../constants/translations';
 import { AUTH_URLS } from '../config/urls';
 
 export const metadata = {
-  title: 'Supplier Portal - Daqaiq',
-  description: 'Manage your products and orders on Daqaiq',
+  title: 'منصة الموردين - دقائق',
+  description: 'إدارة المنتجات والطلبات في منصة دقائق',
 };
 
 export default async function SupplierLayout({ children }) {
@@ -23,10 +23,12 @@ export default async function SupplierLayout({ children }) {
   }
 
   return (
-    <div dir="rtl" lang="ar" className="min-h-screen bg-gray-100">
+    <div dir="rtl" lang="ar" className="min-h-screen bg-gray-50">
       <Navigation />
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {children}
+      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          {children}
+        </div>
       </main>
     </div>
   );
