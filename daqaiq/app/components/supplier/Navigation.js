@@ -13,7 +13,7 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navigation = [
-    { name: t.dashboard, href: '/supplier', icon: '📊' },
+    { name: t.dashboard, href: '/', icon: '📊' },
     { name: t.products, href: '/supplier/products', icon: '📦' },
     { name: t.orders, href: '/supplier/orders', icon: '🛍️' },
     { name: t.inventory, href: '/supplier/inventory', icon: '📋' },
@@ -55,7 +55,7 @@ export default function Navigation() {
         <div className="flex flex-col h-full">
           {/* Logo and Toggle */}
           <div className="flex items-center justify-between p-4 border-b">
-            <Link href="/supplier" className="flex items-center">
+            <Link href="/" className="flex items-center">
               <span className="text-xl font-bold text-blue-600">دقائق</span>
             </Link>
             <button

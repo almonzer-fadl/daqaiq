@@ -11,6 +11,7 @@ export default function ProductsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -27,6 +28,28 @@ export default function ProductsPage() {
       toast.error(t.errorOccurred);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    if (!confirm(t.confirmDeleteProduct)) return;
+    
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/supplier/products/${productId}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) throw new Error(t.errorOccurred);
+      
+      toast.success(t.productDeleted);
+      // Remove the product from the state
+      setProducts(products.filter(product => product._id !== productId));
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      toast.error(t.errorOccurred);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -109,12 +132,13 @@ export default function ProductsPage() {
                 </span>
               </div>
               <div className="mt-4 flex justify-between">
-                <Link
-                  href={`/supplier/products/${product._id}`}
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                <button
+                  onClick={() => handleDeleteProduct(product._id)}
+                  disabled={isDeleting}
+                  className="text-red-600 hover:text-red-800 text-sm font-medium"
                 >
-                  {t.viewDetails}
-                </Link>
+                  {t.deleteProduct}
+                </button>
                 <Link
                   href={`/supplier/products/${product._id}/edit`}
                   className="text-gray-600 hover:text-gray-800 text-sm font-medium"
