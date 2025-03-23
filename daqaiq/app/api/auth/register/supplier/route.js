@@ -76,7 +76,7 @@ export async function POST(req) {
       password: hashedPassword,
       role: 'supplier',
       verificationToken,
-      isVerified: false, // Start as unverified
+      isVerified: true,
     });
 
     // Create supplier profile

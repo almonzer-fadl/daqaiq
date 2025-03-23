@@ -7,11 +7,11 @@ import User from '../../../lib/models/User';
 export const authOptions = {
   providers: [
     CredentialsProvider({
-      name: 'credentials',
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
-        role: { label: "Role", type: "text" },
+        role: { label: "Role", type: "text", default: "supplier" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -49,7 +49,7 @@ export const authOptions = {
           });
 
           return {
-            id: user._id.toString(),
+            id: user._id,
             name: user.name,
             email: user.email,
             role: user.role,
@@ -64,7 +64,7 @@ export const authOptions = {
     })
   ],
   pages: {
-    signIn: '/auth/signin',
+    signIn: '/auth/signin/supplier',
     signOut: '/auth/signout',
     error: '/auth/error',
     verifyRequest: '/auth/verify-request',
