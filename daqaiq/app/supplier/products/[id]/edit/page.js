@@ -80,40 +80,58 @@ export default function EditProduct() {
     const file = e.target.files[0];
     if (file) {
       setMainImage(file);
-      setMainImagePreview(URL.createObjectURL(file));
+      const preview = URL.createObjectURL(file);
+      setMainImagePreview(preview);
     }
   };
   
   const handleAdditionalImagesChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 0) {
-      setAdditionalImages([...additionalImages, ...files]);
+      setAdditionalImages(prev => [...prev, ...files]);
       const newPreviews = files.map(file => URL.createObjectURL(file));
-      setAdditionalImagePreviews([...additionalImagePreviews, ...newPreviews]);
+      setAdditionalImagePreviews(prev => [...prev, ...newPreviews]);
     }
   };
   
   const removeAdditionalImage = (index) => {
-    const updatedImages = [...additionalImages];
-    updatedImages.splice(index, 1);
-    setAdditionalImages(updatedImages);
+    setAdditionalImages(prev => {
+      const updated = [...prev];
+      updated.splice(index, 1);
+      return updated;
+    });
     
-    const updatedPreviews = [...additionalImagePreviews];
-    updatedPreviews.splice(index, 1);
-    setAdditionalImagePreviews(updatedPreviews);
+    setAdditionalImagePreviews(prev => {
+      const updated = [...prev];
+      URL.revokeObjectURL(updated[index]); // Clean up the URL object
+      updated.splice(index, 1);
+      return updated;
+    });
   };
+
+  // Clean up URL objects when component unmounts
+  useEffect(() => {
+    return () => {
+      additionalImagePreviews.forEach(preview => {
+        if (preview.startsWith('blob:')) {
+          URL.revokeObjectURL(preview);
+        }
+      });
+    };
+  }, [additionalImagePreviews]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     
     try {
-      // Create FormData object to handle file uploads
       const productFormData = new FormData();
       
       // Add basic product data
       Object.keys(formData).forEach(key => {
-        productFormData.append(key, formData[key]);
+        if (formData[key] !== undefined && formData[key] !== null) {
+          productFormData.append(key, formData[key]);
+        }
       });
       
       // Add main image if changed
@@ -122,11 +140,9 @@ export default function EditProduct() {
       }
       
       // Add additional images
-      if (additionalImages.length > 0) {
-        additionalImages.forEach((file, index) => {
-          productFormData.append(`additionalImages`, file);
-        });
-      }
+      additionalImages.forEach((file) => {
+        productFormData.append('additionalImages', file);
+      });
 
       const response = await fetch(`/api/supplier/products/${params.id}`, {
         method: 'PUT',

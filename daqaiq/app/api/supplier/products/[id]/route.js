@@ -146,8 +146,6 @@ export async function PUT(request, { params }) {
     // Process main image if uploaded
     const mainImage = formData.get('image');
     if (mainImage && mainImage instanceof Blob) {
-      // In a real application, upload the image to a storage service
-      // For now we'll use a data URL approach for demonstration
       const arrayBuffer = await mainImage.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
       const base64Image = buffer.toString('base64');
@@ -158,21 +156,47 @@ export async function PUT(request, { params }) {
     // Process additional images if uploaded
     const additionalImageFiles = formData.getAll('additionalImages');
     if (additionalImageFiles.length > 0) {
-      updates.additionalImages = [];
+      const additionalImages = [];
       
       for (const file of additionalImageFiles) {
         if (file instanceof Blob) {
-          // Convert each image to a data URL
           const arrayBuffer = await file.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
           const base64Image = buffer.toString('base64');
           const mimeType = file.type;
-          updates.additionalImages.push(`data:${mimeType};base64,${base64Image}`);
+          additionalImages.push(`data:${mimeType};base64,${base64Image}`);
         }
+      }
+      
+      if (additionalImages.length > 0) {
+        updates.additionalImages = additionalImages;
       }
     }
     
     await connectToDatabase();
+    
+    // Find the existing product first
+    const existingProduct = await Product.findOne({ 
+      _id: productId, 
+      supplier: session.user.id 
+    });
+    
+    if (!existingProduct) {
+      return NextResponse.json(
+        { error: 'Product not found or not owned by this supplier' },
+        { status: 404 }
+      );
+    }
+    
+    // If no new main image was uploaded, keep the existing one
+    if (!updates.image) {
+      updates.image = existingProduct.image;
+    }
+    
+    // If no new additional images were uploaded, keep the existing ones
+    if (!updates.additionalImages) {
+      updates.additionalImages = existingProduct.additionalImages || [];
+    }
     
     // Update the product
     const product = await Product.findOneAndUpdate(
@@ -180,13 +204,6 @@ export async function PUT(request, { params }) {
       { $set: updates },
       { new: true, runValidators: true }
     );
-    
-    if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found or not owned by this supplier' },
-        { status: 404 }
-      );
-    }
     
     return NextResponse.json({ 
       message: 'Product updated successfully',
