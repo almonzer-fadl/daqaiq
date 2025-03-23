@@ -70,6 +70,7 @@ export const SUPPLIER_TRANSLATIONS = {
 
   // Common
   loading: 'جارٍ التحميل...',
+  saving: 'جارٍ الحفظ',
   error: 'حدث خطأ',
   success: 'تمت العملية بنجاح',
   save: 'حفظ',
@@ -146,6 +147,7 @@ export const SUPPLIER_TRANSLATIONS = {
   selectType: 'اختر النوع',
   profileUpdated: 'تم تحديث الملف الشخصي بنجاح',
   profileUpdateFailed: 'فشل في تحديث الملف الشخصي',
+  editProfile: 'تعديل الملف الشخصي',
 
   // Categories
   selectCategory: 'اختر التصنيف',

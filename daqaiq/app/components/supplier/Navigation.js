@@ -18,7 +18,6 @@ export default function Navigation() {
     { name: t.orders, href: '/supplier/orders', icon: '🛍️' },
     { name: t.inventory, href: '/supplier/inventory', icon: '📋' },
     { name: t.analytics, href: '/supplier/analytics', icon: '📈' },
-    { name: t.profile, href: '/supplier/profile', icon: '👤' },
   ];
 
   const isActive = (path) => pathname === path;
@@ -99,8 +98,8 @@ export default function Navigation() {
             ))}
           </nav>
 
-          {/* User Profile Section */}
-          <div className="border-t p-4">
+          {/* User Profile Section - Clickable */}
+          <Link href="/supplier/profile" className="border-t p-4 hover:bg-gray-50">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
@@ -115,10 +114,11 @@ export default function Navigation() {
                     {session?.user?.name}
                   </p>
                   <p className="text-xs text-gray-500">{session?.user?.email}</p>
+                  <p className="text-xs text-blue-500 mt-1">{t.editProfile}</p>
                 </div>
               )}
             </div>
-          </div>
+          </Link>
         </div>
       </div>
 
@@ -177,8 +177,8 @@ export default function Navigation() {
             ))}
           </nav>
 
-          {/* User Profile Section */}
-          <div className="border-t p-4">
+          {/* User Profile Section - Clickable */}
+          <Link href="/supplier/profile" className="border-t p-4 hover:bg-gray-50" onClick={() => setIsMobileMenuOpen(false)}>
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
@@ -192,9 +192,10 @@ export default function Navigation() {
                   {session?.user?.name}
                 </p>
                 <p className="text-xs text-gray-500">{session?.user?.email}</p>
+                <p className="text-xs text-blue-500 mt-1">{t.editProfile}</p>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </>

@@ -4,6 +4,7 @@ import { authOptions } from '../../auth/[...nextauth]/route';
 import { connectToDatabase } from '../../../lib/mongodb';
 import Supplier from '../../../lib/models/Supplier';
 import User from '../../../lib/models/User';
+// import { uploadToS3 } from '../../../lib/s3'; // Uncomment if you have S3 upload functionality
 
 // GET /api/supplier/profile
 export async function GET(request) {
@@ -28,7 +29,9 @@ export async function GET(request) {
       supplier = await Supplier.create({
         userId: user._id,
         companyName: user.name || '',
+        contactName: user.name || '',
         email: user.email,
+        image: user.image || '',
         status: 'active',
       });
     }
@@ -60,7 +63,9 @@ export async function PUT(request) {
 
     fields.forEach(field => {
       const value = formData.get(field);
-      if (value) updates[field] = value;
+      if (value !== null && value !== undefined) {
+        updates[field] = value;
+      }
     });
 
     // Process JSON fields
@@ -77,10 +82,17 @@ export async function PUT(request) {
 
     // Process image if provided
     const image = formData.get('image');
-    if (image) {
-      // TODO: Implement image upload to cloud storage
-      // For now, we'll just store the image URL
-      updates.image = '/placeholder-profile.png';
+    if (image && image instanceof Blob) {
+      try {
+        // For now, using a placeholder. In production, you'd upload to S3 or similar
+        // const imageUrl = await uploadToS3(image, `supplier-${session.user.id}`);
+        // updates.image = imageUrl;
+        
+        // Using a public URL for demonstration
+        updates.image = 'https://via.placeholder.com/150';
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
     }
 
     await connectToDatabase();
@@ -97,7 +109,9 @@ export async function PUT(request) {
       supplier = await Supplier.create({
         userId: user._id,
         companyName: updates.companyName || user.name || '',
+        contactName: updates.contactName || user.name || '',
         email: updates.email || user.email,
+        image: updates.image || user.image || '',
         ...updates,
         status: 'active',
       });
@@ -106,6 +120,25 @@ export async function PUT(request) {
         { userId: session.user.id },
         { $set: updates },
         { new: true, runValidators: true }
+      );
+    }
+
+    // Update user name if contactName or companyName was changed
+    if (updates.contactName || updates.companyName) {
+      const newName = updates.contactName || updates.companyName;
+      await User.findByIdAndUpdate(
+        session.user.id,
+        { $set: { name: newName } },
+        { new: true }
+      );
+    }
+
+    // Update user image if image was changed
+    if (updates.image) {
+      await User.findByIdAndUpdate(
+        session.user.id,
+        { $set: { image: updates.image } },
+        { new: true }
       );
     }
 

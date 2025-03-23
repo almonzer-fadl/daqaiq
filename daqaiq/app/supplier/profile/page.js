@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
 import Image from 'next/image';
+import { SUPPLIER_TRANSLATIONS as t } from '../../constants/translations';
 
 export default function SupplierProfile() {
-  const { data: session } = useSession();
+  const { data: session, update: updateSession } = useSession();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
@@ -164,13 +165,23 @@ export default function SupplierProfile() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'فشل في تحديث الملف الشخصي');
+        throw new Error(data.message || t.profileUpdateFailed);
       }
 
-      toast.success('تم تحديث الملف الشخصي بنجاح');
+      // Update the user session to reflect changes
+      await updateSession({
+        ...session,
+        user: {
+          ...session.user,
+          name: formData.contactName || formData.companyName || session.user.name,
+          image: data.profile.image || session.user.image
+        }
+      });
+
+      toast.success(t.profileUpdated);
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error(error.message);
+      toast.error(error.message || t.profileUpdateFailed);
     } finally {
       setSaving(false);
     }
@@ -186,18 +197,18 @@ export default function SupplierProfile() {
 
   return (
     <div dir="rtl" className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-8">إعدادات الملف الشخصي</h1>
+      <h1 className="text-2xl font-bold mb-8">{t.profileSettings}</h1>
       
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Profile Image */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">الصورة الشخصية</h2>
+          <h2 className="text-lg font-semibold mb-4">{t.profileImage}</h2>
           <div className="flex items-center space-x-6">
             <div className="relative h-24 w-24">
               {imagePreview ? (
                 <Image
                   src={imagePreview}
-                  alt="الصورة الشخصية"
+                  alt={t.profileImage}
                   fill
                   className="rounded-full object-cover"
                 />
@@ -210,7 +221,7 @@ export default function SupplierProfile() {
               )}
             </div>
             <label className="block">
-              <span className="sr-only">اختر صورة شخصية</span>
+              <span className="sr-only">{t.chooseProfileImage}</span>
               <input
                 type="file"
                 accept="image/*"
@@ -471,16 +482,21 @@ export default function SupplierProfile() {
           </div>
         </div>
 
-        {/* Submit Button */}
-        <div className="flex justify-start">
+        {/* Form Buttons */}
+        <div className="flex justify-end space-x-4">
+          <button
+            type="button"
+            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            onClick={() => window.history.back()}
+          >
+            {t.cancel}
+          </button>
           <button
             type="submit"
+            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             disabled={saving}
-            className={`px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-              saving ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
           >
-            {saving ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+            {saving ? `${t.saving}...` : t.save}
           </button>
         </div>
       </form>
