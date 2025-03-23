@@ -133,10 +133,25 @@ export default function SupplierProfile() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Clean up previous preview URL if it exists
+      if (imagePreview && imagePreview.startsWith('blob:')) {
+        URL.revokeObjectURL(imagePreview);
+      }
+      
       setProfileImage(file);
-      setImagePreview(URL.createObjectURL(file));
+      const preview = URL.createObjectURL(file);
+      setImagePreview(preview);
     }
   };
+
+  // Clean up URL objects when component unmounts or when preview changes
+  useEffect(() => {
+    return () => {
+      if (imagePreview && imagePreview.startsWith('blob:')) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -145,14 +160,16 @@ export default function SupplierProfile() {
     try {
       const formDataToSend = new FormData();
       
+      // Add all form fields except objects
       Object.keys(formData).forEach(key => {
         if (typeof formData[key] === 'object') {
           formDataToSend.append(key, JSON.stringify(formData[key]));
-        } else {
+        } else if (formData[key] !== undefined && formData[key] !== null) {
           formDataToSend.append(key, formData[key]);
         }
       });
 
+      // Add profile image if changed
       if (profileImage) {
         formDataToSend.append('image', profileImage);
       }
@@ -167,6 +184,18 @@ export default function SupplierProfile() {
       if (!response.ok) {
         throw new Error(data.message || t.profileUpdateFailed);
       }
+
+      // Update image preview with the new image from server
+      if (data.profile.image) {
+        // Clean up previous blob URL if it exists
+        if (imagePreview && imagePreview.startsWith('blob:')) {
+          URL.revokeObjectURL(imagePreview);
+        }
+        setImagePreview(data.profile.image);
+      }
+
+      // Reset the file input
+      setProfileImage(null);
 
       // Update the user session to reflect changes
       await updateSession({

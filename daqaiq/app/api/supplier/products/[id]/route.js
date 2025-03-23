@@ -137,8 +137,8 @@ export async function PUT(request, { params }) {
     });
     
     // Process numeric fields
-    ['price', 'quantity'].forEach(field => {
-      if (formData.has(field)) {
+    ['price', 'quantity', 'stock'].forEach(field => {
+      if (formData.has(field) && formData.get(field) !== '') {
         updates[field] = Number(formData.get(field));
       }
     });
@@ -186,6 +186,14 @@ export async function PUT(request, { params }) {
         { error: 'Product not found or not owned by this supplier' },
         { status: 404 }
       );
+    }
+    
+    // If no new stock/quantity was provided, keep the existing one
+    if (!updates.hasOwnProperty('stock') && !updates.hasOwnProperty('quantity')) {
+      updates.stock = existingProduct.stock;
+    } else if (updates.hasOwnProperty('quantity')) {
+      updates.stock = updates.quantity;
+      delete updates.quantity;
     }
     
     // If no new main image was uploaded, keep the existing one
