@@ -56,6 +56,14 @@ export const config = {
   ],
 };
 
+// Matcher configuration
+export const config = {
+  matcher: [
+    // Match all paths except static files and api
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
+};
+
 export function middleware(request) {
   const url = request.nextUrl;
   const hostname = request.headers.get('host');
@@ -88,10 +96,3 @@ export function middleware(request) {
 
   return NextResponse.next();
 }
-
-export const config = {
-  matcher: [
-    // Match all paths except static files and api
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
-};
