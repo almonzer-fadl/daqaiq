@@ -20,6 +20,7 @@ export const SUPPLIER_TRANSLATIONS = {
   viewAll: 'عرض الكل',
 
   // Products
+  addNewProduct: 'إضافة منتج جديد',
   addProduct: 'إضافة منتج',
   editProduct: 'تعديل المنتج',
   deleteProduct: 'حذف المنتج',
