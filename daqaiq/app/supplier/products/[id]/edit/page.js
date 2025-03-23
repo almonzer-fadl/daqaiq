@@ -94,6 +94,16 @@ export default function EditProduct() {
     }
   };
   
+  const handleMainImageDelete = () => {
+    if (mainImagePreview) {
+      if (mainImagePreview.startsWith('blob:')) {
+        URL.revokeObjectURL(mainImagePreview);
+      }
+      setMainImage(null);
+      setMainImagePreview(null);
+    }
+  };
+
   const removeAdditionalImage = (index) => {
     setAdditionalImages(prev => {
       const updated = [...prev];
@@ -103,7 +113,9 @@ export default function EditProduct() {
     
     setAdditionalImagePreviews(prev => {
       const updated = [...prev];
-      URL.revokeObjectURL(updated[index]); // Clean up the URL object
+      if (updated[index] && updated[index].startsWith('blob:')) {
+        URL.revokeObjectURL(updated[index]);
+      }
       updated.splice(index, 1);
       return updated;
     });
@@ -187,14 +199,25 @@ export default function EditProduct() {
               {t.mainImage}
             </label>
             <div className="flex items-center space-x-4">
-              <div className="relative h-24 w-24 overflow-hidden rounded-md">
+              <div className="relative h-24 w-24 overflow-hidden rounded-md group">
                 {mainImagePreview ? (
-                  <Image
-                    src={mainImagePreview}
-                    alt={formData.name}
-                    fill
-                    className="object-cover"
-                  />
+                  <>
+                    <Image
+                      src={mainImagePreview}
+                      alt={formData.name}
+                      fill
+                      className="object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleMainImageDelete}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </>
                 ) : (
                   <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                     <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -203,13 +226,18 @@ export default function EditProduct() {
                   </div>
                 )}
               </div>
-              <label className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                <span>{t.uploadImages}</span>
+              <label className="block">
+                <span className="sr-only">{t.chooseMainImage}</span>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleMainImageChange}
-                  className="sr-only"
+                  className="block w-full text-sm text-gray-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-blue-50 file:text-blue-700
+                    hover:file:bg-blue-100"
                 />
               </label>
             </div>
