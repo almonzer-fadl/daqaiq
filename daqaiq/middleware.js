@@ -28,28 +28,21 @@ function middleware(request) {
     '/wishlist',
   ];
 
-  // Protected customer routes that require authentication
-  const protectedCustomerRoutes = [
-    '/profile',
-    '/orders',
-    '/checkout',
-  ];
-
-  // Check if the current route is protected for customers
-  const isProtectedCustomerRoute = protectedCustomerRoutes.some(route => 
-    url.pathname.startsWith(route)
-  );
-
-  // Allow public routes
-  if (publicRoutes.includes(url.pathname) || !isProtectedCustomerRoute) {
-    return NextResponse.next();
-  }
-
   // Handle supplier subdomain routing
   if (isSupplierDomain) {
-    // Check if user is authenticated and is a supplier
+    // For supplier auth pages, allow access
+    if (url.pathname.startsWith('/auth')) {
+      return NextResponse.next();
+    }
+
+    // For supplier domain, redirect to supplier signin if not authenticated
     if (!token || token.role !== 'supplier') {
-      return NextResponse.redirect(new URL('/auth/signin/supplier', url));
+      return NextResponse.redirect(new URL('/auth/signin/supplier', request.url));
+    }
+
+    // Handle supplier routes
+    if (url.pathname === '/') {
+      return NextResponse.rewrite(new URL('/supplier', request.url));
     }
 
     // Remove /supplier from the path if it exists
@@ -57,7 +50,7 @@ function middleware(request) {
       url.pathname = url.pathname.replace('/supplier', '');
     }
 
-    // Ensure all paths are prefixed with /supplier internally
+    // Ensure all internal paths are prefixed with /supplier
     if (!url.pathname.startsWith('/supplier') && url.pathname !== '/') {
       url.pathname = `/supplier${url.pathname}`;
     }
@@ -65,35 +58,59 @@ function middleware(request) {
     return NextResponse.rewrite(url);
   }
 
-  // Handle main domain protected routes
-  if (url.pathname.startsWith('/admin') && token?.role !== 'admin') {
-    return NextResponse.redirect(new URL('/auth/signin', url));
+  // For main domain
+  // Allow all public routes without authentication
+  if (publicRoutes.includes(url.pathname) || url.pathname.startsWith('/api/auth')) {
+    return NextResponse.next();
   }
 
+  // Protected customer routes that require authentication
+  const protectedCustomerRoutes = [
+    '/profile',
+    '/orders',
+    '/checkout',
+  ];
+
+  // Handle main domain protected routes
+  if (url.pathname.startsWith('/admin') && (!token || token.role !== 'admin')) {
+    return NextResponse.redirect(new URL('/auth/signin', request.url));
+  }
+
+  // Redirect supplier routes on main domain to supplier subdomain
   if (url.pathname.startsWith('/supplier')) {
-    // Redirect supplier routes to subdomain
-    const supplierUrl = new URL(url.pathname.replace('/supplier', ''), SUPPLIER_URL);
-    return NextResponse.redirect(supplierUrl);
+    return NextResponse.redirect(new URL(url.pathname.replace('/supplier', ''), `https://supplier.${hostname}`));
   }
 
   // Handle protected customer routes
-  if (isProtectedCustomerRoute && !token) {
-    return NextResponse.redirect(new URL('/auth/signin', url));
+  if (protectedCustomerRoutes.some(route => url.pathname.startsWith(route)) && !token) {
+    return NextResponse.redirect(new URL('/auth/signin', request.url));
   }
 
+  // Allow all other routes
   return NextResponse.next();
 }
 
 export default withAuth(middleware, {
   callbacks: {
     authorized: ({ token, req }) => {
-      // Allow all requests to public routes
-      if (req.nextUrl.pathname.startsWith('/api/auth')) {
-        return true;
+      // For supplier routes, check if user is a supplier
+      if (req.nextUrl.pathname.startsWith('/supplier') && token) {
+        return token.role === 'supplier';
       }
       
-      // For protected routes, require a token
-      return !!token;
+      // For admin routes, check if user is an admin
+      if (req.nextUrl.pathname.startsWith('/admin') && token) {
+        return token.role === 'admin';
+      }
+      
+      // For protected customer routes, just check if token exists
+      const protectedCustomerRoutes = ['/profile', '/orders', '/checkout'];
+      if (protectedCustomerRoutes.some(route => req.nextUrl.pathname.startsWith(route))) {
+        return !!token;
+      }
+      
+      // For all other routes, allow access regardless of auth state
+      return true;
     },
   },
 });
@@ -107,7 +124,9 @@ export const config = {
     '/profile/:path*',
     '/orders/:path*',
     '/checkout/:path*',
+    // Auth routes
+    '/auth/:path*',
     // Match all paths except static files and api
-    '/((?!api|_next/static|_next/image|favicon.ico|auth).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };

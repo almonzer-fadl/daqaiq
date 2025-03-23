@@ -27,12 +27,14 @@ export const authOptions = {
             throw new Error('No user found with this email');
           }
 
-          if (credentials.role === 'supplier' && user.role !== 'supplier') {
-            throw new Error('Invalid supplier credentials');
+          // Check if the user's role matches the requested role
+          if (credentials.role && user.role !== credentials.role) {
+            throw new Error(`Invalid ${credentials.role} credentials`);
           }
 
-          if (!credentials.role && user.role !== 'customer') {
-            throw new Error('Invalid customer credentials');
+          // If supplier, check verification status
+          if (user.role === 'supplier' && !user.isVerified) {
+            throw new Error('Please verify your email before signing in');
           }
 
           const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
@@ -41,6 +43,7 @@ export const authOptions = {
             throw new Error('Invalid password');
           }
 
+          // Update last login time
           await User.findByIdAndUpdate(user._id, {
             lastLogin: new Date()
           });
@@ -50,7 +53,7 @@ export const authOptions = {
             name: user.name,
             email: user.email,
             role: user.role,
-            image: user.avatar,
+            image: user.avatar || null,
             isVerified: user.isVerified,
           };
         } catch (error) {
