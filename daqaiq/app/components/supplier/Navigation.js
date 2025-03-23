@@ -3,141 +3,200 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SUPPLIER_ROUTES } from '../../config/urls';
+import { useSession } from 'next-auth/react';
 import { SUPPLIER_TRANSLATIONS as t } from '../../constants/translations';
 
-const Navigation = () => {
+export default function Navigation() {
+  const { data: session } = useSession();
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const navItems = [
-    {
-      label: t.dashboard,
-      href: SUPPLIER_ROUTES.dashboard,
-      icon: '📊',
-    },
-    {
-      label: t.products,
-      href: SUPPLIER_ROUTES.products,
-      icon: '📦',
-    },
-    {
-      label: t.orders,
-      href: SUPPLIER_ROUTES.orders,
-      icon: '🛍️',
-    },
-    {
-      label: t.inventory,
-      href: SUPPLIER_ROUTES.inventory,
-      icon: '📋',
-    },
-    {
-      label: t.analytics,
-      href: SUPPLIER_ROUTES.analytics,
-      icon: '📈',
-    },
+  const navigation = [
+    { name: t.dashboard, href: '/supplier', icon: '📊' },
+    { name: t.products, href: '/supplier/products', icon: '📦' },
+    { name: t.orders, href: '/supplier/orders', icon: '🛍️' },
+    { name: t.inventory, href: '/supplier/inventory', icon: '📋' },
+    { name: t.analytics, href: '/supplier/analytics', icon: '📈' },
+    { name: t.profile, href: '/supplier/profile', icon: '👤' },
   ];
+
+  const isActive = (path) => pathname === path;
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <div className="lg:hidden fixed top-0 right-0 p-4 z-50">
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+      {/* Mobile menu button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="fixed top-4 left-4 z-50 lg:hidden bg-white p-2 rounded-md shadow-md"
+      >
+        <svg
+          className="h-6 w-6"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
         >
-          <span className="sr-only">{isMobileMenuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}</span>
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            {isMobileMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
-      </div>
+          {isMobileMenuOpen ? (
+            <path d="M6 18L18 6M6 6l12 12" />
+          ) : (
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          )}
+        </svg>
+      </button>
 
-      {/* Sidebar for Desktop */}
-      <div className={`hidden lg:flex lg:flex-col fixed right-0 top-0 h-full bg-white shadow-lg transition-all duration-300 ease-in-out ${isSidebarOpen ? 'w-64' : 'w-20'}`}>
-        <div className="flex items-center justify-between p-4 border-b">
-          <Link href={SUPPLIER_ROUTES.dashboard} className={`text-xl font-bold text-blue-600 ${!isSidebarOpen && 'hidden'}`}>
-            {t.supplierPortal}
-          </Link>
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
-          >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isSidebarOpen ? "M9 5l7 7-7 7" : "M15 19l-7-7 7-7"} />
-            </svg>
-          </button>
-        </div>
-        <nav className="flex-1 overflow-y-auto">
-          <div className="px-2 py-4 space-y-1">
-            {navItems.map((item) => (
+      {/* Sidebar */}
+      <div
+        className={`fixed top-0 right-0 h-full bg-white shadow-lg transition-all duration-300 z-40 ${
+          isSidebarOpen ? 'w-64' : 'w-20'
+        }`}
+      >
+        <div className="flex flex-col h-full">
+          {/* Logo and Toggle */}
+          <div className="flex items-center justify-between p-4 border-b">
+            <Link href="/supplier" className="flex items-center">
+              <span className="text-xl font-bold text-blue-600">دقائق</span>
+            </Link>
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="p-2 rounded-md hover:bg-gray-100"
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                {isSidebarOpen ? (
+                  <path d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                ) : (
+                  <path d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                )}
+              </svg>
+            </button>
+          </div>
+
+          {/* Navigation Items */}
+          <nav className="flex-1 overflow-y-auto py-4">
+            {navigation.map((item) => (
               <Link
-                key={item.href}
+                key={item.name}
                 href={item.href}
-                className={`flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors duration-200 ${
-                  pathname === item.href
+                className={`flex items-center px-4 py-3 text-sm font-medium ${
+                  isActive(item.href)
                     ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 <span className="ml-3">{item.icon}</span>
-                {isSidebarOpen && <span className="mr-4">{item.label}</span>}
+                {isSidebarOpen && <span>{item.name}</span>}
               </Link>
             ))}
+          </nav>
+
+          {/* User Profile Section */}
+          <div className="border-t p-4">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-lg">
+                    {session?.user?.name?.[0]?.toUpperCase() || '👤'}
+                  </span>
+                </div>
+              </div>
+              {isSidebarOpen && (
+                <div className="mr-3">
+                  <p className="text-sm font-medium text-gray-700">
+                    {session?.user?.name}
+                  </p>
+                  <p className="text-xs text-gray-500">{session?.user?.email}</p>
+                </div>
+              )}
+            </div>
           </div>
-        </nav>
+        </div>
       </div>
 
-      {/* Mobile Sidebar */}
-      <div className={`lg:hidden fixed inset-0 z-40 ${isMobileMenuOpen ? '' : 'hidden'}`}>
-        {/* Backdrop */}
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setIsMobileMenuOpen(false)}></div>
+      {/* Mobile Menu Backdrop */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
 
-        {/* Sidebar Panel */}
-        <div className="fixed inset-y-0 right-0 flex max-w-xs w-full bg-white shadow-xl">
-          <div className="w-64 flex flex-col h-full">
-            <div className="flex items-center justify-between p-4 border-b">
-              <Link href={SUPPLIER_ROUTES.dashboard} className="text-xl font-bold text-blue-600" onClick={() => setIsMobileMenuOpen(false)}>
-                {t.supplierPortal}
-              </Link>
-              <button
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+      {/* Mobile Menu */}
+      <div
+        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 z-40 lg:hidden ${
+          isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="flex flex-col h-full">
+          <div className="flex items-center justify-between p-4 border-b">
+            <Link href="/supplier" className="flex items-center">
+              <span className="text-xl font-bold text-blue-600">دقائق</span>
+            </Link>
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-2 rounded-md hover:bg-gray-100"
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <nav className="flex-1 overflow-y-auto">
-              <div className="px-2 py-4 space-y-1">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors duration-200 ${
-                      pathname === item.href
-                        ? 'bg-blue-50 text-blue-600'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <span className="ml-3">{item.icon}</span>
-                    <span className="mr-4">{item.label}</span>
-                  </Link>
-                ))}
+                <path d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <nav className="flex-1 overflow-y-auto py-4">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`flex items-center px-4 py-3 text-sm font-medium ${
+                  isActive(item.href)
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <span className="ml-3">{item.icon}</span>
+                <span>{item.name}</span>
+              </Link>
+            ))}
+          </nav>
+
+          {/* User Profile Section */}
+          <div className="border-t p-4">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-lg">
+                    {session?.user?.name?.[0]?.toUpperCase() || '👤'}
+                  </span>
+                </div>
               </div>
-            </nav>
+              <div className="mr-3">
+                <p className="text-sm font-medium text-gray-700">
+                  {session?.user?.name}
+                </p>
+                <p className="text-xs text-gray-500">{session?.user?.email}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </>
   );
-};
-
-export default Navigation; 
+} 
