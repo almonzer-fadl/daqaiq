@@ -100,7 +100,7 @@ export default function SupplierRegister() {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             {t.alreadyHaveAccount}{' '}
-            <Link href="/auth/signin/supplier" className="font-medium text-[#4F46E5] hover:text-[#4338CA]">
+            <Link href="/auth/signin" className="font-medium text-[#4F46E5] hover:text-[#4338CA]">
               {t.signIn}
             </Link>
           </p>
