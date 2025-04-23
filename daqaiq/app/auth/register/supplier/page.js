@@ -186,10 +186,10 @@ export default function SupplierRegister() {
                   onChange={handleChange}
                 >
                   <option value="">Select Business Type</option>
-                  <option value="retail">Retail</option>
-                  <option value="wholesale">Wholesale</option>
-                  <option value="manufacturer">Manufacturer</option>
-                  <option value="distributor">Distributor</option>
+                  <option value="corporation">Corporation</option>
+                  <option value="llc">LLC</option>
+                  <option value="partnership">Partnership</option>
+                  <option value="soleProprietorship">Sole Proprietorship</option>
                 </select>
               </div>
               <div>

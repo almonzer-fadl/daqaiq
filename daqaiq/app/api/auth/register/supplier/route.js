@@ -81,12 +81,13 @@ export async function POST(req) {
 
     // Create supplier profile
     await Supplier.create({
-      user: user._id,
-      businessName,
-      businessType,
+      userId: user._id,
+      companyName: businessName,
+      businessType: businessType,
       taxId,
-      phoneNumber,
+      phone: phoneNumber,
       status: 'pending', // Suppliers need admin approval
+      verificationStatus: 'unverified'
     });
 
     // Send verification email (but don't wait for it)
