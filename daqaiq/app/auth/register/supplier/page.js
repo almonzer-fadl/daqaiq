@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
+import { SUPPLIER_TRANSLATIONS as t } from '../../constants/translations';
 
 export default function SupplierRegister() {
   const router = useRouter();
@@ -66,7 +68,7 @@ export default function SupplierRegister() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Registration failed');
+        throw new Error(data.error || t.registrationFailed);
       }
 
       // Show success message and redirect after delay
@@ -76,7 +78,7 @@ export default function SupplierRegister() {
       }, 3000);
     } catch (err) {
       console.error('Registration error:', err);
-      setError(err.message || 'An error occurred during registration');
+      setError(err.message || t.registrationFailed);
     } finally {
       setLoading(false);
     }
@@ -86,13 +88,22 @@ export default function SupplierRegister() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
+          <div className="flex justify-center">
+            <Image
+              src="/images/logo.png"
+              alt="Daqaiq Logo"
+              width={150}
+              height={150}
+              className="h-12 w-auto"
+            />
+          </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Register as a Supplier
+            {t.registerNewSupplier}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link href="/auth/signin/supplier" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Sign in
+            {t.alreadyHaveAccount}{' '}
+            <Link href="/auth/signin/supplier" className="font-medium text-[#4F46E5] hover:text-[#4338CA]">
+              {t.signIn}
             </Link>
           </p>
         </div>
@@ -107,8 +118,7 @@ export default function SupplierRegister() {
               </div>
               <div className="ml-3">
                 <p className="text-sm text-green-700">
-                  Registration successful! You will need to verify your email before signing in.
-                  Redirecting to sign in page...
+                  {t.registrationSuccess}
                 </p>
               </div>
             </div>
@@ -132,98 +142,98 @@ export default function SupplierRegister() {
 
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
-                <label htmlFor="name" className="sr-only">Full Name</label>
+                <label htmlFor="name" className="sr-only">{t.name}</label>
                 <input
                   id="name"
                   name="name"
                   type="text"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Full Name"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
+                  placeholder={t.name}
                   value={formData.name}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <label htmlFor="email" className="sr-only">Email address</label>
+                <label htmlFor="email" className="sr-only">{t.email}</label>
                 <input
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Email address"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
+                  placeholder={t.email}
                   value={formData.email}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <label htmlFor="password" className="sr-only">Password</label>
+                <label htmlFor="password" className="sr-only">{t.password}</label>
                 <input
                   id="password"
                   name="password"
                   type="password"
                   autoComplete="new-password"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
+                  placeholder={t.password}
                   value={formData.password}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <label htmlFor="phoneNumber" className="sr-only">Phone Number</label>
+                <label htmlFor="phoneNumber" className="sr-only">{t.phoneNumber}</label>
                 <input
                   id="phoneNumber"
                   name="phoneNumber"
                   type="tel"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Phone Number"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
+                  placeholder={t.phoneNumber}
                   value={formData.phoneNumber}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <label htmlFor="businessName" className="sr-only">Business Name</label>
+                <label htmlFor="businessName" className="sr-only">{t.businessName}</label>
                 <input
                   id="businessName"
                   name="businessName"
                   type="text"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Business Name"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
+                  placeholder={t.businessName}
                   value={formData.businessName}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <label htmlFor="businessType" className="sr-only">Business Type</label>
+                <label htmlFor="businessType" className="sr-only">{t.businessType}</label>
                 <select
                   id="businessType"
                   name="businessType"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
                   value={formData.businessType}
                   onChange={handleChange}
                 >
-                  <option value="">Select Business Type</option>
-                  <option value="corporation">Corporation</option>
-                  <option value="llc">LLC</option>
-                  <option value="partnership">Partnership</option>
-                  <option value="soleProprietorship">Sole Proprietorship</option>
+                  <option value="">{t.selectType}</option>
+                  <option value="corporation">{t.businessTypes.corporation}</option>
+                  <option value="llc">{t.businessTypes.llc}</option>
+                  <option value="partnership">{t.businessTypes.partnership}</option>
+                  <option value="soleProprietorship">{t.businessTypes.soleProprietorship}</option>
                 </select>
               </div>
               <div>
-                <label htmlFor="taxId" className="sr-only">Tax ID</label>
+                <label htmlFor="taxId" className="sr-only">{t.taxId}</label>
                 <input
                   id="taxId"
                   name="taxId"
                   type="text"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Tax ID"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
+                  placeholder={t.taxId}
                   value={formData.taxId}
                   onChange={handleChange}
                 />
@@ -234,9 +244,9 @@ export default function SupplierRegister() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#4F46E5] hover:bg-[#4338CA] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4F46E5] disabled:bg-[#4F46E5]/70"
               >
-                {loading ? 'Registering...' : 'Register'}
+                {loading ? t.loading : t.registerNewSupplier}
               </button>
             </div>
           </form>
