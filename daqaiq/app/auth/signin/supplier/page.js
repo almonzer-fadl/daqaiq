@@ -29,7 +29,7 @@ export default function SupplierSignIn() {
         setError(result.error);
       } else {
         // Redirect to supplier dashboard
-        window.location.href = '/';
+        window.location.href = '/supplier/dashboard';
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
