@@ -247,4 +247,31 @@ export const SUPPLIER_TRANSLATIONS = {
   confirm: 'تأكيد',
   errorOccurred: 'حدث خطأ. الرجاء المحاولة مرة أخرى',
   back: 'رجوع',
+
+  // Registration
+  registerNewSupplier: 'إنشاء حساب مورد جديد',
+  fullName: 'الاسم الكامل',
+  phoneNumber: 'رقم الهاتف',
+  businessName: 'اسم الشركة',
+  businessType: 'نوع النشاط التجاري',
+  taxId: 'الرقم الضريبي',
+  register: 'إنشاء حساب',
+  registering: 'جاري إنشاء الحساب...',
+  businessTypes: {
+    corporation: 'شركة مساهمة',
+    llc: 'شركة ذات مسؤولية محدودة',
+    partnership: 'شراكة',
+    soleProprietorship: 'مؤسسة فردية'
+  },
+  selectType: 'اختر النوع',
+  registrationSuccess: 'تم إنشاء الحساب بنجاح. سيتم تحويلك إلى صفحة تسجيل الدخول...',
+  registrationFailed: 'فشل إنشاء الحساب',
+  emailAlreadyExists: 'البريد الإلكتروني مسجل بالفعل',
+  invalidEmail: 'البريد الإلكتروني غير صالح',
+  passwordTooShort: 'يجب أن تكون كلمة المرور 6 أحرف على الأقل',
+  requiredField: 'هذا الحقل مطلوب',
+  phoneRequired: 'رقم الهاتف مطلوب',
+  businessNameRequired: 'اسم الشركة مطلوب',
+  businessTypeRequired: 'نوع النشاط التجاري مطلوب',
+  taxIdRequired: 'الرقم الضريبي مطلوب',
 }; 
