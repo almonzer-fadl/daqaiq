@@ -24,8 +24,8 @@ export async function POST(req) {
     await connectToDatabase();
 
     const user = await User.findOne({
-      resetToken: token,
-      resetTokenExpiry: { $gt: Date.now() }
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() }
     });
 
     if (!user) {
@@ -41,8 +41,8 @@ export async function POST(req) {
     // Update user password and remove reset token
     await User.findByIdAndUpdate(user._id, {
       password: hashedPassword,
-      resetToken: undefined,
-      resetTokenExpiry: undefined
+      resetPasswordToken: undefined,
+      resetPasswordExpires: undefined
     });
 
     return NextResponse.json(

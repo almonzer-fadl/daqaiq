@@ -32,8 +32,8 @@ export async function POST(req) {
 
     // Save reset token to user
     await User.findByIdAndUpdate(user._id, {
-      resetToken,
-      resetTokenExpiry
+      resetPasswordToken: resetToken,
+      resetPasswordExpires: resetTokenExpiry
     });
 
     // Send password reset email
