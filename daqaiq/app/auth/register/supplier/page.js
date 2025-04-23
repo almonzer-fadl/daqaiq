@@ -32,6 +32,28 @@ export default function SupplierRegister() {
     setLoading(true);
     setError('');
 
+    // Validate form data
+    if (!formData.name || !formData.email || !formData.password || !formData.businessName || !formData.businessType || !formData.taxId) {
+      setError('Please fill in all required fields');
+      setLoading(false);
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      setLoading(false);
+      return;
+    }
+
+    // Validate password length
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/auth/register/supplier', {
         method: 'POST',
@@ -53,7 +75,8 @@ export default function SupplierRegister() {
         router.push('/auth/signin/supplier');
       }, 3000);
     } catch (err) {
-      setError(err.message);
+      console.error('Registration error:', err);
+      setError(err.message || 'An error occurred during registration');
     } finally {
       setLoading(false);
     }

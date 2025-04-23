@@ -18,8 +18,11 @@ export async function POST(req) {
       phoneNumber,
     } = await req.json();
 
+    console.log('Registration attempt:', { name, email, businessName, businessType });
+
     // Validate input
     if (!name || !email || !password || !businessName || !businessType || !taxId) {
+      console.log('Missing required fields:', { name, email, businessName, businessType, taxId });
       return NextResponse.json(
         { error: 'Please provide all required fields' },
         { status: 400 }
@@ -43,7 +46,15 @@ export async function POST(req) {
       );
     }
 
-    await connectToDatabase();
+    try {
+      await connectToDatabase();
+    } catch (dbError) {
+      console.error('Database connection error:', dbError);
+      return NextResponse.json(
+        { error: 'Database connection error' },
+        { status: 500 }
+      );
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -69,46 +80,53 @@ export async function POST(req) {
     // Generate verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
 
-    // Create new user
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      role: 'supplier',
-      verificationToken,
-      isVerified: true,
-    });
+    try {
+      // Create new user
+      const user = await User.create({
+        name,
+        email,
+        password: hashedPassword,
+        role: 'supplier',
+        verificationToken,
+        isVerified: true,
+        phoneNumber,
+      });
 
-    // Create supplier profile
-    await Supplier.create({
-      userId: user._id,
-      companyName: businessName,
-      businessType: businessType,
-      taxId,
-      phone: phoneNumber,
-      status: 'pending', // Suppliers need admin approval
-      verificationStatus: 'unverified'
-    });
+      // Create supplier profile
+      await Supplier.create({
+        userId: user._id,
+        companyName: businessName,
+        businessType: businessType,
+        taxId,
+        phone: phoneNumber,
+        status: 'pending',
+        verificationStatus: 'unverified'
+      });
 
-    // Send verification email (but don't wait for it)
-    sendVerificationEmail(email, verificationToken).catch(console.error);
+      // Send verification email (but don't wait for it)
+      sendVerificationEmail(email, verificationToken).catch(console.error);
 
-    // Remove password from response
-    const userWithoutPassword = {
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-      storeName: user.storeName,
-      storeAddress: user.storeAddress,
-      isVerified: user.isVerified
-    };
+      // Remove password from response
+      const userWithoutPassword = {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        phone: user.phoneNumber,
+        role: user.role,
+        isVerified: user.isVerified
+      };
 
-    return NextResponse.json(
-      { message: 'Supplier registered successfully', user: userWithoutPassword },
-      { status: 201 }
-    );
+      return NextResponse.json(
+        { message: 'Supplier registered successfully', user: userWithoutPassword },
+        { status: 201 }
+      );
+    } catch (createError) {
+      console.error('Error creating user/supplier:', createError);
+      return NextResponse.json(
+        { error: 'Error creating user account' },
+        { status: 500 }
+      );
+    }
 
   } catch (error) {
     console.error('Registration Error:', error);
