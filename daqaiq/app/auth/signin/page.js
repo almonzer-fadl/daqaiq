@@ -66,9 +66,8 @@ export default function SignIn() {
             {t.signIn}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            {t.dontHaveAccount}{' '}
             <Link href="/auth/register/supplier" className="font-medium text-[#4F46E5] hover:text-[#4338CA]">
-              {t.registerNewSupplier}
+              {t.dontHaveAccount} {t.registerNewSupplier}
             </Link>
           </p>
         </div>
