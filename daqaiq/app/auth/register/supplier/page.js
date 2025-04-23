@@ -36,7 +36,7 @@ export default function SupplierRegister() {
 
     // Validate form data
     if (!formData.name || !formData.email || !formData.password || !formData.businessName || !formData.businessType || !formData.taxId) {
-      setError('Please fill in all required fields');
+      setError(t.requiredField);
       setLoading(false);
       return;
     }
@@ -44,14 +44,14 @@ export default function SupplierRegister() {
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      setError('Please enter a valid email address');
+      setError(t.invalidEmail);
       setLoading(false);
       return;
     }
 
     // Validate password length
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError(t.passwordTooShort);
       setLoading(false);
       return;
     }
@@ -71,13 +71,11 @@ export default function SupplierRegister() {
         throw new Error(data.error || t.registrationFailed);
       }
 
-      // Show success message and redirect after delay
       setSuccess(true);
       setTimeout(() => {
         router.push('/auth/signin/supplier');
       }, 3000);
     } catch (err) {
-      console.error('Registration error:', err);
       setError(err.message || t.registrationFailed);
     } finally {
       setLoading(false);
@@ -85,7 +83,7 @@ export default function SupplierRegister() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8" dir="rtl">
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center">
@@ -116,7 +114,7 @@ export default function SupplierRegister() {
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div className="ml-3">
+              <div className="mr-3">
                 <p className="text-sm text-green-700">
                   {t.registrationSuccess}
                 </p>
@@ -133,7 +131,7 @@ export default function SupplierRegister() {
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <div className="ml-3">
+                  <div className="mr-3">
                     <p className="text-sm text-red-700">{error}</p>
                   </div>
                 </div>
@@ -148,7 +146,7 @@ export default function SupplierRegister() {
                   name="name"
                   type="text"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
                   placeholder={t.name}
                   value={formData.name}
                   onChange={handleChange}
@@ -162,7 +160,7 @@ export default function SupplierRegister() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
                   placeholder={t.email}
                   value={formData.email}
                   onChange={handleChange}
@@ -176,7 +174,7 @@ export default function SupplierRegister() {
                   type="password"
                   autoComplete="new-password"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
                   placeholder={t.password}
                   value={formData.password}
                   onChange={handleChange}
@@ -189,7 +187,7 @@ export default function SupplierRegister() {
                   name="phoneNumber"
                   type="tel"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
                   placeholder={t.phoneNumber}
                   value={formData.phoneNumber}
                   onChange={handleChange}
@@ -202,7 +200,7 @@ export default function SupplierRegister() {
                   name="businessName"
                   type="text"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
                   placeholder={t.businessName}
                   value={formData.businessName}
                   onChange={handleChange}
@@ -214,7 +212,7 @@ export default function SupplierRegister() {
                   id="businessType"
                   name="businessType"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
                   value={formData.businessType}
                   onChange={handleChange}
                 >
@@ -232,7 +230,7 @@ export default function SupplierRegister() {
                   name="taxId"
                   type="text"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
                   placeholder={t.taxId}
                   value={formData.taxId}
                   onChange={handleChange}
