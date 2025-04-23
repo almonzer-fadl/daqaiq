@@ -10,9 +10,10 @@ export default function SupplierRegister() {
     name: '',
     email: '',
     password: '',
-    phone: '',
-    storeName: '',
-    storeAddress: '',
+    phoneNumber: '',
+    businessName: '',
+    businessType: '',
+    taxId: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -149,41 +150,58 @@ export default function SupplierRegister() {
                 />
               </div>
               <div>
-                <label htmlFor="phone" className="sr-only">Phone Number</label>
+                <label htmlFor="phoneNumber" className="sr-only">Phone Number</label>
                 <input
-                  id="phone"
-                  name="phone"
+                  id="phoneNumber"
+                  name="phoneNumber"
                   type="tel"
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder="Phone Number"
-                  value={formData.phone}
+                  value={formData.phoneNumber}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <label htmlFor="storeName" className="sr-only">Store Name</label>
+                <label htmlFor="businessName" className="sr-only">Business Name</label>
                 <input
-                  id="storeName"
-                  name="storeName"
+                  id="businessName"
+                  name="businessName"
                   type="text"
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Store Name"
-                  value={formData.storeName}
+                  placeholder="Business Name"
+                  value={formData.businessName}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <label htmlFor="storeAddress" className="sr-only">Store Address</label>
+                <label htmlFor="businessType" className="sr-only">Business Type</label>
+                <select
+                  id="businessType"
+                  name="businessType"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  value={formData.businessType}
+                  onChange={handleChange}
+                >
+                  <option value="">Select Business Type</option>
+                  <option value="retail">Retail</option>
+                  <option value="wholesale">Wholesale</option>
+                  <option value="manufacturer">Manufacturer</option>
+                  <option value="distributor">Distributor</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="taxId" className="sr-only">Tax ID</label>
                 <input
-                  id="storeAddress"
-                  name="storeAddress"
+                  id="taxId"
+                  name="taxId"
                   type="text"
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Store Address"
-                  value={formData.storeAddress}
+                  placeholder="Tax ID"
+                  value={formData.taxId}
                   onChange={handleChange}
                 />
               </div>
