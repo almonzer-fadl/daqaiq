@@ -82,6 +82,13 @@ export async function POST(req) {
 
     try {
       // Create new user
+      console.log('Attempting to create user with data:', {
+        name,
+        email,
+        role: 'supplier',
+        phoneNumber
+      });
+
       const user = await User.create({
         name,
         email,
@@ -92,8 +99,18 @@ export async function POST(req) {
         phoneNumber,
       });
 
+      console.log('User created successfully:', user._id);
+
       // Create supplier profile
-      await Supplier.create({
+      console.log('Attempting to create supplier profile with data:', {
+        userId: user._id,
+        companyName: businessName,
+        businessType,
+        taxId,
+        phone: phoneNumber
+      });
+
+      const supplier = await Supplier.create({
         userId: user._id,
         companyName: businessName,
         businessType: businessType,
@@ -102,6 +119,8 @@ export async function POST(req) {
         status: 'pending',
         verificationStatus: 'unverified'
       });
+
+      console.log('Supplier profile created successfully:', supplier._id);
 
       // Send verification email (but don't wait for it)
       sendVerificationEmail(email, verificationToken).catch(console.error);
@@ -121,9 +140,23 @@ export async function POST(req) {
         { status: 201 }
       );
     } catch (createError) {
-      console.error('Error creating user/supplier:', createError);
+      console.error('Detailed error creating user/supplier:', {
+        error: createError,
+        message: createError.message,
+        stack: createError.stack,
+        code: createError.code
+      });
+
+      // Check for specific MongoDB errors
+      if (createError.code === 11000) {
+        return NextResponse.json(
+          { error: 'A user with this email or tax ID already exists' },
+          { status: 400 }
+        );
+      }
+
       return NextResponse.json(
-        { error: 'Error creating user account' },
+        { error: `Error creating user account: ${createError.message}` },
         { status: 500 }
       );
     }
