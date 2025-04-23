@@ -116,6 +116,7 @@ export async function POST(req) {
         businessType: businessType,
         taxId,
         phone: phoneNumber,
+        email: email,
         status: 'pending',
         verificationStatus: 'unverified'
       });
