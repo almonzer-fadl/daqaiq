@@ -274,4 +274,18 @@ export const SUPPLIER_TRANSLATIONS = {
   businessNameRequired: 'اسم الشركة مطلوب',
   businessTypeRequired: 'نوع النشاط التجاري مطلوب',
   taxIdRequired: 'الرقم الضريبي مطلوب',
+
+  // Dashboard Metrics
+  inventoryValue: 'قيمة المخزون',
+  viewProducts: 'عرض المنتجات',
+  viewOrders: 'عرض الطلبات',
+  viewRevenue: 'عرض الإيرادات',
+  viewInventory: 'عرض المخزون',
+  currency: '﷼',
+  currencyCode: 'SAR',
+  currencyFormat: '{amount} ﷼',
+  noProducts: 'لا توجد منتجات',
+  noOrders: 'لا توجد طلبات',
+  noRevenue: 'لا توجد إيرادات',
+  noInventory: 'لا يوجد مخزون',
 }; 
