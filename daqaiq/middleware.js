@@ -37,7 +37,7 @@ function middleware(request) {
 
     // For supplier domain, redirect to supplier signin if not authenticated
     if (!token || token.role !== 'supplier') {
-      return NextResponse.redirect(new URL('/auth/signin/supplier', request.url));
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
 
     // Handle supplier routes
