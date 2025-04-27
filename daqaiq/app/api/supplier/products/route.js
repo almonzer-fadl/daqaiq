@@ -69,8 +69,9 @@ export async function POST(req) {
     // Connect to database
     await connectToDatabase();
 
-    // Create product
-    const product = await Product.create(productData);
+    // Create product using new instance and save
+    const product = new Product(productData);
+    await product.save();
 
     return NextResponse.json({
       message: 'Product created successfully',
