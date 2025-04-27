@@ -117,11 +117,13 @@ export default function ProductsPage() {
               />
             </div>
             <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{product.name}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <Link href={`/supplier/products/${product._id}`}>{product.name}</Link>
+              </h3>
               <p className="text-sm text-gray-500 mb-2">{product.description}</p>
               <div className="flex items-center justify-between">
                 <span className="text-lg font-bold text-gray-900" dir="ltr">
-                  ${product.price.toLocaleString('ar-SA')}
+                  ر.س{product.price.toLocaleString('ar-SA')}
                 </span>
                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                   product.status === 'active' ? 'bg-green-100 text-green-800' :
@@ -144,6 +146,12 @@ export default function ProductsPage() {
                   className="text-gray-600 hover:text-gray-800 text-sm font-medium"
                 >
                   {t.edit}
+                </Link>
+                <Link
+                  href={`/supplier/products/${product._id}`}
+                  className="text-blue-600 hover:text-blue-800 text-sm font-medium ml-2"
+                >
+                  {t.view || 'عرض'}
                 </Link>
               </div>
             </div>
