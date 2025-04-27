@@ -93,6 +93,7 @@ const productSchema = new mongoose.Schema({
 
 // Generate slug before saving
 productSchema.pre('save', function(next) {
+  console.log('PRE-SAVE HOOK:', { name: this.name, slug: this.slug });
   if (!this.isModified('name') && this.slug) {
     return next();
   }

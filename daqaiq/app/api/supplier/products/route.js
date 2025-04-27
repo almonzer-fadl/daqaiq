@@ -72,7 +72,7 @@ export async function POST(req) {
     try {
       // Create product using new instance and save
       const product = new Product(productData);
-      
+      console.log('PRODUCT DATA BEFORE SAVE:', product);
       // Validate the product before saving
       const validationError = product.validateSync();
       if (validationError) {
@@ -81,7 +81,6 @@ export async function POST(req) {
           { status: 400 }
         );
       }
-      
       await product.save();
 
       return NextResponse.json({
