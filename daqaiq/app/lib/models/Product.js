@@ -93,15 +93,15 @@ const productSchema = new mongoose.Schema({
 
 // Generate slug before saving
 productSchema.pre('save', function(next) {
-  if (!this.slug) {
-    this.slug = generateSlug(this.name);
+  if (!this.isModified('name') && this.slug) {
+    return next();
   }
-  this.updatedAt = new Date();
-  next();
-});
-
-// Update timestamps on save
-productSchema.pre('save', function(next) {
+  
+  if (!this.name) {
+    return next(new Error('Product name is required to generate slug'));
+  }
+  
+  this.slug = generateSlug(this.name);
   this.updatedAt = new Date();
   next();
 });

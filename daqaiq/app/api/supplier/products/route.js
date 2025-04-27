@@ -69,14 +69,32 @@ export async function POST(req) {
     // Connect to database
     await connectToDatabase();
 
-    // Create product using new instance and save
-    const product = new Product(productData);
-    await product.save();
+    try {
+      // Create product using new instance and save
+      const product = new Product(productData);
+      
+      // Validate the product before saving
+      const validationError = product.validateSync();
+      if (validationError) {
+        return NextResponse.json(
+          { error: validationError.message },
+          { status: 400 }
+        );
+      }
+      
+      await product.save();
 
-    return NextResponse.json({
-      message: 'Product created successfully',
-      product: product
-    }, { status: 201 });
+      return NextResponse.json({
+        message: 'Product created successfully',
+        product: product
+      }, { status: 201 });
+    } catch (error) {
+      console.error('Error creating product:', error);
+      return NextResponse.json(
+        { error: error.message || 'Failed to create product' },
+        { status: 500 }
+      );
+    }
 
   } catch (error) {
     console.error('Error creating product:', error);
