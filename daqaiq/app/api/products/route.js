@@ -1,20 +1,22 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
+import Product from '@/lib/models/Product';
+import mongoose from 'mongoose';
 
 export async function POST(request) {
   try {
-    const { db } = await connectToDatabase();
+    await connectToDatabase();
     const body = await request.json();
     
-    // Create new product
-    const result = await db.collection('products').insertOne(body);
-    const product = await db.collection('products').findOne({ _id: result.insertedId });
+    // Create new product using Mongoose model
+    const product = new Product(body);
+    await product.save();
     
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
     console.error('Error creating product:', error);
     return NextResponse.json(
-      { error: 'Failed to create product' },
+      { error: error.message || 'Failed to create product' },
       { status: 500 }
     );
   }
