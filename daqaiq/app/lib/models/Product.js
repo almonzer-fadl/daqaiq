@@ -1,10 +1,16 @@
 import mongoose from 'mongoose';
+import { generateSlug } from '../utils/slug';
 
 const productSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
     trim: true
+  },
+  slug: {
+    type: String,
+    required: true,
+    unique: true
   },
   description: {
     type: String,
@@ -85,6 +91,15 @@ const productSchema = new mongoose.Schema({
   }
 });
 
+// Generate slug before saving
+productSchema.pre('save', function(next) {
+  if (!this.slug) {
+    this.slug = generateSlug(this.name);
+  }
+  this.updatedAt = new Date();
+  next();
+});
+
 // Update timestamps on save
 productSchema.pre('save', function(next) {
   this.updatedAt = new Date();
@@ -131,6 +146,7 @@ productSchema.index({ name: 'text', description: 'text' });
 productSchema.index({ category: 1 });
 productSchema.index({ supplier: 1 });
 productSchema.index({ status: 1 });
+productSchema.index({ slug: 1 }, { unique: true });
 
 // Don't create the model if it already exists
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
