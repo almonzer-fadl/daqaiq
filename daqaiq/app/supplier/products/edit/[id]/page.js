@@ -65,11 +65,14 @@ export default function EditProduct() {
     return <div className="flex justify-center items-center min-h-screen">Product not found</div>;
   }
 
+  // Map stock to quantity for the form
+  const initialData = { ...product, quantity: product.quantity ?? product.stock ?? 0 };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Edit Product</h1>
       <ProductForm 
-        initialData={product}
+        initialData={initialData}
         onSubmit={handleSubmit}
         submitButtonText="Update Product"
       />
