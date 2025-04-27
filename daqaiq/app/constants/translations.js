@@ -28,6 +28,14 @@ export const SUPPLIER_TRANSLATIONS = {
   customer: 'العميل',
   date: 'التاريخ',
   actions: 'الإجراءات',
+  activeOrders: 'الطلبات النشطة',
+  monthlyRevenue: 'الإيرادات الشهرية',
+  inventoryValue: 'قيمة المخزون',
+  viewDetails: 'عرض التفاصيل',
+  completed: 'مكتمل',
+  pending: 'قيد الانتظار',
+  processing: 'قيد المعالجة',
+  cancelled: 'ملغي',
 
   // Products
   addNewProduct: 'إضافة منتج جديد',
@@ -58,18 +66,12 @@ export const SUPPLIER_TRANSLATIONS = {
   shippingAddress: 'عنوان التوصيل',
   paymentMethod: 'طريقة الدفع',
   all: 'جميع الطلبات',
-  pending: 'قيد الانتظار',
-  processing: 'قيد المعالجة',
-  shipped: 'تم الشحن',
-  delivered: 'تم التوصيل',
-  cancelled: 'ملغي',
   createTestOrder: 'إنشاء طلب تجريبي',
   loadMore: 'تحميل المزيد',
   total: 'المجموع',
 
   // Analytics
   salesOverview: 'ملخص المبيعات',
-  monthlyRevenue: 'الإيرادات الشهرية',
   topProducts: 'المنتجات الأكثر مبيعاً',
   salesByCategory: 'المبيعات حسب التصنيف',
   weeklySales: 'المبيعات الأسبوعية',
@@ -276,7 +278,6 @@ export const SUPPLIER_TRANSLATIONS = {
   taxIdRequired: 'الرقم الضريبي مطلوب',
 
   // Dashboard Metrics
-  inventoryValue: 'قيمة المخزون',
   viewProducts: 'عرض المنتجات',
   viewOrders: 'عرض الطلبات',
   viewRevenue: 'عرض الإيرادات',
