@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '../../../lib/mongodb';
 import Product from '../../../lib/models/Product';
 import { authOptions } from '../../auth/[...nextauth]/route';
+import { generateSlug } from '../../../lib/utils/slug';
 
 export async function POST(req) {
   try {
@@ -69,18 +70,15 @@ export async function POST(req) {
     // Connect to database
     await connectToDatabase();
 
+    // Fallback: generate slug if missing
+    if (!productData.slug && productData.name) {
+      productData.slug = generateSlug(productData.name);
+    }
+
     try {
       // Create product using new instance and save
       const product = new Product(productData);
       console.log('PRODUCT DATA BEFORE SAVE:', product);
-      // Validate the product before saving
-      const validationError = product.validateSync();
-      if (validationError) {
-        return NextResponse.json(
-          { error: validationError.message },
-          { status: 400 }
-        );
-      }
       await product.save();
 
       return NextResponse.json({
@@ -91,7 +89,7 @@ export async function POST(req) {
       console.error('Error creating product:', error);
       return NextResponse.json(
         { error: error.message || 'Failed to create product' },
-        { status: 500 }
+        { status: 400 }
       );
     }
 

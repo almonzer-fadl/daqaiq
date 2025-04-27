@@ -98,3 +98,14 @@ html {
 }
 
 /* Add any global styles here */
+
+/* Add this to the bottom of the file for input color fix */
+input, select, textarea {
+  background-color: #fff !important;
+  color: #222 !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #888 !important;
+  opacity: 1;
+}
