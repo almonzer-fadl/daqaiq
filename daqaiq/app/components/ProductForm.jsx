@@ -27,6 +27,14 @@ export default function ProductForm({ initialData, onSubmit, submitButtonText = 
   const [existingImages, setExistingImages] = useState(initialData?.images || []);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Ensure quantity is always set from initialData (stock fallback)
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      quantity: initialData.quantity ?? initialData.stock ?? '',
+    }));
+  }, [initialData]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -270,7 +278,7 @@ export default function ProductForm({ initialData, onSubmit, submitButtonText = 
             <input
               type="number"
               name="quantity"
-              value={formData.quantity}
+              value={formData.quantity === undefined || formData.quantity === null ? '' : formData.quantity}
               onChange={handleChange}
               min="0"
               step="1"
