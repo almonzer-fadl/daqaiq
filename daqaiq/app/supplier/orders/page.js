@@ -146,7 +146,7 @@ export default function SupplierOrders() {
               placeholder={t.search}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm bg-white"
             />
           </div>
           <select
@@ -193,11 +193,11 @@ export default function SupplierOrders() {
                         onChange={(e) => handleStatusChange(order._id, e.target.value)}
                         className="text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                       >
-                        <option value="pending">{t.pending}</option>
-                        <option value="processing">{t.processing}</option>
-                        <option value="shipped">{t.shipped}</option>
-                        <option value="delivered">{t.delivered}</option>
-                        <option value="cancelled">{t.cancelled}</option>
+                        <option value="pending">{t.pending || 'قيد الانتظار'}</option>
+                        <option value="processing">{t.processing || 'قيد المعالجة'}</option>
+                        <option value="shipped">{t.shipped || 'تم الشحن'}</option>
+                        <option value="delivered">{t.delivered || 'تم التوصيل'}</option>
+                        <option value="cancelled">{t.cancelled || 'ملغي'}</option>
                       </select>
                     </div>
                   </div>

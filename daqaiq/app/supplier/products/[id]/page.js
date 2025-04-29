@@ -16,7 +16,7 @@ export default function ProductDetailsPage() {
         setLoading(true);
         const res = await fetch(`/api/supplier/products/${id}`);
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to fetch product');
+        if (!res.ok) throw new Error(data.error || 'فشل في جلب بيانات المنتج');
         setProduct(data.product);
       } catch (err) {
         setError(err.message);
@@ -27,9 +27,9 @@ export default function ProductDetailsPage() {
     if (id) fetchProduct();
   }, [id]);
 
-  if (loading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  if (loading) return <div className="flex justify-center items-center min-h-screen">جاري التحميل...</div>;
   if (error) return <div className="flex justify-center items-center min-h-screen text-red-600">{error}</div>;
-  if (!product) return <div className="flex justify-center items-center min-h-screen">Product not found</div>;
+  if (!product) return <div className="flex justify-center items-center min-h-screen">المنتج غير موجود</div>;
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
@@ -40,7 +40,7 @@ export default function ProductDetailsPage() {
       </div>
       <div className="mb-4">
         <span className="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-          {product.status}
+          {product.status === 'active' ? 'نشط' : 'غير نشط'}
         </span>
       </div>
       <div className="mb-6">
