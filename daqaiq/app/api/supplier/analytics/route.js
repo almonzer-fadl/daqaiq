@@ -7,16 +7,19 @@ import { authOptions } from '../../auth/[...nextauth]/route';
 
 export async function GET(request) {
   try {
+    console.log('Analytics API called');
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'supplier') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     await connectToDatabase();
+    console.log('Connected to database');
 
     // Get query parameters for date range
     const { searchParams } = new URL(request.url);
-    const period = searchParams.get('period') || '30d'; // Default to last 30 days
+    const period = searchParams.get('period') || '30d';
+    console.log('Period:', period);
 
     // Calculate date range
     const endDate = new Date();
@@ -37,6 +40,7 @@ export async function GET(request) {
       default:
         startDate.setDate(startDate.getDate() - 30);
     }
+    console.log('Date range:', { startDate, endDate });
 
     // Get inventory metrics
     const inventoryMetrics = await Product.aggregate([
@@ -65,6 +69,7 @@ export async function GET(request) {
     ]);
 
     // Get order metrics
+    console.log('Fetching order metrics...');
     const orderMetrics = await Order.aggregate([
       {
         $match: {
@@ -76,30 +81,16 @@ export async function GET(request) {
         $group: {
           _id: null,
           totalOrders: { $sum: 1 },
-          totalRevenue: {
-            $sum: {
-              $reduce: {
-                input: '$items',
-                initialValue: 0,
-                in: { $add: ['$$value', { $multiply: ['$$this.price', '$$this.quantity'] }] }
-              }
-            }
-          },
-          averageOrderValue: {
-            $avg: {
-              $reduce: {
-                input: '$items',
-                initialValue: 0,
-                in: { $add: ['$$value', { $multiply: ['$$this.price', '$$this.quantity'] }] }
-              }
-            }
-          }
+          totalRevenue: { $sum: '$total' },
+          averageOrderValue: { $avg: '$total' }
         }
       }
     ]);
+    console.log('Order metrics:', orderMetrics);
 
-    // Get daily orders and revenue
-    const dailyMetrics = await Order.aggregate([
+    // Get daily sales
+    console.log('Fetching daily sales...');
+    const dailySales = await Order.aggregate([
       {
         $match: {
           supplier: session.user.id,
@@ -109,22 +100,15 @@ export async function GET(request) {
       {
         $group: {
           _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          orders: { $sum: 1 },
-          revenue: {
-            $sum: {
-              $reduce: {
-                input: '$items',
-                initialValue: 0,
-                in: { $add: ['$$value', { $multiply: ['$$this.price', '$$this.quantity'] }] }
-              }
-            }
-          }
+          amount: { $sum: '$total' }
         }
       },
       { $sort: { '_id': 1 } }
     ]);
+    console.log('Daily sales:', dailySales);
 
-    // Get top selling products
+    // Get top products
+    console.log('Fetching top products...');
     const topProducts = await Order.aggregate([
       {
         $match: {
@@ -136,11 +120,11 @@ export async function GET(request) {
       {
         $group: {
           _id: '$items.product',
-          totalQuantity: { $sum: '$items.quantity' },
-          totalRevenue: { $sum: { $multiply: ['$items.price', '$items.quantity'] } }
+          totalSales: { $sum: '$items.quantity' },
+          revenue: { $sum: { $multiply: ['$items.price', '$items.quantity'] } }
         }
       },
-      { $sort: { totalQuantity: -1 } },
+      { $sort: { totalSales: -1 } },
       { $limit: 5 },
       {
         $lookup: {
@@ -154,13 +138,49 @@ export async function GET(request) {
       {
         $project: {
           name: '$product.name',
-          totalQuantity: 1,
-          totalRevenue: 1
+          totalSales: 1,
+          revenue: 1
         }
       }
     ]);
+    console.log('Top products:', topProducts);
 
-    return NextResponse.json({
+    // Get sales by category
+    console.log('Fetching sales by category...');
+    const salesByCategory = await Order.aggregate([
+      {
+        $match: {
+          supplier: session.user.id,
+          createdAt: { $gte: startDate, $lte: endDate }
+        }
+      },
+      { $unwind: '$items' },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'items.product',
+          foreignField: '_id',
+          as: 'product'
+        }
+      },
+      { $unwind: '$product' },
+      {
+        $group: {
+          _id: '$product.category',
+          revenue: { $sum: { $multiply: ['$items.price', '$items.quantity'] } }
+        }
+      },
+      {
+        $project: {
+          name: '$_id',
+          revenue: 1,
+          _id: 0
+        }
+      }
+    ]);
+    console.log('Sales by category:', salesByCategory);
+
+    const response = {
       salesOverview: {
         totalSales: orderMetrics[0]?.totalRevenue || 0,
         monthlyRevenue: orderMetrics[0]?.totalRevenue || 0,
@@ -169,18 +189,25 @@ export async function GET(request) {
       },
       topProducts: topProducts.map(product => ({
         name: product.name,
-        totalSales: product.totalQuantity,
-        revenue: product.totalRevenue
+        totalSales: product.totalSales,
+        revenue: product.revenue
       })),
-      salesByCategory: [], // TODO: Implement category-based sales
-      recentSales: dailyMetrics.map(metric => ({
-        date: metric._id,
-        amount: metric.revenue
+      salesByCategory: salesByCategory.map(category => ({
+        name: category.name,
+        revenue: category.revenue,
+        percentage: (category.revenue / (orderMetrics[0]?.totalRevenue || 1)) * 100
+      })),
+      recentSales: dailySales.map(sale => ({
+        date: sale._id,
+        amount: sale.amount
       }))
-    });
+    };
+
+    console.log('Final response:', response);
+    return NextResponse.json(response);
 
   } catch (error) {
-    console.error('Error fetching analytics:', error);
+    console.error('Error in analytics API:', error);
     return NextResponse.json(
       { error: 'Failed to fetch analytics' },
       { status: 500 }

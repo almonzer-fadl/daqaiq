@@ -37,12 +37,14 @@ export default function SupplierAnalytics() {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
+      console.log('Fetching analytics...');
       const response = await fetch(`/api/supplier/analytics?period=${period}`);
       if (!response.ok) throw new Error(t.errorOccurred);
       const data = await response.json();
+      console.log('Analytics data received:', data);
       
       // Merge the received data with default values to ensure all properties exist
-      setAnalytics({
+      const formattedData = {
         salesOverview: {
           totalSales: data.salesOverview?.totalSales || 0,
           monthlyRevenue: data.salesOverview?.monthlyRevenue || 0,
@@ -63,10 +65,12 @@ export default function SupplierAnalytics() {
           date: sale.date || new Date(),
           amount: sale.amount || 0
         })) : []
-      });
+      };
+      console.log('Formatted analytics data:', formattedData);
+      setAnalytics(formattedData);
     } catch (error) {
-      toast.error(t.errorOccurred);
       console.error('Error fetching analytics:', error);
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
