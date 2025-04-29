@@ -173,7 +173,7 @@ export default function InventoryManagement() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">{t.inventory}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t.inventory || 'إدارة المخزون'}</h1>
         <div className="mt-4 md:mt-0 flex flex-col md:flex-row gap-4">
           <select
             value={filter}
@@ -183,9 +183,9 @@ export default function InventoryManagement() {
             }}
             className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="all">{t.all}</option>
-            <option value="low_stock">{t.lowStock}</option>
-            <option value="out_of_stock">{t.outOfStock}</option>
+            <option value="all">{t.all || 'الكل'}</option>
+            <option value="low_stock">{t.lowStock || 'مخزون منخفض'}</option>
+            <option value="out_of_stock">{t.outOfStock || 'نفذ المخزون'}</option>
           </select>
         </div>
       </div>
@@ -198,54 +198,67 @@ export default function InventoryManagement() {
       {/* Bulk Update Section */}
       {selectedProducts.length > 0 && (
         <div className="bg-white p-4 rounded-lg shadow mb-6">
-          <h2 className="text-lg font-semibold mb-4">{t.bulkUpdateSelectedProducts}</h2>
-          <div className="flex flex-wrap gap-4">
+          <h2 className="text-lg font-semibold mb-4">{t.bulkUpdate || 'تحديث جماعي'}</h2>
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <input
+                type="number"
+                value={stockAdjustment.quantity}
+                onChange={(e) => setStockAdjustment(prev => ({ ...prev, quantity: e.target.value }))}
+                placeholder={t.enterQuantity || 'أدخل الكمية'}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
             <select
               value={stockAdjustment.type}
               onChange={(e) => setStockAdjustment(prev => ({ ...prev, type: e.target.value }))}
-              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="increase">{t.addStock}</option>
-              <option value="decrease">{t.removeStock}</option>
+              <option value="increase">{t.increase || 'زيادة'}</option>
+              <option value="decrease">{t.decrease || 'نقصان'}</option>
+              <option value="set">{t.set || 'تعيين'}</option>
             </select>
-            <input
-              type="number"
-              value={stockAdjustment.quantity}
-              onChange={(e) => setStockAdjustment(prev => ({ ...prev, quantity: e.target.value }))}
-              placeholder={t.enterQuantity}
-              className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
             <button
               onClick={handleBulkUpdate}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              {t.updateSelected} ({selectedProducts.length})
+              {t.update || 'تحديث'}
             </button>
           </div>
         </div>
       )}
 
-      {/* Products Table */}
-      <div className="overflow-x-auto">
+      {/* Inventory Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 <input
                   type="checkbox"
                   checked={selectedProducts.length === products.length}
                   onChange={handleSelectAll}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t.productName}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t.description}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t.price}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t.category}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t.currentStock}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t.minimumStock}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t.status}</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t.actions}</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {t.product || 'المنتج'}
+              </th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {t.sku || 'رمز المنتج'}
+              </th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {t.stock || 'المخزون'}
+              </th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {t.lowStockThreshold || 'حد المخزون المنخفض'}
+              </th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {t.status || 'الحالة'}
+              </th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {t.actions || 'الإجراءات'}
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -256,98 +269,80 @@ export default function InventoryManagement() {
                     type="checkbox"
                     checked={selectedProducts.includes(product._id)}
                     onChange={() => handleProductSelect(product._id)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                 </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    {product.image && (
+                      <div className="flex-shrink-0 h-10 w-10 relative">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="h-10 w-10 rounded-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="mr-4">
+                      <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                      <div className="text-sm text-gray-500">{product.category}</div>
+                    </div>
+                  </div>
                 </td>
-                <td className="px-6 py-4">
-                  <textarea
-                    defaultValue={product.description}
-                    className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows="2"
-                  />
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {product.sku || '-'}
                 </td>
-                <td className="px-6 py-4">
-                  <input
-                    type="number"
-                    defaultValue={product.price}
-                    className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {product.quantity}
                 </td>
-                <td className="px-6 py-4">
-                  <select
-                    defaultValue={product.category}
-                    className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="electronics">{t.electronics}</option>
-                    <option value="clothing">{t.clothing}</option>
-                    <option value="home">{t.home}</option>
-                    <option value="books">{t.books}</option>
-                    <option value="toys">{t.toys}</option>
-                  </select>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {product.lowStockThreshold}
                 </td>
-                <td className="px-6 py-4">
-                  <input
-                    type="number"
-                    defaultValue={product.quantity}
-                    className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </td>
-                <td className="px-6 py-4">
-                  <input
-                    type="number"
-                    defaultValue={product.lowStockThreshold}
-                    className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStockStatusColor(product)}`}>
-                    {product.quantity <= 0 ? t.outOfStock : 
-                     product.quantity <= product.lowStockThreshold ? t.lowStock : t.inStock}
+                    {product.quantity <= 0 ? (t.outOfStock || 'نفذ المخزون') :
+                     product.quantity <= product.lowStockThreshold ? (t.lowStock || 'مخزون منخفض') :
+                     (t.inStock || 'متوفر')}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {editingProduct === product._id ? (
-                    <div className="flex items-center space-x-4">
-                      <select
-                        value={stockAdjustment.type}
-                        onChange={(e) => setStockAdjustment(prev => ({ ...prev, type: e.target.value }))}
-                        className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="increase">{t.addStock}</option>
-                        <option value="decrease">{t.removeStock}</option>
-                      </select>
+                    <div className="flex items-center gap-2">
                       <input
                         type="number"
                         value={stockAdjustment.quantity}
                         onChange={(e) => setStockAdjustment(prev => ({ ...prev, quantity: e.target.value }))}
-                        placeholder={t.enterQuantity}
-                        className="border border-gray-300 rounded-md px-2 py-1 w-20 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder={t.enterQuantity || 'أدخل الكمية'}
+                        className="w-20 px-2 py-1 border border-gray-300 rounded-md"
                       />
+                      <select
+                        value={stockAdjustment.type}
+                        onChange={(e) => setStockAdjustment(prev => ({ ...prev, type: e.target.value }))}
+                        className="px-2 py-1 border border-gray-300 rounded-md"
+                      >
+                        <option value="increase">{t.increase || 'زيادة'}</option>
+                        <option value="decrease">{t.decrease || 'نقصان'}</option>
+                        <option value="set">{t.set || 'تعيين'}</option>
+                      </select>
                       <button
                         onClick={() => handleStockUpdate(product._id)}
-                        className="text-green-600 hover:text-green-900 text-sm font-medium"
+                        className="text-blue-600 hover:text-blue-900"
                       >
-                        {t.save}
+                        {t.save || 'حفظ'}
                       </button>
                       <button
-                        onClick={() => {
-                          setEditingProduct(null);
-                          setStockAdjustment({ quantity: '', type: 'increase' });
-                        }}
-                        className="text-red-600 hover:text-red-900 text-sm font-medium"
+                        onClick={() => setEditingProduct(null)}
+                        className="text-gray-600 hover:text-gray-900"
                       >
-                        {t.cancel}
+                        {t.cancel || 'إلغاء'}
                       </button>
                     </div>
                   ) : (
                     <button
                       onClick={() => setEditingProduct(product._id)}
-                      className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                      className="text-blue-600 hover:text-blue-900"
                     >
-                      {t.updateStock}
+                      {t.edit || 'تعديل'}
                     </button>
                   )}
                 </td>
@@ -357,20 +352,15 @@ export default function InventoryManagement() {
         </table>
       </div>
 
+      {/* Load More Button */}
       {hasMore && (
-        <div className="mt-4 flex justify-center">
+        <div className="mt-4 text-center">
           <button
             onClick={() => setPage(prev => prev + 1)}
-            className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
           >
-            {t.loadMore}
+            {t.loadMore || 'تحميل المزيد'}
           </button>
-        </div>
-      )}
-
-      {products.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">{t.noData}</p>
         </div>
       )}
     </div>

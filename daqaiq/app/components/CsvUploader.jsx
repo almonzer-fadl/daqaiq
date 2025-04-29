@@ -118,11 +118,11 @@ export default function CsvUploader({ onUploadComplete }) {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-lg font-semibold mb-4">Bulk Upload via CSV/XLSX</h2>
+      <h2 className="text-lg font-semibold mb-4">رفع جماعي عبر CSV/XLSX</h2>
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Upload CSV or XLSX File
+            رفع ملف CSV أو XLSX
           </label>
           <input
             type="file"
@@ -136,15 +136,15 @@ export default function CsvUploader({ onUploadComplete }) {
               hover:file:bg-blue-100"
           />
           <div className="mt-1 text-sm text-gray-500">
-            <p>For new products, include: name, description, price, category, stock</p>
-            <p>For inventory updates, include: name, quantity, type</p>
+            <p>للمنتجات الجديدة، يجب تضمين: الاسم، الوصف، السعر، الفئة، المخزون</p>
+            <p>لتحديث المخزون، يجب تضمين: الاسم، الكمية، النوع</p>
           </div>
         </div>
 
         {preview && (
           <div>
             <h3 className="font-medium text-gray-900 mb-2">
-              Preview ({preview.data.length} items) - {preview.type === 'new_products' ? 'New Products' : 'Inventory Update'}
+              معاينة ({preview.data.length} عنصر) - {preview.type === 'new_products' ? 'منتجات جديدة' : 'تحديث المخزون'}
             </h3>
             <div className="bg-gray-50 p-4 rounded-md">
               <div className="overflow-x-auto">
@@ -154,7 +154,7 @@ export default function CsvUploader({ onUploadComplete }) {
                       {Object.keys(preview.data[0]).map((header) => (
                         <th
                           key={header}
-                          className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
                           {header}
                         </th>
@@ -187,7 +187,7 @@ export default function CsvUploader({ onUploadComplete }) {
                   uploading ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
-                {uploading ? 'Processing...' : 'Process File'}
+                {uploading ? 'جاري المعالجة...' : 'معالجة الملف'}
               </button>
             </div>
           </div>
