@@ -7,8 +7,9 @@ function middleware(request) {
   const hostname = request.headers.get('host');
   const token = request.nextauth?.token;
 
-  // Check if it's the supplier subdomain
+  // Check if it's the supplier or admin subdomain
   const isSupplierDomain = hostname.startsWith('supplier.');
+  const isAdminDomain = hostname.startsWith('admin.');
 
   // Public routes - accessible to everyone
   const publicRoutes = [
@@ -27,6 +28,36 @@ function middleware(request) {
     '/cart',
     '/wishlist',
   ];
+
+  // Handle admin subdomain routing
+  if (isAdminDomain) {
+    // For admin auth pages, allow access
+    if (url.pathname.startsWith('/auth')) {
+      return NextResponse.next();
+    }
+
+    // For admin domain, redirect to admin signin if not authenticated
+    if (!token || token.role !== 'admin') {
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    }
+
+    // Handle admin routes
+    if (url.pathname === '/') {
+      return NextResponse.rewrite(new URL('/admin', request.url));
+    }
+
+    // Remove /admin from the path if it exists
+    if (url.pathname.startsWith('/admin')) {
+      url.pathname = url.pathname.replace('/admin', '');
+    }
+
+    // Ensure all internal paths are prefixed with /admin
+    if (!url.pathname.startsWith('/admin') && url.pathname !== '/') {
+      url.pathname = `/admin${url.pathname}`;
+    }
+
+    return NextResponse.rewrite(url);
+  }
 
   // Handle supplier subdomain routing
   if (isSupplierDomain) {
@@ -79,6 +110,11 @@ function middleware(request) {
   // Redirect supplier routes on main domain to supplier subdomain
   if (url.pathname.startsWith('/supplier')) {
     return NextResponse.redirect(new URL(url.pathname.replace('/supplier', ''), `https://supplier.${hostname}`));
+  }
+
+  // Redirect admin routes on main domain to admin subdomain
+  if (url.pathname.startsWith('/admin')) {
+    return NextResponse.redirect(new URL(url.pathname.replace('/admin', ''), `https://admin.${hostname}`));
   }
 
   // Handle protected customer routes
