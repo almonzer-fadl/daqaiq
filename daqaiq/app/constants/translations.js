@@ -35,6 +35,8 @@ export const SUPPLIER_TRANSLATIONS = {
   completed: 'مكتمل',
   pending: 'قيد الانتظار',
   processing: 'قيد المعالجة',
+  delivered: 'تم التوصيل',
+  shipped: 'تم الشحن',
   cancelled: 'ملغي',
 
   // Products
