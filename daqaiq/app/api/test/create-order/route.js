@@ -3,6 +3,8 @@ import { connectToDatabase } from '../../../lib/mongodb';
 import Order from '../../../lib/models/Order';
 import User from '../../../lib/models/User';
 import Product from '../../../lib/models/Product';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../auth/[...nextauth]/route';
 
 export async function POST() {
   try {
@@ -10,23 +12,30 @@ export async function POST() {
     await connectToDatabase();
     console.log('Connected to database successfully');
 
-    // Find a supplier and a customer
-    console.log('Finding supplier and customer...');
-    const supplier = await User.findOne({ role: 'supplier' });
+    // Get the current supplier from the session
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== 'supplier') {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Find a customer
+    console.log('Finding customer...');
     const customer = await User.findOne({ role: 'customer' });
-    console.log('Supplier found:', !!supplier);
     console.log('Customer found:', !!customer);
 
-    if (!supplier || !customer) {
+    if (!customer) {
       return NextResponse.json(
-        { error: 'Supplier or customer not found' },
+        { error: 'Customer not found' },
         { status: 404 }
       );
     }
 
     // Find a product from this supplier
     console.log('Finding product for supplier...');
-    const product = await Product.findOne({ supplier: supplier._id });
+    const product = await Product.findOne({ supplier: session.user.id });
     console.log('Product found:', !!product);
 
     if (!product) {
@@ -41,7 +50,7 @@ export async function POST() {
     const testOrder = new Order({
       orderNumber: 'TEST-' + Date.now(),
       customer: customer._id,
-      supplier: supplier._id,
+      supplier: session.user.id,
       items: [
         {
           product: product._id,

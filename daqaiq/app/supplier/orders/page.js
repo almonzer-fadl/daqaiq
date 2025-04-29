@@ -57,8 +57,9 @@ export default function SupplierOrders() {
       }
 
       toast.success('Test order created successfully');
-      // Refresh the orders list
+      // Reset the page and fetch orders
       setPage(1);
+      setOrders([]); // Clear existing orders
       await fetchOrders();
     } catch (error) {
       console.error('Error creating test order:', error);
