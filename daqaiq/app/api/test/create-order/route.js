@@ -72,7 +72,8 @@ export async function POST() {
       subtotal: product.price * 2,
       shippingCost: 10,
       tax: (product.price * 2) * 0.15,
-      total: (product.price * 2) + 10 + ((product.price * 2) * 0.15)
+      total: (product.price * 2) + 10 + ((product.price * 2) * 0.15),
+      currency: 'SAR'
     });
 
     console.log('Saving test order...');

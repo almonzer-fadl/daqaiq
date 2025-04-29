@@ -73,9 +73,9 @@ export default function SupplierAnalytics() {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('ar-SA', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'SAR',
     }).format(amount);
   };
 
@@ -108,19 +108,19 @@ export default function SupplierAnalytics() {
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-sm font-medium text-gray-500">{t.totalSales}</h3>
           <p className="mt-2 text-3xl font-semibold text-gray-900" dir="ltr">
-            ${(analytics?.salesOverview?.totalSales || 0).toLocaleString('ar-SA')}
+            ر.س{(analytics?.salesOverview?.totalSales || 0).toLocaleString('ar-SA')}
           </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-sm font-medium text-gray-500">{t.monthlyRevenue}</h3>
           <p className="mt-2 text-3xl font-semibold text-gray-900" dir="ltr">
-            ${(analytics?.salesOverview?.monthlyRevenue || 0).toLocaleString('ar-SA')}
+            ر.س{(analytics?.salesOverview?.monthlyRevenue || 0).toLocaleString('ar-SA')}
           </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-sm font-medium text-gray-500">{t.averageOrderValue}</h3>
           <p className="mt-2 text-3xl font-semibold text-gray-900" dir="ltr">
-            ${(analytics?.salesOverview?.averageOrderValue || 0).toLocaleString('ar-SA')}
+            ر.س{(analytics?.salesOverview?.averageOrderValue || 0).toLocaleString('ar-SA')}
           </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">

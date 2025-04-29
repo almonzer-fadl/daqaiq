@@ -161,19 +161,22 @@ export async function GET(request) {
     ]);
 
     return NextResponse.json({
-      inventory: inventoryMetrics[0] || {
-        totalProducts: 0,
-        totalStock: 0,
-        lowStockProducts: 0,
-        outOfStockProducts: 0
+      salesOverview: {
+        totalSales: orderMetrics[0]?.totalRevenue || 0,
+        monthlyRevenue: orderMetrics[0]?.totalRevenue || 0,
+        averageOrderValue: orderMetrics[0]?.averageOrderValue || 0,
+        totalOrders: orderMetrics[0]?.totalOrders || 0
       },
-      orders: orderMetrics[0] || {
-        totalOrders: 0,
-        totalRevenue: 0,
-        averageOrderValue: 0
-      },
-      dailyMetrics,
-      topProducts
+      topProducts: topProducts.map(product => ({
+        name: product.name,
+        totalSales: product.totalQuantity,
+        revenue: product.totalRevenue
+      })),
+      salesByCategory: [], // TODO: Implement category-based sales
+      recentSales: dailyMetrics.map(metric => ({
+        date: metric._id,
+        amount: metric.revenue
+      }))
     });
 
   } catch (error) {
