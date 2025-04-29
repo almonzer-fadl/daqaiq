@@ -29,10 +29,12 @@ export default function InventoryManagement() {
 
   const fetchInventory = async () => {
     try {
+      console.log('Fetching inventory...');
       const response = await fetch(
         `/api/supplier/inventory?stockStatus=${filter}&page=${page}`
       );
       const data = await response.json();
+      console.log('Inventory data received:', data);
 
       if (!response.ok) {
         throw new Error(t.errorOccurred);
@@ -55,7 +57,7 @@ export default function InventoryManagement() {
   const handleStockUpdate = async (productId) => {
     try {
       if (!stockAdjustment.quantity) {
-        toast.error(t.enterQuantity);
+        toast.error(t.enterQuantity || 'الرجاء إدخال الكمية');
         return;
       }
 
@@ -76,7 +78,7 @@ export default function InventoryManagement() {
         throw new Error(data.message || t.errorOccurred);
       }
 
-      toast.success(t.stockUpdated);
+      toast.success(t.stockUpdated || 'تم تحديث المخزون بنجاح');
       setEditingProduct(null);
       setStockAdjustment({ quantity: '', type: 'increase' });
       fetchInventory();
@@ -147,8 +149,8 @@ export default function InventoryManagement() {
   };
 
   const getStockStatusColor = (product) => {
-    if (product.quantity <= 0) return 'bg-red-100 text-red-800';
-    if (product.quantity <= product.lowStockThreshold) return 'bg-yellow-100 text-yellow-800';
+    if (product.stock <= 0) return 'bg-red-100 text-red-800';
+    if (product.stock <= product.lowStockThreshold) return 'bg-yellow-100 text-yellow-800';
     return 'bg-green-100 text-green-800';
   };
 
@@ -293,15 +295,15 @@ export default function InventoryManagement() {
                   {product.sku || '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {product.quantity}
+                  {product.stock}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {product.lowStockThreshold}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStockStatusColor(product)}`}>
-                    {product.quantity <= 0 ? (t.outOfStock || 'نفذ المخزون') :
-                     product.quantity <= product.lowStockThreshold ? (t.lowStock || 'مخزون منخفض') :
+                    {product.stock <= 0 ? (t.outOfStock || 'نفذ المخزون') :
+                     product.stock <= product.lowStockThreshold ? (t.lowStock || 'مخزون منخفض') :
                      (t.inStock || 'متوفر')}
                   </span>
                 </td>
