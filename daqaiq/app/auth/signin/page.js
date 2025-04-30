@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { SUPPLIER_TRANSLATIONS as t } from '../../constants/translations';
 
-export default function SignIn() {
+function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
@@ -181,5 +181,22 @@ export default function SignIn() {
         </form>
       </div>
     </div>
+  );
+}
+
+// Loading fallback component
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#4F46E5]"></div>
+    </div>
+  );
+}
+
+export default function SignIn() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <SignInForm />
+    </Suspense>
   );
 } 
