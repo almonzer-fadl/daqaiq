@@ -31,8 +31,8 @@ function middleware(request) {
 
   // Handle admin subdomain routing
   if (isAdminDomain) {
-    // For admin auth pages, allow access
-    if (url.pathname.startsWith('/auth')) {
+    // For admin auth pages and setup page, allow access
+    if (url.pathname.startsWith('/auth') || url.pathname === '/setup') {
       return NextResponse.next();
     }
 
@@ -162,7 +162,7 @@ export const config = {
     '/checkout/:path*',
     // Auth routes
     '/auth/:path*',
-    // Match all paths except static files and api
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    // Match all paths except static files, api, and setup
+    '/((?!api|_next/static|_next/image|favicon.ico|setup).*)',
   ],
 };
