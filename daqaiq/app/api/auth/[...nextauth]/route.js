@@ -10,8 +10,7 @@ export const authOptions = {
       name: 'Credentials',
       credentials: {
         email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
-        role: { label: "Role", type: "text", default: "supplier" },
+        password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -26,16 +25,6 @@ export const authOptions = {
           if (!user) {
             throw new Error('No user found with this email');
           }
-
-          // Check if the user's role matches the requested role
-          if (credentials.role && user.role !== credentials.role) {
-            throw new Error(`Invalid ${credentials.role} credentials`);
-          }
-
-          // Remove verification check for suppliers
-          // if (user.role === 'supplier' && !user.isVerified) {
-          //   throw new Error('Please verify your email before signing in');
-          // }
 
           const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
           
@@ -52,9 +41,9 @@ export const authOptions = {
             id: user._id,
             name: user.name,
             email: user.email,
-            role: user.role,
-            image: user.avatar || null,
-            isVerified: user.isVerified,
+            roles: user.roles,
+            status: user.status,
+            image: user.avatar || null
           };
         } catch (error) {
           console.error('Auth Error:', error);
@@ -64,7 +53,7 @@ export const authOptions = {
     })
   ],
   pages: {
-    signIn: '/auth/signin/supplier',
+    signIn: '/auth/signin',
     signOut: '/auth/signout',
     error: '/auth/error',
     verifyRequest: '/auth/verify-request',
@@ -73,16 +62,16 @@ export const authOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role;
-        token.isVerified = user.isVerified;
+        token.roles = user.roles;
+        token.status = user.status;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id;
-        session.user.role = token.role;
-        session.user.isVerified = token.isVerified;
+        session.user.roles = token.roles;
+        session.user.status = token.status;
       }
       return session;
     }
