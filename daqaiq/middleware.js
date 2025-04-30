@@ -36,10 +36,17 @@ function middleware(request) {
       return NextResponse.next();
     }
 
-    // For admin domain, redirect to admin signin if not authenticated
-    if (!token || token.role !== 'admin') {
+    // For admin domain, check if user has admin role
+    if (!token?.roles?.includes('main-admin')) {
       return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
+
+    // Handle admin routes
+    if (url.pathname === '/') {
+      return NextResponse.rewrite(new URL('/admin', request.url));
+    }
+
+    return NextResponse.next();
   }
 
   // Handle supplier subdomain routing
@@ -49,8 +56,8 @@ function middleware(request) {
       return NextResponse.next();
     }
 
-    // For supplier domain, redirect to supplier signin if not authenticated
-    if (!token || token.role !== 'supplier') {
+    // For supplier domain, check if user has supplier role
+    if (!token?.roles?.includes('supplier')) {
       return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
 
@@ -59,17 +66,7 @@ function middleware(request) {
       return NextResponse.rewrite(new URL('/supplier', request.url));
     }
 
-    // Remove /supplier from the path if it exists
-    if (url.pathname.startsWith('/supplier')) {
-      url.pathname = url.pathname.replace('/supplier', '');
-    }
-
-    // Ensure all internal paths are prefixed with /supplier
-    if (!url.pathname.startsWith('/supplier') && url.pathname !== '/') {
-      url.pathname = `/supplier${url.pathname}`;
-    }
-
-    return NextResponse.rewrite(url);
+    return NextResponse.next();
   }
 
   // For main domain
@@ -85,21 +82,6 @@ function middleware(request) {
     '/checkout',
   ];
 
-  // Handle main domain protected routes
-  if (url.pathname.startsWith('/admin') && (!token || token.role !== 'admin')) {
-    return NextResponse.redirect(new URL('/auth/signin', request.url));
-  }
-
-  // Redirect supplier routes on main domain to supplier subdomain
-  if (url.pathname.startsWith('/supplier')) {
-    return NextResponse.redirect(new URL(url.pathname.replace('/supplier', ''), `https://supplier.${hostname}`));
-  }
-
-  // Redirect admin routes on main domain to admin subdomain
-  if (url.pathname.startsWith('/admin')) {
-    return NextResponse.redirect(new URL(url.pathname.replace('/admin', ''), `https://admin.${hostname}`));
-  }
-
   // Handle protected customer routes
   if (protectedCustomerRoutes.some(route => url.pathname.startsWith(route)) && !token) {
     return NextResponse.redirect(new URL('/auth/signin', request.url));
@@ -112,24 +94,33 @@ function middleware(request) {
 export default withAuth(middleware, {
   callbacks: {
     authorized: ({ token, req }) => {
-      // For supplier routes, check if user is a supplier
-      if (req.nextUrl.pathname.startsWith('/supplier') && token) {
-        return token.role === 'supplier';
+      const hostname = req.headers.get('host');
+      const isSupplierDomain = hostname.startsWith('supplier.');
+      const isAdminDomain = hostname.startsWith('admin.');
+
+      if (!token) {
+        // Allow access to public routes without authentication
+        return req.nextUrl.pathname.startsWith('/auth') || 
+               req.nextUrl.pathname === '/' ||
+               req.nextUrl.pathname.startsWith('/api/auth');
+      }
+
+      // Domain-specific role checks
+      if (isAdminDomain) {
+        return token.roles?.includes('main-admin');
       }
       
-      // For admin routes, check if user is an admin
-      if (req.nextUrl.pathname.startsWith('/admin') && token) {
-        return token.role === 'admin';
+      if (isSupplierDomain) {
+        return token.roles?.includes('supplier');
       }
-      
-      // For protected customer routes, just check if token exists
+
+      // For main domain, check protected routes
       const protectedCustomerRoutes = ['/profile', '/orders', '/checkout'];
       if (protectedCustomerRoutes.some(route => req.nextUrl.pathname.startsWith(route))) {
-        return !!token;
+        return true; // Allow any authenticated user
       }
       
-      // For all other routes, allow access regardless of auth state
-      return true;
+      return true; // Allow access to other main domain routes
     },
   },
 });

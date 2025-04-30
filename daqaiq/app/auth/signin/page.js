@@ -29,7 +29,6 @@ function SignInForm() {
         email: formData.email,
         password: formData.password,
         redirect: false,
-        callbackUrl,
       });
 
       if (result?.error) {
@@ -50,19 +49,24 @@ function SignInForm() {
         throw new Error('Invalid user roles');
       }
 
-      // Determine redirect URL based on roles and callbackUrl
-      let redirectUrl = callbackUrl;
-      if (callbackUrl === '/') {
-        if (userData.roles.includes('main-admin')) {
-          redirectUrl = '/admin';
-        } else if (userData.roles.includes('supplier')) {
-          redirectUrl = '/supplier';
-        }
+      // Get current domain
+      const hostname = window.location.hostname;
+      const isAdminDomain = hostname.startsWith('admin.');
+      const isSupplierDomain = hostname.startsWith('supplier.');
+
+      // Check if user has the appropriate role for the current domain
+      if (isAdminDomain && !userData.roles.includes('main-admin')) {
+        throw new Error('You do not have permission to access the admin panel');
       }
 
-      // Use replace instead of push to avoid back button issues
-      router.replace(redirectUrl);
-      router.refresh();
+      if (isSupplierDomain && !userData.roles.includes('supplier')) {
+        throw new Error('You do not have permission to access the supplier panel');
+      }
+
+      // If we get here, the user has the correct role for the domain
+      // Use the callbackUrl or default to the domain root
+      window.location.href = callbackUrl;
+
     } catch (error) {
       console.error('Sign in error:', error);
       setError(error.message || 'حدث خطأ. الرجاء المحاولة مرة أخرى');
