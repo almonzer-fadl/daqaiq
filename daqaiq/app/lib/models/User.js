@@ -17,10 +17,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Password is required'],
   },
-  role: {
+  roles: {
+    type: [String],
+    enum: ['customer', 'supplier', 'admin', 'main-admin'],
+    default: ['customer'],
+  },
+  status: {
     type: String,
-    enum: ['customer', 'supplier', 'admin'],
-    default: 'customer',
+    enum: ['active', 'inactive', 'suspended'],
+    default: 'active',
   },
   phoneNumber: {
     type: String,

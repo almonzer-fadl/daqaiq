@@ -28,24 +28,36 @@ export default function SignIn() {
         redirect: false,
       });
 
-      if (result.error) {
+      if (result?.error) {
         setError(result.error);
-      } else {
-        // Get user data to check role
-        const response = await fetch('/api/auth/me');
-        const userData = await response.json();
-
-        if (userData.roles.includes('main-admin')) {
-          router.push('/admin');
-        } else if (userData.roles.includes('supplier')) {
-          router.push('/supplier');
-        } else {
-          router.push('/');
-        }
-        router.refresh();
+        return;
       }
+
+      // Get user data to check roles
+      const response = await fetch('/api/auth/me');
+      if (!response.ok) {
+        throw new Error('Failed to get user data');
+      }
+
+      const userData = await response.json();
+      console.log('User data:', userData); // Debug log
+
+      if (!userData.roles || !Array.isArray(userData.roles)) {
+        throw new Error('Invalid user roles');
+      }
+
+      // Redirect based on roles
+      if (userData.roles.includes('main-admin')) {
+        router.push('/admin');
+      } else if (userData.roles.includes('supplier')) {
+        router.push('/supplier');
+      } else {
+        router.push('/');
+      }
+      router.refresh();
     } catch (error) {
-      setError(t.errorOccurred);
+      console.error('Sign in error:', error);
+      setError(error.message || 'حدث خطأ. الرجاء المحاولة مرة أخرى');
     } finally {
       setLoading(false);
     }
