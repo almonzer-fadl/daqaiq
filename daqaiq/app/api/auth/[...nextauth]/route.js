@@ -12,7 +12,7 @@ export const authOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" }
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Please provide all required fields');
         }
@@ -38,7 +38,7 @@ export const authOptions = {
           });
 
           return {
-            id: user._id,
+            id: user._id.toString(),
             name: user.name,
             email: user.email,
             roles: user.roles,
@@ -47,23 +47,25 @@ export const authOptions = {
           };
         } catch (error) {
           console.error('Auth Error:', error);
-          throw new Error(error.message);
+          throw error;
         }
       }
     })
   ],
   pages: {
     signIn: '/auth/signin',
-    signOut: '/auth/signout',
     error: '/auth/error',
-    verifyRequest: '/auth/verify-request',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.roles = user.roles;
         token.status = user.status;
+      }
+      // Handle updates
+      if (trigger === "update" && session) {
+        token = { ...token, ...session };
       }
       return token;
     },
@@ -74,6 +76,13 @@ export const authOptions = {
         session.user.status = token.status;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // Allows relative URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     }
   },
   session: {

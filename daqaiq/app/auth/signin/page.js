@@ -2,13 +2,16 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { SUPPLIER_TRANSLATIONS as t } from '../../constants/translations';
 
 export default function SignIn() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -26,6 +29,7 @@ export default function SignIn() {
         email: formData.email,
         password: formData.password,
         redirect: false,
+        callbackUrl,
       });
 
       if (result?.error) {
@@ -46,14 +50,18 @@ export default function SignIn() {
         throw new Error('Invalid user roles');
       }
 
-      // Redirect based on roles
-      if (userData.roles.includes('main-admin')) {
-        router.push('/admin');
-      } else if (userData.roles.includes('supplier')) {
-        router.push('/supplier');
-      } else {
-        router.push('/');
+      // Determine redirect URL based on roles and callbackUrl
+      let redirectUrl = callbackUrl;
+      if (callbackUrl === '/') {
+        if (userData.roles.includes('main-admin')) {
+          redirectUrl = '/admin';
+        } else if (userData.roles.includes('supplier')) {
+          redirectUrl = '/supplier';
+        }
       }
+
+      // Use replace instead of push to avoid back button issues
+      router.replace(redirectUrl);
       router.refresh();
     } catch (error) {
       console.error('Sign in error:', error);
