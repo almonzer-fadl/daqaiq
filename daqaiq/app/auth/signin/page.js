@@ -31,7 +31,17 @@ export default function SignIn() {
       if (result.error) {
         setError(result.error);
       } else {
-        router.push('/');
+        // Get user data to check role
+        const response = await fetch('/api/auth/me');
+        const userData = await response.json();
+
+        if (userData.roles.includes('main-admin')) {
+          router.push('/admin');
+        } else if (userData.roles.includes('supplier')) {
+          router.push('/supplier');
+        } else {
+          router.push('/');
+        }
         router.refresh();
       }
     } catch (error) {
