@@ -31,11 +31,6 @@ function middleware(request) {
 
   // Handle admin subdomain routing
   if (isAdminDomain) {
-    // For setup page, allow direct access without any checks
-    if (url.pathname === '/admin/setup') {
-      return NextResponse.next();
-    }
-
     // For admin auth pages, allow access
     if (url.pathname.startsWith('/auth')) {
       return NextResponse.next();
@@ -45,23 +40,6 @@ function middleware(request) {
     if (!token || token.role !== 'admin') {
       return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
-
-    // Handle admin routes
-    if (url.pathname === '/') {
-      return NextResponse.rewrite(new URL('/admin', request.url));
-    }
-
-    // Remove /admin from the path if it exists
-    if (url.pathname.startsWith('/admin')) {
-      url.pathname = url.pathname.replace('/admin', '');
-    }
-
-    // Ensure all internal paths are prefixed with /admin
-    if (!url.pathname.startsWith('/admin') && url.pathname !== '/') {
-      url.pathname = `/admin${url.pathname}`;
-    }
-
-    return NextResponse.rewrite(url);
   }
 
   // Handle supplier subdomain routing
@@ -134,11 +112,6 @@ function middleware(request) {
 export default withAuth(middleware, {
   callbacks: {
     authorized: ({ token, req }) => {
-      // Allow access to setup page without authentication
-      if (req.nextUrl.pathname === '/admin/setup') {
-        return true;
-      }
-
       // For supplier routes, check if user is a supplier
       if (req.nextUrl.pathname.startsWith('/supplier') && token) {
         return token.role === 'supplier';
@@ -172,8 +145,6 @@ export const config = {
     '/checkout/:path*',
     // Auth routes
     '/auth/:path*',
-    // Setup route
-    '/admin/setup',
     // Match all paths except static files and api
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
