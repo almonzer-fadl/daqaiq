@@ -32,7 +32,7 @@ function middleware(request) {
   // Handle admin subdomain routing
   if (isAdminDomain) {
     // For setup page, allow direct access without any checks
-    if (url.pathname === '/setup') {
+    if (url.pathname === '/admin/setup') {
       return NextResponse.next();
     }
 
@@ -135,7 +135,7 @@ export default withAuth(middleware, {
   callbacks: {
     authorized: ({ token, req }) => {
       // Allow access to setup page without authentication
-      if (req.nextUrl.pathname === '/setup') {
+      if (req.nextUrl.pathname === '/admin/setup') {
         return true;
       }
 
@@ -173,7 +173,7 @@ export const config = {
     // Auth routes
     '/auth/:path*',
     // Setup route
-    '/setup',
+    '/admin/setup',
     // Match all paths except static files and api
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
