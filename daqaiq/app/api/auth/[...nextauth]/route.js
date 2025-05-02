@@ -67,7 +67,6 @@ export const authOptions = {
         token.roles = user.roles;
         token.status = user.status;
       }
-      // Handle updates
       if (trigger === "update" && session) {
         token = { ...token, ...session };
       }
@@ -82,47 +81,25 @@ export const authOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      const isSupplierDomain = baseUrl.includes('supplier.');
-      
       // For supplier domain
-      if (isSupplierDomain) {
-        // Always redirect to /supplier for root or auth paths
-        if (url === baseUrl || url.includes('/auth/')) {
+      if (baseUrl.includes('supplier.')) {
+        // If trying to access auth pages, redirect to supplier dashboard
+        if (url.includes('/auth/')) {
           return `${baseUrl}/supplier`;
         }
-        
-        // For relative URLs
+        // For relative URLs, prepend the base URL
         if (url.startsWith('/')) {
           return `${baseUrl}${url}`;
         }
-        
-        // For absolute URLs
-        if (url.startsWith('http')) {
-          const urlObj = new URL(url);
-          if (urlObj.host === new URL(baseUrl).host) {
-            return url;
-          }
-        }
-        
         // Default to supplier dashboard
         return `${baseUrl}/supplier`;
       }
-
-      // For non-supplier domains
+      
+      // For other domains, handle normally
       if (url.startsWith('/')) {
         return `${baseUrl}${url}`;
       }
-      
-      // Allow same-origin URLs
-      if (url.startsWith('http')) {
-        const urlHost = new URL(url).host;
-        const baseUrlHost = new URL(baseUrl).host;
-        if (urlHost === baseUrlHost) {
-          return url;
-        }
-      }
-
-      return baseUrl;
+      return url.startsWith(baseUrl) ? url : baseUrl;
     }
   },
   session: {
