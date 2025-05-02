@@ -63,17 +63,13 @@ function middleware(request) {
         return NextResponse.redirect(new URL('/supplier', request.url));
       }
 
-      // For signin page, clean up any problematic callback URLs
+      // For signin page, ensure proper callback URL
       if (url.pathname === '/auth/signin') {
         const cleanUrl = new URL('/auth/signin', request.url);
         const callbackUrl = url.searchParams.get('callbackUrl');
         
-        // Only set callback if it's a valid supplier path and not an auth path
-        if (callbackUrl && 
-            !callbackUrl.includes('/auth/') && 
-            !callbackUrl.includes('/supplier/auth/')) {
-          cleanUrl.searchParams.set('callbackUrl', callbackUrl);
-        }
+        // Always set callback to /supplier for supplier domain
+        cleanUrl.searchParams.set('callbackUrl', '/supplier');
         
         if (url.toString() !== cleanUrl.toString()) {
           return NextResponse.redirect(cleanUrl);
@@ -86,11 +82,7 @@ function middleware(request) {
     // For non-auth routes, check if user has supplier role
     if (!token?.roles?.includes('supplier')) {
       const redirectUrl = new URL('/auth/signin', request.url);
-      // Only set callback for non-auth routes that should be preserved
-      if (!url.pathname.startsWith('/auth') && 
-          !url.pathname.startsWith('/supplier/auth')) {
-        redirectUrl.searchParams.set('callbackUrl', url.pathname);
-      }
+      redirectUrl.searchParams.set('callbackUrl', '/supplier');
       return NextResponse.redirect(redirectUrl);
     }
 

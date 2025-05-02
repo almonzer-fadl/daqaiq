@@ -83,66 +83,24 @@ export const authOptions = {
     },
     async redirect({ url, baseUrl }) {
       const isSupplierDomain = baseUrl.includes('supplier.');
-      // If callback is missing or points to any /auth path, use /supplier
-      if (!url || url.includes('/auth/')) {
-        return `${baseUrl}/supplier`;
-      }
       
-      // Clean up the URL by removing any nested auth callbacks
-      const cleanUrl = (inputUrl) => {
-        try {
-          const urlObj = new URL(inputUrl.startsWith('http') ? inputUrl : inputUrl, baseUrl);
-          // Remove nested auth callbacks
-          if (urlObj.pathname.includes('/auth/') || urlObj.pathname.includes('/supplier/auth/')) {
-            return '/supplier';
-          }
-          return urlObj.pathname + urlObj.search;
-        } catch (e) {
-          return '/supplier';
-        }
-      };
-
       // For supplier domain
       if (isSupplierDomain) {
-        // Always rewrite root to /supplier
-        if (url.pathname === '/') {
-          return NextResponse.rewrite(new URL('/supplier', url));
-        }
-
-        // Handle auth routes
-        if (url.pathname.startsWith('/auth')) {
-          // If user is already authenticated with supplier role, redirect to supplier dashboard
-          if (token?.roles?.includes('supplier')) {
-            return NextResponse.redirect(new URL('/supplier', url));
-          }
-
-          // For signin page, clean up any problematic callback URLs
-          if (url.pathname === '/auth/signin') {
-            const callbackUrl = url.searchParams.get('callbackUrl');
-            // If callbackUrl is missing, or points to any /auth path, reset it to /supplier
-            if (!callbackUrl || callbackUrl.includes('/auth/')) {
-              const cleanUrl = new URL('/auth/signin', url);
-              cleanUrl.searchParams.set('callbackUrl', '/supplier');
-              if (url.toString() !== cleanUrl.toString()) {
-                return NextResponse.redirect(cleanUrl);
-              }
-            }
-          }
-          return NextResponse.next();
+        // Always redirect to /supplier for root or auth paths
+        if (url === baseUrl || url.includes('/auth/')) {
+          return `${baseUrl}/supplier`;
         }
         
         // For relative URLs
         if (url.startsWith('/')) {
-          const cleaned = cleanUrl(url);
-          return `${baseUrl}${cleaned}`;
+          return `${baseUrl}${url}`;
         }
         
         // For absolute URLs
         if (url.startsWith('http')) {
           const urlObj = new URL(url);
           if (urlObj.host === new URL(baseUrl).host) {
-            const cleaned = cleanUrl(url);
-            return `${baseUrl}${cleaned}`;
+            return url;
           }
         }
         

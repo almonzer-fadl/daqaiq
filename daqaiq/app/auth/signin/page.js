@@ -54,7 +54,6 @@ function SignInForm() {
       }
 
       const userData = await response.json();
-      console.log('User data:', userData); // Debug log
 
       if (!userData.roles || !Array.isArray(userData.roles)) {
         throw new Error('Invalid user roles');
@@ -69,8 +68,13 @@ function SignInForm() {
         throw new Error('You do not have permission to access the supplier panel');
       }
 
-      // Use the default redirect path
-      router.push(defaultRedirect);
+      // For supplier domain, always redirect to /supplier
+      if (isSupplierDomain) {
+        router.push('/supplier');
+      } else {
+        // For other domains, use the callback URL or default
+        router.push(callbackUrl || defaultRedirect);
+      }
 
     } catch (error) {
       console.error('Sign in error:', error);
