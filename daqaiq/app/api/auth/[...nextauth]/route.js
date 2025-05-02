@@ -84,35 +84,55 @@ export const authOptions = {
       // Handle supplier subdomain
       const isSupplierDomain = baseUrl.includes('supplier.');
       
-      // If on supplier subdomain and URL is relative
-      if (isSupplierDomain && url.startsWith('/')) {
-        // If trying to access root, redirect to supplier dashboard
-        if (url === '/') {
-          return `${baseUrl}/supplier`;
+      // Clean up the URL by removing any nested auth callbacks
+      const cleanUrl = (inputUrl) => {
+        try {
+          const urlObj = new URL(inputUrl.startsWith('http') ? inputUrl : inputUrl, baseUrl);
+          // Remove nested auth callbacks
+          if (urlObj.pathname.includes('/auth/') || urlObj.pathname.includes('/supplier/auth/')) {
+            return '/supplier';
+          }
+          return urlObj.pathname + urlObj.search;
+        } catch (e) {
+          return '/supplier';
         }
-        // If already has /supplier prefix, use as is
-        if (url.startsWith('/supplier')) {
-          return `${baseUrl}${url}`;
+      };
+
+      // For supplier domain
+      if (isSupplierDomain) {
+        // For relative URLs
+        if (url.startsWith('/')) {
+          const cleaned = cleanUrl(url);
+          return `${baseUrl}${cleaned}`;
         }
-        // Add /supplier prefix for other paths
-        return `${baseUrl}/supplier${url}`;
+        
+        // For absolute URLs
+        if (url.startsWith('http')) {
+          const urlObj = new URL(url);
+          if (urlObj.host === new URL(baseUrl).host) {
+            const cleaned = cleanUrl(url);
+            return `${baseUrl}${cleaned}`;
+          }
+        }
+        
+        // Default to supplier dashboard
+        return `${baseUrl}/supplier`;
       }
 
-      // For absolute URLs, allow if they match the domain or subdomains
+      // For non-supplier domains
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`;
+      }
+      
+      // Allow same-origin URLs
       if (url.startsWith('http')) {
         const urlHost = new URL(url).host;
         const baseUrlHost = new URL(baseUrl).host;
-        if (urlHost === baseUrlHost || urlHost.endsWith(`.${baseUrlHost}`)) {
+        if (urlHost === baseUrlHost) {
           return url;
         }
       }
 
-      // Default case: allow relative URLs with baseUrl
-      if (url.startsWith('/')) {
-        return `${baseUrl}${url}`;
-      }
-
-      // Fallback to baseUrl
       return baseUrl;
     }
   },

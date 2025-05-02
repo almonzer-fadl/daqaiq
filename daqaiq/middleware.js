@@ -51,39 +51,50 @@ function middleware(request) {
 
   // Handle supplier subdomain routing
   if (isSupplierDomain) {
-    // For supplier auth pages, allow access
+    // Always rewrite root to /supplier
+    if (url.pathname === '/') {
+      return NextResponse.rewrite(new URL('/supplier', request.url));
+    }
+
+    // Handle auth routes
     if (url.pathname.startsWith('/auth')) {
-      // Check for redirect loops in signin
+      // If user is already authenticated with supplier role, redirect to supplier dashboard
+      if (token?.roles?.includes('supplier')) {
+        return NextResponse.redirect(new URL('/supplier', request.url));
+      }
+
+      // For signin page, clean up any problematic callback URLs
       if (url.pathname === '/auth/signin') {
+        const cleanUrl = new URL('/auth/signin', request.url);
         const callbackUrl = url.searchParams.get('callbackUrl');
-        if (callbackUrl && (callbackUrl.includes('/auth/signin') || callbackUrl === '/')) {
-          // Reset callback and redirect to supplier dashboard if authenticated
-          if (token?.roles?.includes('supplier')) {
-            return NextResponse.redirect(new URL('/supplier', request.url));
-          }
-          // Remove problematic callback for non-authenticated users
-          const cleanUrl = new URL('/auth/signin', request.url);
+        
+        // Only set callback if it's a valid supplier path and not an auth path
+        if (callbackUrl && 
+            !callbackUrl.includes('/auth/') && 
+            !callbackUrl.includes('/supplier/auth/')) {
+          cleanUrl.searchParams.set('callbackUrl', callbackUrl);
+        }
+        
+        if (url.toString() !== cleanUrl.toString()) {
           return NextResponse.redirect(cleanUrl);
         }
       }
+      
       return NextResponse.next();
     }
 
-    // For supplier domain, check if user has supplier role
+    // For non-auth routes, check if user has supplier role
     if (!token?.roles?.includes('supplier')) {
       const redirectUrl = new URL('/auth/signin', request.url);
-      // Only set callback URL if it's not an auth page and not root
-      if (!url.pathname.startsWith('/auth') && url.pathname !== '/') {
+      // Only set callback for non-auth routes that should be preserved
+      if (!url.pathname.startsWith('/auth') && 
+          !url.pathname.startsWith('/supplier/auth')) {
         redirectUrl.searchParams.set('callbackUrl', url.pathname);
       }
       return NextResponse.redirect(redirectUrl);
     }
 
-    // Handle supplier routes
-    if (url.pathname === '/') {
-      return NextResponse.rewrite(new URL('/supplier', request.url));
-    }
-
+    // For authenticated supplier routes
     return NextResponse.next();
   }
 

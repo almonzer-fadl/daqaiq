@@ -25,10 +25,21 @@ function SignInForm() {
     setLoading(true);
 
     try {
+      // Get current domain
+      const hostname = window.location.hostname;
+      const isSupplierDomain = hostname.startsWith('supplier.');
+      const isAdminDomain = hostname.startsWith('admin.');
+
+      // Determine default redirect path based on domain
+      const defaultRedirect = isSupplierDomain ? '/supplier' 
+                          : isAdminDomain ? '/admin'
+                          : '/';
+
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
         redirect: false,
+        callbackUrl: defaultRedirect
       });
 
       if (result?.error) {
@@ -49,11 +60,6 @@ function SignInForm() {
         throw new Error('Invalid user roles');
       }
 
-      // Get current domain
-      const hostname = window.location.hostname;
-      const isAdminDomain = hostname.startsWith('admin.');
-      const isSupplierDomain = hostname.startsWith('supplier.');
-
       // Check if user has the appropriate role for the current domain
       if (isAdminDomain && !userData.roles.includes('main-admin')) {
         throw new Error('You do not have permission to access the admin panel');
@@ -63,22 +69,8 @@ function SignInForm() {
         throw new Error('You do not have permission to access the supplier panel');
       }
 
-      // Handle redirects based on domain and roles
-      let finalCallbackUrl;
-      if (isSupplierDomain) {
-        // For supplier domain, always redirect to /supplier unless there's a valid callback
-        finalCallbackUrl = callbackUrl && !callbackUrl.includes('/auth/signin') && callbackUrl !== '/'
-          ? callbackUrl
-          : '/supplier';
-      } else {
-        // For other domains, use callback or default to root
-        finalCallbackUrl = callbackUrl && !callbackUrl.includes('/auth/signin')
-          ? callbackUrl
-          : '/';
-      }
-
-      // Use router for client-side navigation
-      router.push(finalCallbackUrl);
+      // Use the default redirect path
+      router.push(defaultRedirect);
 
     } catch (error) {
       console.error('Sign in error:', error);
