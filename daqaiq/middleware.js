@@ -62,31 +62,14 @@ function middleware(request) {
       if (token?.roles?.includes('supplier')) {
         return NextResponse.redirect(new URL('/supplier', request.url));
       }
-
-      // For signin page, ensure proper callback URL
-      if (url.pathname === '/auth/signin') {
-        const cleanUrl = new URL('/auth/signin', request.url);
-        const callbackUrl = url.searchParams.get('callbackUrl');
-        
-        // Always set callback to /supplier for supplier domain
-        cleanUrl.searchParams.set('callbackUrl', '/supplier');
-        
-        if (url.toString() !== cleanUrl.toString()) {
-          return NextResponse.redirect(cleanUrl);
-        }
-      }
-      
       return NextResponse.next();
     }
 
     // For non-auth routes, check if user has supplier role
     if (!token?.roles?.includes('supplier')) {
-      const redirectUrl = new URL('/auth/signin', request.url);
-      redirectUrl.searchParams.set('callbackUrl', '/supplier');
-      return NextResponse.redirect(redirectUrl);
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
 
-    // For authenticated supplier routes
     return NextResponse.next();
   }
 
