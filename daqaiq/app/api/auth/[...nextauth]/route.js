@@ -81,18 +81,38 @@ export const authOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Allow relative URLs
-      if (url.startsWith("/")) {
-        // Handle supplier subdomain
-        if (baseUrl.includes('supplier.')) {
-          return `${baseUrl}${url.startsWith('/supplier') ? url : '/supplier' + url}`;
+      // Handle supplier subdomain
+      const isSupplierDomain = baseUrl.includes('supplier.');
+      
+      // If on supplier subdomain and URL is relative
+      if (isSupplierDomain && url.startsWith('/')) {
+        // If trying to access root, redirect to supplier dashboard
+        if (url === '/') {
+          return `${baseUrl}/supplier`;
         }
+        // If already has /supplier prefix, use as is
+        if (url.startsWith('/supplier')) {
+          return `${baseUrl}${url}`;
+        }
+        // Add /supplier prefix for other paths
+        return `${baseUrl}/supplier${url}`;
+      }
+
+      // For absolute URLs, allow if they match the domain or subdomains
+      if (url.startsWith('http')) {
+        const urlHost = new URL(url).host;
+        const baseUrlHost = new URL(baseUrl).host;
+        if (urlHost === baseUrlHost || urlHost.endsWith(`.${baseUrlHost}`)) {
+          return url;
+        }
+      }
+
+      // Default case: allow relative URLs with baseUrl
+      if (url.startsWith('/')) {
         return `${baseUrl}${url}`;
       }
-      // Allow callback URLs on the same origin or subdomains
-      else if (new URL(url).origin.endsWith(new URL(baseUrl).hostname)) {
-        return url;
-      }
+
+      // Fallback to baseUrl
       return baseUrl;
     }
   },

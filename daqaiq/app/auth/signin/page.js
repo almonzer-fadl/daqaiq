@@ -63,17 +63,22 @@ function SignInForm() {
         throw new Error('You do not have permission to access the supplier panel');
       }
 
-      // If we get here, the user has the correct role for the domain
-      // Clean up the callback URL to prevent infinite redirects
-      let finalCallbackUrl = '/';
-      if (callbackUrl && !callbackUrl.includes('/auth/signin')) {
-        finalCallbackUrl = callbackUrl;
-      } else if (isSupplierDomain) {
-        finalCallbackUrl = '/supplier';
+      // Handle redirects based on domain and roles
+      let finalCallbackUrl;
+      if (isSupplierDomain) {
+        // For supplier domain, always redirect to /supplier unless there's a valid callback
+        finalCallbackUrl = callbackUrl && !callbackUrl.includes('/auth/signin') && callbackUrl !== '/'
+          ? callbackUrl
+          : '/supplier';
+      } else {
+        // For other domains, use callback or default to root
+        finalCallbackUrl = callbackUrl && !callbackUrl.includes('/auth/signin')
+          ? callbackUrl
+          : '/';
       }
 
-      // Redirect to the appropriate page
-      window.location.href = finalCallbackUrl;
+      // Use router for client-side navigation
+      router.push(finalCallbackUrl);
 
     } catch (error) {
       console.error('Sign in error:', error);

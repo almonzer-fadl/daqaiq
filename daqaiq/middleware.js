@@ -53,18 +53,27 @@ function middleware(request) {
   if (isSupplierDomain) {
     // For supplier auth pages, allow access
     if (url.pathname.startsWith('/auth')) {
-      // Prevent redirect loops
-      if (url.pathname === '/auth/signin' && url.search.includes('callbackUrl=/auth/signin')) {
-        return NextResponse.redirect(new URL('/supplier', request.url));
+      // Check for redirect loops in signin
+      if (url.pathname === '/auth/signin') {
+        const callbackUrl = url.searchParams.get('callbackUrl');
+        if (callbackUrl && (callbackUrl.includes('/auth/signin') || callbackUrl === '/')) {
+          // Reset callback and redirect to supplier dashboard if authenticated
+          if (token?.roles?.includes('supplier')) {
+            return NextResponse.redirect(new URL('/supplier', request.url));
+          }
+          // Remove problematic callback for non-authenticated users
+          const cleanUrl = new URL('/auth/signin', request.url);
+          return NextResponse.redirect(cleanUrl);
+        }
       }
       return NextResponse.next();
     }
 
     // For supplier domain, check if user has supplier role
     if (!token?.roles?.includes('supplier')) {
-      // Ensure we don't create a redirect loop
       const redirectUrl = new URL('/auth/signin', request.url);
-      if (!url.pathname.startsWith('/auth')) {
+      // Only set callback URL if it's not an auth page and not root
+      if (!url.pathname.startsWith('/auth') && url.pathname !== '/') {
         redirectUrl.searchParams.set('callbackUrl', url.pathname);
       }
       return NextResponse.redirect(redirectUrl);
