@@ -21,6 +21,12 @@ const userSchema = new mongoose.Schema({
     type: [String],
     enum: ['customer', 'supplier', 'admin', 'main-admin'],
     default: ['customer'],
+    validate: {
+      validator: function(v) {
+        return Array.isArray(v) && v.length > 0;
+      },
+      message: 'User must have at least one role'
+    }
   },
   status: {
     type: String,

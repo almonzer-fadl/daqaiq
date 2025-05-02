@@ -93,7 +93,7 @@ export async function POST(req) {
         name,
         email,
         password: hashedPassword,
-        role: 'supplier',
+        roles: ['supplier'],
         verificationToken,
         isVerified: true,
         phoneNumber,

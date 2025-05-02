@@ -37,11 +37,14 @@ export const authOptions = {
             lastLogin: new Date()
           });
 
+          // Ensure roles is an array
+          const roles = Array.isArray(user.roles) ? user.roles : [user.role || 'customer'];
+
           return {
             id: user._id.toString(),
             name: user.name,
             email: user.email,
-            roles: user.roles,
+            roles: roles,
             status: user.status,
             image: user.avatar || null
           };
