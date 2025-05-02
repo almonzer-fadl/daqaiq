@@ -64,8 +64,16 @@ function SignInForm() {
       }
 
       // If we get here, the user has the correct role for the domain
-      // Use the callbackUrl or default to the domain root
-      window.location.href = callbackUrl;
+      // Clean up the callback URL to prevent infinite redirects
+      let finalCallbackUrl = '/';
+      if (callbackUrl && !callbackUrl.includes('/auth/signin')) {
+        finalCallbackUrl = callbackUrl;
+      } else if (isSupplierDomain) {
+        finalCallbackUrl = '/supplier';
+      }
+
+      // Redirect to the appropriate page
+      window.location.href = finalCallbackUrl;
 
     } catch (error) {
       console.error('Sign in error:', error);

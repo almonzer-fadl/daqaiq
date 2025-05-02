@@ -53,12 +53,21 @@ function middleware(request) {
   if (isSupplierDomain) {
     // For supplier auth pages, allow access
     if (url.pathname.startsWith('/auth')) {
+      // Prevent redirect loops
+      if (url.pathname === '/auth/signin' && url.search.includes('callbackUrl=/auth/signin')) {
+        return NextResponse.redirect(new URL('/supplier', request.url));
+      }
       return NextResponse.next();
     }
 
     // For supplier domain, check if user has supplier role
     if (!token?.roles?.includes('supplier')) {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
+      // Ensure we don't create a redirect loop
+      const redirectUrl = new URL('/auth/signin', request.url);
+      if (!url.pathname.startsWith('/auth')) {
+        redirectUrl.searchParams.set('callbackUrl', url.pathname);
+      }
+      return NextResponse.redirect(redirectUrl);
     }
 
     // Handle supplier routes

@@ -81,10 +81,18 @@ export const authOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Allows relative URLs
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
+      // Allow relative URLs
+      if (url.startsWith("/")) {
+        // Handle supplier subdomain
+        if (baseUrl.includes('supplier.')) {
+          return `${baseUrl}${url.startsWith('/supplier') ? url : '/supplier' + url}`;
+        }
+        return `${baseUrl}${url}`;
+      }
+      // Allow callback URLs on the same origin or subdomains
+      else if (new URL(url).origin.endsWith(new URL(baseUrl).hostname)) {
+        return url;
+      }
       return baseUrl;
     }
   },
