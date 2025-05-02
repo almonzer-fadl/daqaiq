@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { connectToDatabase } from '../../../lib/mongodb';
 import User from '../../../lib/models/User';
+import { NextResponse } from 'next/server';
 
 export const authOptions = {
   providers: [
@@ -81,8 +82,11 @@ export const authOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Handle supplier subdomain
       const isSupplierDomain = baseUrl.includes('supplier.');
+      // If callback is missing or points to any /auth path, use /supplier
+      if (!url || url.includes('/auth/')) {
+        return `${baseUrl}/supplier`;
+      }
       
       // Clean up the URL by removing any nested auth callbacks
       const cleanUrl = (inputUrl) => {
@@ -100,6 +104,33 @@ export const authOptions = {
 
       // For supplier domain
       if (isSupplierDomain) {
+        // Always rewrite root to /supplier
+        if (url.pathname === '/') {
+          return NextResponse.rewrite(new URL('/supplier', url));
+        }
+
+        // Handle auth routes
+        if (url.pathname.startsWith('/auth')) {
+          // If user is already authenticated with supplier role, redirect to supplier dashboard
+          if (token?.roles?.includes('supplier')) {
+            return NextResponse.redirect(new URL('/supplier', url));
+          }
+
+          // For signin page, clean up any problematic callback URLs
+          if (url.pathname === '/auth/signin') {
+            const callbackUrl = url.searchParams.get('callbackUrl');
+            // If callbackUrl is missing, or points to any /auth path, reset it to /supplier
+            if (!callbackUrl || callbackUrl.includes('/auth/')) {
+              const cleanUrl = new URL('/auth/signin', url);
+              cleanUrl.searchParams.set('callbackUrl', '/supplier');
+              if (url.toString() !== cleanUrl.toString()) {
+                return NextResponse.redirect(cleanUrl);
+              }
+            }
+          }
+          return NextResponse.next();
+        }
+        
         // For relative URLs
         if (url.startsWith('/')) {
           const cleaned = cleanUrl(url);
