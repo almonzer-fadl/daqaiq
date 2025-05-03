@@ -19,11 +19,52 @@ const nextConfig = {
         hostname: 'd1muf25xaso8hp.cloudfront.net',
         pathname: '/**',
       },
-      // Add any other image domains you're using
+      {
+        protocol: 'https',
+        hostname: 'daqaiq.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'supplier.daqaiq.com',
+        pathname: '/**',
+      }
     ],
   },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        // Handle supplier subdomain
+        {
+          source: '/:path*',
+          has: [
+            {
+              type: 'host',
+              value: 'supplier.daqaiq.com',
+            },
+          ],
+          destination: '/supplier/:path*',
+        },
+      ],
+    };
+  },
+  async redirects() {
+    return [
+      {
+        source: '/supplier',
+        has: [
+          {
+            type: 'host',
+            value: 'daqaiq.com',
+          },
+        ],
+        destination: 'https://supplier.daqaiq.com',
+        permanent: true,
+      },
+    ];
+  },
   webpack: (config) => {
-    config.resolve.extensions = ['.js', '.jsx', '.json'];
+    config.resolve.extensions = ['.ts', '.tsx', '.js', '.jsx', '.json'];
     return config;
   }
 };
