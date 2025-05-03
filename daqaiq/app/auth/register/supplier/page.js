@@ -1,86 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import Image from 'next/image';
-import { SUPPLIER_TRANSLATIONS as t } from '../../../constants/translations';
+import Link from 'next/link';
+import { SUPPLIER_TRANSLATIONS as t } from '../../../../constants/translations';
+import { FormFields } from './components/FormFields';
+import { SuccessMessage } from './components/SuccessMessage';
+import { useSupplierForm } from './hooks/useSupplierForm';
 
 export default function SupplierRegister() {
-  const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    phoneNumber: '',
-    businessName: '',
-    businessType: '',
-    taxId: '',
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    // Validate form data
-    if (!formData.name || !formData.email || !formData.password || !formData.businessName || !formData.businessType || !formData.taxId) {
-      setError(t.requiredField);
-      setLoading(false);
-      return;
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError(t.invalidEmail);
-      setLoading(false);
-      return;
-    }
-
-    // Validate password length
-    if (formData.password.length < 6) {
-      setError(t.passwordTooShort);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/auth/register/supplier', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || t.registrationFailed);
-      }
-
-      setSuccess(true);
-      setTimeout(() => {
-        router.push('/auth/signin');
-      }, 3000);
-    } catch (err) {
-      setError(err.message || t.registrationFailed);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    formData,
+    loading,
+    error,
+    success,
+    handleChange,
+    handleSubmit,
+  } = useSupplierForm();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8" dir="rtl">
@@ -107,20 +42,7 @@ export default function SupplierRegister() {
         </div>
 
         {success ? (
-          <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="mr-3">
-                <p className="text-sm text-green-700">
-                  {t.registrationSuccess}
-                </p>
-              </div>
-            </div>
-          </div>
+          <SuccessMessage />
         ) : (
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             {error && (
@@ -138,105 +60,11 @@ export default function SupplierRegister() {
               </div>
             )}
 
-            <div className="rounded-md shadow-sm -space-y-px">
-              <div>
-                <label htmlFor="name" className="sr-only">{t.fullName}</label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
-                  placeholder={t.fullName}
-                  value={formData.name}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="sr-only">{t.email}</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
-                  placeholder={t.email}
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="sr-only">{t.password}</label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
-                  placeholder={t.password}
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label htmlFor="phoneNumber" className="sr-only">{t.phoneNumber}</label>
-                <input
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  type="tel"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
-                  placeholder={t.phoneNumber}
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label htmlFor="businessName" className="sr-only">{t.businessName}</label>
-                <input
-                  id="businessName"
-                  name="businessName"
-                  type="text"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
-                  placeholder={t.businessName}
-                  value={formData.businessName}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label htmlFor="businessType" className="sr-only">{t.businessType}</label>
-                <select
-                  id="businessType"
-                  name="businessType"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
-                  value={formData.businessType}
-                  onChange={handleChange}
-                >
-                  <option value="">{t.selectType}</option>
-                  <option value="corporation">{t.businessTypes.corporation}</option>
-                  <option value="llc">{t.businessTypes.llc}</option>
-                  <option value="partnership">{t.businessTypes.partnership}</option>
-                  <option value="soleProprietorship">{t.businessTypes.soleProprietorship}</option>
-                </select>
-              </div>
-              <div>
-                <label htmlFor="taxId" className="sr-only">{t.taxId}</label>
-                <input
-                  id="taxId"
-                  name="taxId"
-                  type="text"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#4F46E5] focus:border-[#4F46E5] focus:z-10 sm:text-sm text-right"
-                  placeholder={t.taxId}
-                  value={formData.taxId}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
+            <FormFields
+              formData={formData}
+              handleChange={handleChange}
+              error={error}
+            />
 
             <div>
               <button
