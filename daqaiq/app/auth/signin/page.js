@@ -39,21 +39,17 @@ export default function SignIn() {
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false,
+        redirect: true,
         callbackUrl: domain === 'supplier' 
-          ? '/supplier'
+          ? 'https://supplier.daqaiq.com'
           : domain === 'admin'
-          ? '/admin'
-          : '/',
+          ? 'https://admin.daqaiq.com'
+          : 'https://daqaiq.com',
       });
 
       if (result?.error) {
         setError('Invalid email or password');
         return;
-      }
-
-      if (result?.url) {
-        router.push(result.url);
       }
     } catch (err) {
       setError('An error occurred. Please try again.');

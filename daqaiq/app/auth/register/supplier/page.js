@@ -73,7 +73,7 @@ export default function SupplierRegister() {
 
       setSuccess(true);
       setTimeout(() => {
-        router.push('/auth/signin/supplier');
+        router.push('/auth/signin');
       }, 3000);
     } catch (err) {
       setError(err.message || t.registrationFailed);
