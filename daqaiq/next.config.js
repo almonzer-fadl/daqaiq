@@ -1,11 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    turbo: {
-      // You can add specific options here if needed
-      // For example:
-      // enable: true,
-    },
+    turbo: true
   },
   distDir: '.next',
   images: {
