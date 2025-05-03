@@ -11,11 +11,16 @@ async function processUploadedFile(file) {
     return null;
   }
   
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  const base64Data = buffer.toString('base64');
-  const mimeType = file.type;
-  return `data:${mimeType};base64,${base64Data}`;
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64Data = buffer.toString('base64');
+    const mimeType = file.type;
+    return `data:${mimeType};base64,${base64Data}`;
+  } catch (error) {
+    console.error('Error processing file:', error);
+    return null;
+  }
 }
 
 // GET handler
