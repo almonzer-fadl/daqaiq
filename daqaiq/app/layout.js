@@ -1,20 +1,15 @@
 "use client";
-import { Geist, Geist_Mono } from "next/font/google"; // Import Geist and Geist_Mono fonts from Google Fonts
+import { Inter } from "next/font/google"; // Using Inter as a fallback since Geist is not available in Google Fonts
 import "./globals.css"; // Import global CSS styles
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import Loading from './components/loading';  // lowercase 'loading'
+import Loading from './components/Loading';
 import { SessionProvider } from 'next-auth/react';
 import { Toaster } from 'react-hot-toast';
 
-const geistSans = Geist({ // Define the Geist Sans font
-  variable: "--font-geist-sans", // Set the CSS variable for the font
-  subsets: ["latin"], // Specify the subsets to include
-});
-
-const geistMono = Geist_Mono({ // Define the Geist Mono font
-  variable: "--font-geist-mono", // Set the CSS variable for the font
-  subsets: ["latin"], // Specify the subsets to include
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
 });
 
 export default function RootLayout({ children }) { // Define the RootLayout functional component
@@ -35,9 +30,7 @@ export default function RootLayout({ children }) { // Define the RootLayout func
 
   return (
     <html lang="ar">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${inter.variable} antialiased`}>
         <SessionProvider>
           {!isMaintenancePage && isLoading && <Loading />}
           <div

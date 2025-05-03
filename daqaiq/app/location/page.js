@@ -1,10 +1,10 @@
 "use client";
 import React from 'react';
 import styles from './location.module.css';
-import Headertop from "../components/headertop";
-import Navbar from "../components/navbar";
-import Navlinks from "../components/navlinks";
-import Footer from '../components/footer';
+import HeaderTop from "../components/HeaderTop";
+import NavbarMain from "../components/NavbarMain";
+import NavLinks from "../components/NavLinks";
+import FooterMain from '../components/FooterMain';
 import Image from 'next/image';
 
 export default function Location() {
@@ -14,9 +14,9 @@ export default function Location() {
 
   return (
     <main className="min-h-screen bg-white">
-      <Headertop />
-      <Navbar />
-      <Navlinks />
+      <HeaderTop />
+      <NavbarMain />
+      <NavLinks />
       <div className={styles.container}>
         <div className={styles.header}>
           <h1 className="text-4xl font-bold text-center mb-8">موقعنا</h1>
@@ -55,7 +55,7 @@ export default function Location() {
           </div>
         </div>
       </div>
-      <Footer />
+      <FooterMain />
     </main>
   );
 }

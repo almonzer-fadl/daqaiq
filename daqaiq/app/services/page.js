@@ -1,11 +1,10 @@
 "use client";
 import { useState } from 'react';
 import styles from './services.module.css';
-import Headertop from '../components/headertop';
-import Navbar from "../components/navbar";
-import Navlinks from "../components/navlinks";
-import Footer from '../components/footer';
-
+import HeaderTop from '../components/HeaderTop';
+import NavbarMain from "../components/NavbarMain";
+import NavLinks from "../components/NavLinks";
+import FooterMain from '../components/FooterMain';
 
 const serviceCategories = {
   Offers: {
@@ -59,8 +58,7 @@ const serviceCategories = {
         description: "فحص شامل للسيارة مع تقرير مفصل",
         icon: "🚗",
         link: "/prices"
-      },
-      // Add more services (up to 7 per category)
+      }
     ]
   },
   inspection: {
@@ -114,8 +112,7 @@ const serviceCategories = {
         description: "فحص شامل للسيارة مع تقرير مفصل",
         icon: "🚗",
         link: "/prices"
-      },
-      // Add more services (up to 7 per category)
+      }
     ]
   },
   maintenance: {
@@ -169,12 +166,10 @@ const serviceCategories = {
         description: "صيانة دورية شاملة للسيارة",
         icon: "🔧",
         link: "/maintenance"
-      },
-      // Add more services (up to 7 per category)
+      }
     ]
-  },
-  // Add more categories...
-}
+  }
+};
 
 export default function Services() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -188,9 +183,9 @@ export default function Services() {
 
   return (
     <main className={styles.container}>
-      <Headertop />
-      <Navbar />
-      <Navlinks />
+      <HeaderTop />
+      <NavbarMain />
+      <NavLinks />
       <div className={styles.searchContainer}>
         <input
           type="text"
@@ -200,28 +195,26 @@ export default function Services() {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      <div className={styles.content}>
+      <div className={styles.servicesGrid}>
         {Object.entries(serviceCategories).map(([key, category]) => (
           <div key={key} className={styles.categorySection}>
-            <div className={styles.categoryHeader}>
-              <h2 className={styles.categoryTitle}>{category.title}</h2>
-              <button className={styles.viewAllButton}>عرض الكل</button>
-            </div>
+            <h2 className={styles.categoryTitle}>{category.title}</h2>
             <div className={styles.servicesContainer}>
-              <div className={styles.servicesRow}>
-                {filterServices(category.services).map((service) => (
-                  <div key={service.id} className={styles.serviceCard}>
-                    <div className={styles.serviceIcon}>{service.icon}</div>
-                    <h3 className={styles.serviceTitle}>{service.title}</h3>
-                    <p className={styles.serviceDescription}>{service.description}</p>
-                  </div>
-                ))}
-              </div>
+              {filterServices(category.services).map((service) => (
+                <div key={service.id} className={styles.serviceCard}>
+                  <div className={styles.serviceIcon}>{service.icon}</div>
+                  <h3 className={styles.serviceTitle}>{service.title}</h3>
+                  <p className={styles.serviceDescription}>{service.description}</p>
+                  <a href={service.link} className={styles.serviceLink}>
+                    المزيد من التفاصيل
+                  </a>
+                </div>
+              ))}
             </div>
           </div>
         ))}
       </div>
-      <Footer />
+      <FooterMain />
     </main>
   );
 }

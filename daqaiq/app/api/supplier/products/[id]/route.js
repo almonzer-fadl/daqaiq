@@ -4,12 +4,12 @@ import { connectToDatabase } from '../../../../lib/mongodb';
 import Product from '../../../../lib/models/Product';
 import { authOptions } from '../../../auth/[...nextauth]/route';
 import { unlink, writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 // Ensure uploads directory exists
 async function ensureUploadDir() {
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'products');
+  const uploadDir = join('public', 'uploads', 'products');
   try {
     await mkdir(uploadDir, { recursive: true });
   } catch (error) {
@@ -17,6 +17,7 @@ async function ensureUploadDir() {
       throw error;
     }
   }
+  return uploadDir;
 }
 
 export async function DELETE(request, context) {
@@ -52,7 +53,7 @@ export async function DELETE(request, context) {
     if (product.images && product.images.length > 0) {
       for (const imageUrl of product.images) {
         try {
-          const imagePath = path.join(process.cwd(), 'public', imageUrl);
+          const imagePath = join(process.cwd(), imageUrl);
           await unlink(imagePath);
         } catch (error) {
           console.error('Error deleting image file:', error);

@@ -7,6 +7,7 @@ const nextConfig = {
       // enable: true,
     },
   },
+  distDir: '.next',
   images: {
     remotePatterns: [
       {
@@ -63,8 +64,18 @@ const nextConfig = {
       },
     ];
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
+    // Ensure proper path handling
     config.resolve.extensions = ['.js', '.jsx', '.json'];
+    
+    if (!isServer) {
+      // Polyfills for client-side
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        path: require.resolve('path-browserify'),
+      };
+    }
+
     return config;
   }
 };

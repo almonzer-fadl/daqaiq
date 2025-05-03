@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from 'react';
 import styles from './contact.module.css';
-import Footer from '../components/footer';
-import Headertop from "../components/headertop";
-import Navbar from "../components/navbar";
-import Navlinks from "../components/navlinks";
+import FooterMain from '../components/FooterMain';
+import HeaderTop from "../components/HeaderTop";
+import NavbarMain from "../components/NavbarMain";
+import NavLinks from "../components/NavLinks";
 
 const validateForm = (formData) => {
   const errors = {};
@@ -44,9 +44,9 @@ export default function Contact() {
 
   return (
     <main className="min-h-screen">
-      <Headertop />
-      <Navbar />
-      <Navlinks />
+      <HeaderTop />
+      <NavbarMain />
+      <NavLinks />
       <div className={styles.container}>
         <div className={styles.header}>
           <h1 className="text-4xl font-bold text-black mb-8">تواصل معنا</h1>
@@ -83,7 +83,7 @@ export default function Contact() {
           </div>
         </div>
       </div>
-      <Footer />
+      <FooterMain />
     </main>
   );
 }
