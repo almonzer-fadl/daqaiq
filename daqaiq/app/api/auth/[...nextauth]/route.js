@@ -1,11 +1,10 @@
 import NextAuth from 'next-auth';
-import { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
-import { connectToDB } from '@/lib/mongoose';
+import { connectToDatabase } from '@/lib/mongodb';
 import User from '@/models/user';
 
-const authOptions: AuthOptions = {
+const handler = NextAuth({
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -18,7 +17,7 @@ const authOptions: AuthOptions = {
           throw new Error('Invalid credentials');
         }
 
-        await connectToDB();
+        await connectToDatabase();
 
         const user = await User.findOne({ email: credentials.email });
 
@@ -67,8 +66,6 @@ const authOptions: AuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   secret: process.env.NEXTAUTH_SECRET,
-};
-
-const handler = NextAuth(authOptions);
+});
 
 export { handler as GET, handler as POST }; 

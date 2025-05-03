@@ -1,14 +1,25 @@
-export const validateEmail = (email) => {
+export function validateEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
-};
+}
 
-export const validatePassword = (password) => {
-  // Password must be at least 8 characters long and contain at least one number
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-  return passwordRegex.test(password);
-};
+export function validatePassword(password) {
+  return password.length >= 6;
+}
 
-export const validateName = (name) => {
+export function validateName(name) {
   return name.length >= 2 && name.length <= 50;
-}; 
+}
+
+export function validateBusinessFields(businessName, businessType, taxId) {
+  return (
+    businessName?.length >= 2 &&
+    businessType?.length >= 2 &&
+    taxId?.length >= 5
+  );
+}
+
+export function validatePhoneNumber(phoneNumber) {
+  const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+  return phoneRegex.test(phoneNumber);
+} 

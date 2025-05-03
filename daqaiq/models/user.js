@@ -19,13 +19,24 @@ const userSchema = new mongoose.Schema({
   },
   roles: {
     type: [String],
-    enum: ['user', 'supplier', 'main-admin'],
-    default: ['user'],
+    enum: ['customer', 'supplier', 'main-admin'],
+    default: ['customer'],
   },
   emailVerified: Date,
+  verificationToken: String,
+  verificationTokenExpiry: Date,
+  resetPasswordToken: String,
+  resetPasswordTokenExpiry: Date,
   image: String,
-  companyName: String,
-  companyRegistration: String,
+  // Business fields for suppliers
+  businessName: String,
+  businessType: String,
+  taxId: String,
+  phoneNumber: String,
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -41,6 +52,10 @@ userSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   next();
 });
+
+// Add index for email verification token
+userSchema.index({ verificationToken: 1 }, { sparse: true });
+userSchema.index({ resetPasswordToken: 1 }, { sparse: true });
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
