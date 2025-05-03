@@ -1,47 +1,50 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI;
-const MONGODB_DB = process.env.MONGODB_DB;
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env');
+if (!process.env.MONGODB_URI) {
+  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
 
-if (!MONGODB_DB) {
-  throw new Error('Please define the MONGODB_DB environment variable inside .env');
+if (!process.env.MONGODB_DB) {
+  throw new Error('Please define the MONGODB_DB environment variable inside .env.local');
 }
 
-let cachedConnection = null;
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
 
 export async function connectToDatabase() {
-  if (cachedConnection) {
-    return cachedConnection;
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    };
+
+    cached.promise = mongoose.connect(process.env.MONGODB_URI, opts).then((mongoose) => {
+      return mongoose;
+    });
   }
 
   try {
-    const opts = {
-      bufferCommands: false,
-      dbName: MONGODB_DB,
-    };
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
 
-    const connection = await mongoose.connect(MONGODB_URI, opts);
-    
-    cachedConnection = connection;
-    
-    // Handle connection errors
-    mongoose.connection.on('error', (err) => {
-      console.error('MongoDB connection error:', err);
-      cachedConnection = null;
-    });
+  return cached.conn;
+}
 
-    mongoose.connection.on('disconnected', () => {
-      console.log('MongoDB disconnected');
-      cachedConnection = null;
-    });
-
-    return connection;
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
-    throw new Error('Error connecting to database');
+export async function disconnectFromDatabase() {
+  if (cached.conn) {
+    await mongoose.disconnect();
+    cached.conn = null;
+    cached.promise = null;
   }
 } 

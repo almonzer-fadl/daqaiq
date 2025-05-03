@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { generateSlug } from '../utils/slug';
 
 const productSchema = new mongoose.Schema({
   name: {
@@ -10,8 +9,7 @@ const productSchema = new mongoose.Schema({
   slug: {
     type: String,
     required: true,
-    unique: true,
-    index: true
+    unique: true
   },
   description: {
     type: String,
@@ -22,21 +20,23 @@ const productSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
-  image: {
-    type: String,
-    required: true
+  compareAtPrice: {
+    type: Number,
+    min: 0
   },
-  additionalImages: [{
-    type: String
-  }],
-  category: {
-    type: String,
-    required: true
+  cost: {
+    type: Number,
+    min: 0
   },
-  supplier: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+  sku: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  barcode: {
+    type: String,
+    unique: true,
+    sparse: true
   },
   stock: {
     type: Number,
@@ -46,65 +46,61 @@ const productSchema = new mongoose.Schema({
   },
   lowStockThreshold: {
     type: Number,
-    required: true,
-    min: 0,
-    default: 10
+    default: 5
   },
-  variants: [{
-    name: String,
-    stock: {
-      type: Number,
-      required: true,
-      min: 0,
-      default: 0
-    },
-    lowStockThreshold: {
-      type: Number,
-      required: true,
-      min: 0,
-      default: 5
-    }
-  }],
-  stockHistory: [{
-    quantity: Number,
-    type: {
-      type: String,
-      enum: ['increase', 'decrease', 'adjustment'],
-      required: true
-    },
-    reason: String,
-    date: {
-      type: Date,
-      default: Date.now
-    }
-  }],
-  isActive: {
+  category: {
+    type: String,
+    required: true
+  },
+  categorySlug: {
+    type: String,
+    required: true
+  },
+  subcategory: {
+    type: String
+  },
+  subcategorySlug: {
+    type: String
+  },
+  brand: String,
+  tags: [String],
+  images: [String],
+  status: {
+    type: String,
+    enum: ['draft', 'active', 'inactive'],
+    default: 'draft'
+  },
+  featured: {
     type: Boolean,
-    default: true
+    default: false
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
+  supplier: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
+}, {
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
-// Generate slug before saving
+// Virtual for stock status
+productSchema.virtual('stockStatus').get(function() {
+  if (this.stock <= 0) return 'out_of_stock';
+  if (this.stock <= this.lowStockThreshold) return 'low_stock';
+  return 'in_stock';
+});
+
+// Pre-save hook to generate slug
 productSchema.pre('save', function(next) {
-  console.log('PRE-SAVE HOOK:', { name: this.name, slug: this.slug });
-  if (!this.isModified('name') && this.slug) {
-    return next();
-  }
+  if (!this.isModified('name')) return next();
   
-  if (!this.name) {
-    return next(new Error('Product name is required to generate slug'));
-  }
-  
-  this.slug = generateSlug(this.name);
-  this.updatedAt = new Date();
+  this.slug = this.name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+    
   next();
 });
 
@@ -114,42 +110,29 @@ productSchema.methods.isLowStock = function() {
 };
 
 // Method to update stock
-productSchema.methods.updateStock = function(quantity, type, reason) {
-  const oldStock = this.stock;
-  
-  if (type === 'increase') {
-    this.stock += quantity;
-  } else if (type === 'decrease') {
-    if (this.stock < quantity) {
-      throw new Error('Insufficient stock');
-    }
-    this.stock -= quantity;
-  } else if (type === 'adjustment') {
-    this.stock = quantity;
+productSchema.methods.updateStock = async function(quantity, type = 'set') {
+  switch (type) {
+    case 'increase':
+      this.stock += quantity;
+      break;
+    case 'decrease':
+      this.stock = Math.max(0, this.stock - quantity);
+      break;
+    case 'set':
+      this.stock = Math.max(0, quantity);
+      break;
   }
-
-  this.stockHistory.push({
-    quantity: Math.abs(this.stock - oldStock),
-    type,
-    reason,
-    date: new Date()
-  });
+  return this.save();
 };
 
-// Virtual for low stock status
-productSchema.virtual('stockStatus').get(function() {
-  if (this.stock <= 0) return 'out_of_stock';
-  if (this.stock <= this.lowStockThreshold) return 'low_stock';
-  return 'in_stock';
-});
-
-// Create indexes for faster queries
-productSchema.index({ name: 'text', description: 'text' });
-productSchema.index({ category: 1 });
+// Indexes
+productSchema.index({ slug: 1 });
+productSchema.index({ categorySlug: 1 });
+productSchema.index({ subcategorySlug: 1 });
 productSchema.index({ supplier: 1 });
 productSchema.index({ status: 1 });
+productSchema.index({ featured: 1 });
 
-// Don't create the model if it already exists
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
 export default Product; 
