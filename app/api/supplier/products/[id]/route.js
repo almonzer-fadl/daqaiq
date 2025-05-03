@@ -5,6 +5,10 @@ import Product from '../../../../lib/models/Product';
 import { authOptions } from '../../../auth/[...nextauth]/route';
 import { v4 as uuidv4 } from 'uuid';
 
+// Add segment config to explicitly mark as dynamic
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // Helper function to process uploaded file
 async function processUploadedFile(file) {
   if (!file || !(file instanceof Blob)) {
@@ -90,9 +94,10 @@ export async function PUT(request, { params }) {
     // Process additional images
     const additionalImages = formData.getAll('additionalImages');
     if (additionalImages.length > 0) {
-      updates.additionalImages = await Promise.all(
+      const processedImages = await Promise.all(
         additionalImages.map(processUploadedFile)
-      ).then(images => images.filter(Boolean));
+      );
+      updates.additionalImages = processedImages.filter(Boolean);
     }
 
     await connectToDatabase();
