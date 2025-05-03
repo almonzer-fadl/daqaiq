@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
 import Link from 'next/link';
@@ -15,13 +15,7 @@ export default function SupplierOrders() {
   const [hasMore, setHasMore] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    if (session?.user) {
-      fetchOrders();
-    }
-  }, [session, filter, page]);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch(`/api/supplier/orders?status=${filter}&page=${page}`);
       const data = await response.json();
@@ -43,7 +37,13 @@ export default function SupplierOrders() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, page]);
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchOrders();
+    }
+  }, [session, fetchOrders]);
 
   const createTestOrder = async () => {
     try {

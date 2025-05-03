@@ -10,7 +10,8 @@ const productSchema = new mongoose.Schema({
   slug: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    index: true
   },
   description: {
     type: String,
@@ -147,7 +148,6 @@ productSchema.index({ name: 'text', description: 'text' });
 productSchema.index({ category: 1 });
 productSchema.index({ supplier: 1 });
 productSchema.index({ status: 1 });
-productSchema.index({ slug: 1 }, { unique: true });
 
 // Don't create the model if it already exists
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);

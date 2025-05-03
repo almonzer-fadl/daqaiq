@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
 import dynamic from 'next/dynamic';
@@ -28,13 +28,7 @@ export default function SupplierAnalytics() {
     recentSales: []
   });
 
-  useEffect(() => {
-    if (session) {
-      fetchAnalytics();
-    }
-  }, [session, period]);
-
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
       setLoading(true);
       console.log('Fetching analytics...');
@@ -74,7 +68,13 @@ export default function SupplierAnalytics() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [period]);
+
+  useEffect(() => {
+    if (session) {
+      fetchAnalytics();
+    }
+  }, [session, fetchAnalytics]);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('ar-SA', {

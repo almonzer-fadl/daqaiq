@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
 import Link from 'next/link';
+import Image from 'next/image';
 import CsvUploader from '../../components/CsvUploader';
 import { SUPPLIER_TRANSLATIONS as t } from '../../constants/translations';
 
@@ -21,13 +22,7 @@ export default function InventoryManagement() {
     type: 'increase'
   });
 
-  useEffect(() => {
-    if (session?.user) {
-      fetchInventory();
-    }
-  }, [session, filter, page]);
-
-  const fetchInventory = async () => {
+  const fetchInventory = useCallback(async () => {
     try {
       console.log('Fetching inventory...');
       const response = await fetch(
@@ -52,7 +47,13 @@ export default function InventoryManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, page]);
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchInventory();
+    }
+  }, [session, fetchInventory]);
 
   const handleStockUpdate = async (productId) => {
     try {
@@ -276,18 +277,17 @@ export default function InventoryManagement() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    {product.image && (
-                      <div className="flex-shrink-0 h-10 w-10 relative">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="h-10 w-10 rounded-full object-cover"
-                        />
-                      </div>
-                    )}
+                    <div className="flex-shrink-0 h-10 w-10 relative">
+                      <Image
+                        src={product.image || '/placeholder.png'}
+                        alt={product.name}
+                        fill
+                        className="object-cover rounded-md"
+                      />
+                    </div>
                     <div className="mr-4">
                       <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                      <div className="text-sm text-gray-500">{product.category}</div>
+                      <div className="text-sm text-gray-500">{product.sku}</div>
                     </div>
                   </div>
                 </td>

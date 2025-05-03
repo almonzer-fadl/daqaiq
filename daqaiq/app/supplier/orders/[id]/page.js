@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
@@ -14,13 +14,7 @@ export default function OrderDetails() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (session?.user && params?.id) {
-      fetchOrder();
-    }
-  }, [session, params?.id]);
-
-  const fetchOrder = async () => {
+  const fetchOrder = useCallback(async () => {
     try {
       const response = await fetch(`/api/supplier/orders/${params.id}`);
       const data = await response.json();
@@ -36,7 +30,13 @@ export default function OrderDetails() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    if (session?.user && params?.id) {
+      fetchOrder();
+    }
+  }, [session, params?.id, fetchOrder]);
 
   const handleStatusChange = async (newStatus) => {
     try {

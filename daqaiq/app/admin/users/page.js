@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function UsersPage() {
@@ -17,11 +17,7 @@ export default function UsersPage() {
   const router = useRouter();
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    fetchUsers();
-  }, [page, searchTerm, roleFilter, statusFilter]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const queryParams = new URLSearchParams({
@@ -43,7 +39,11 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, searchTerm, roleFilter, statusFilter, itemsPerPage]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleBulkAction = async (action) => {
     if (!selectedUsers.length) return;

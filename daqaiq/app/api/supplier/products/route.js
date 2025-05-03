@@ -5,6 +5,10 @@ import Product from '../../../lib/models/Product';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import { generateSlug } from '../../../lib/utils/slug';
 
+// Add segment config to explicitly mark as dynamic
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(req) {
   try {
     // Check authentication and role

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import Image from 'next/image';
@@ -26,13 +26,7 @@ export default function EditProduct() {
     quantity: '',
   });
 
-  useEffect(() => {
-    if (params?.id) {
-      fetchProduct();
-    }
-  }, [params?.id]);
-
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/supplier/products/${params.id}`);
@@ -66,7 +60,13 @@ export default function EditProduct() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    if (params?.id) {
+      fetchProduct();
+    }
+  }, [params?.id, fetchProduct]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

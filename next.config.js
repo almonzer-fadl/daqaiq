@@ -5,7 +5,6 @@ const nextConfig = {
       enabled: true
     }
   },
-  distDir: '.next',
   images: {
     remotePatterns: [
       {

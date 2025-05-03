@@ -1,4 +1,9 @@
+import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../lib/mongodb';
+
+// Add segment config to explicitly mark as dynamic
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function GET() {
   try {
@@ -8,18 +13,15 @@ export async function GET() {
     // Convert ObjectId to string
     const formattedCategories = categories.map(category => ({
       ...category,
-      
       _id: category._id.toString(),
     }));
 
-    return new Response(JSON.stringify(formattedCategories), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    return NextResponse.json(formattedCategories);
   } catch (error) {
     console.error('Error fetching categories:', error);
-    return new Response('Error fetching categories', { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch categories' },
+      { status: 500 }
+    );
   }
 } 

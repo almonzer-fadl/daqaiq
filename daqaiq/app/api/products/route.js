@@ -3,6 +3,10 @@ import { connectToDatabase } from '../../lib/mongodb';
 import Product from '../../lib/models/Product';
 import mongoose from 'mongoose';
 
+// Add segment config to explicitly mark as dynamic
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(request) {
   try {
     await connectToDatabase();

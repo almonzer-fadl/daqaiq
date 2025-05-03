@@ -1,6 +1,10 @@
 import { connectToDatabase } from '../../../lib/mongodb';
 import { NextResponse } from 'next/server';
 
+// Add segment config to explicitly mark as dynamic
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET() {
   try {
     const { db } = await connectToDatabase();

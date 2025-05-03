@@ -117,7 +117,7 @@ export default function ProductForm({ initialData, onSubmit, submitButtonText = 
         }
       });
     };
-  }, []);
+  }, [previewUrls]);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
