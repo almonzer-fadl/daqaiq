@@ -366,5 +366,34 @@ export const SUPPLIER_TRANSLATIONS = {
     back: 'رجوع',
     next: 'التالي',
     previous: 'السابق'
+  },
+
+  FORM: {
+    TITLE: 'Supplier Registration',
+    NAME: 'Full Name',
+    EMAIL: 'Email Address',
+    PASSWORD: 'Password',
+    COMPANY_NAME: 'Company Name',
+    COMPANY_REGISTRATION: 'Company Registration Number',
+    SUBMIT: 'Register as Supplier',
+    ERRORS: {
+      REQUIRED: 'This field is required',
+      INVALID_EMAIL: 'Please enter a valid email address',
+      PASSWORD_LENGTH: 'Password must be at least 8 characters',
+      PASSWORD_NUMBER: 'Password must contain at least one number',
+      COMPANY_NAME_REQUIRED: 'Company name is required',
+      COMPANY_REGISTRATION_REQUIRED: 'Company registration number is required'
+    }
+  },
+  SUCCESS: {
+    TITLE: 'Registration Successful!',
+    MESSAGE: 'Your supplier account has been created successfully. Please check your email for verification.',
+    LOGIN_LINK: 'Go to Login'
+  },
+  ERROR: {
+    TITLE: 'Registration Failed',
+    GENERIC: 'Something went wrong during registration. Please try again.',
+    USER_EXISTS: 'A user with this email already exists.',
+    INVALID_DATA: 'Please check your input and try again.'
   }
 }; 

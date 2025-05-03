@@ -1,112 +1,47 @@
 export const categories = [
   {
-    id: 'electronics',
-    name: 'Electronics',
-    slug: 'electronics',
-    description: 'Latest electronic devices and accessories',
-    image: '/images/categories/electronics.jpg',
-    featuredOrder: 1,
+    id: 1,
+    name: 'Car Parts',
+    slug: 'car-parts',
+    image: '/images/categories/car-parts.webp',
     subcategories: [
-      {
-        name: 'Headphones',
-        slug: 'headphones'
-      },
-      {
-        name: 'Smartwatches',
-        slug: 'smartwatches'
-      },
-      {
-        name: 'Smartphones',
-        slug: 'smartphones'
-      }
+      { name: 'Engine Parts', slug: 'engine-parts' },
+      { name: 'Brake System', slug: 'brake-system' },
+      { name: 'Transmission', slug: 'transmission' },
+      { name: 'Suspension', slug: 'suspension' }
     ]
   },
   {
-    id: 'clothing',
-    name: 'Clothing',
-    slug: 'clothing',
-    description: 'Fashion items and accessories',
-    image: '/images/categories/clothing.jpg',
-    featuredOrder: 2,
+    id: 2,
+    name: 'Accessories',
+    slug: 'accessories',
+    image: '/images/categories/accessories.webp',
     subcategories: [
-      {
-        name: 'T-Shirts',
-        slug: 't-shirts'
-      },
-      {
-        name: 'Pants',
-        slug: 'pants'
-      },
-      {
-        name: 'Dresses',
-        slug: 'dresses'
-      }
+      { name: 'Interior', slug: 'interior-accessories' },
+      { name: 'Exterior', slug: 'exterior-accessories' },
+      { name: 'Electronics', slug: 'electronics' }
     ]
   },
   {
-    id: 'home-garden',
-    name: 'Home & Garden',
-    slug: 'home-garden',
-    description: 'Everything for your home and garden',
-    image: '/images/categories/home-garden.jpg',
-    featuredOrder: 3,
+    id: 3,
+    name: 'Tools',
+    slug: 'tools',
+    image: '/images/categories/tools.webp',
     subcategories: [
-      {
-        name: 'Furniture',
-        slug: 'furniture'
-      },
-      {
-        name: 'Garden Tools',
-        slug: 'garden-tools'
-      },
-      {
-        name: 'Home Decor',
-        slug: 'home-decor'
-      }
+      { name: 'Hand Tools', slug: 'hand-tools' },
+      { name: 'Power Tools', slug: 'power-tools' },
+      { name: 'Diagnostic Tools', slug: 'diagnostic-tools' }
     ]
   },
   {
-    id: 'sports',
-    name: 'Sports',
-    slug: 'sports',
-    description: 'Sports equipment and accessories',
-    image: '/images/categories/sports.jpg',
-    featuredOrder: 4,
+    id: 4,
+    name: 'Maintenance',
+    slug: 'maintenance',
+    image: '/images/categories/maintenance.webp',
     subcategories: [
-      {
-        name: 'Exercise Equipment',
-        slug: 'exercise-equipment'
-      },
-      {
-        name: 'Sports Wear',
-        slug: 'sports-wear'
-      },
-      {
-        name: 'Outdoor Sports',
-        slug: 'outdoor-sports'
-      }
-    ]
-  },
-  {
-    id: 'beauty',
-    name: 'Beauty',
-    slug: 'beauty',
-    description: 'Beauty and personal care products',
-    image: '/images/categories/beauty.jpg',
-    featuredOrder: 5,
-    subcategories: [
-      {
-        name: 'Skincare',
-        slug: 'skincare'
-      },
-      {
-        name: 'Makeup',
-        slug: 'makeup'
-      },
-      {
-        name: 'Hair Care',
-        slug: 'hair-care'
-      }
+      { name: 'Oils & Fluids', slug: 'oils-fluids' },
+      { name: 'Filters', slug: 'filters' },
+      { name: 'Cleaning', slug: 'cleaning' }
     ]
   }
 ]; 

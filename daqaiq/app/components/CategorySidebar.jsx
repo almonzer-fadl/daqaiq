@@ -24,47 +24,44 @@ export default function CategorySidebar({
   }
   
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-semibold mb-4">Categories</h2>
-      <nav>
-        <ul className="space-y-2">
-          {categories.map((category) => (
-            <li key={category.slug} className="space-y-2">
-              <Link
-                href={`/category/${category.slug}`}
-                className={`block hover:text-primary transition-colors ${
-                  currentCategorySlug === category.slug ? 'text-primary font-semibold' : 'text-gray-700'
-                }`}
-              >
-                {category.name}
-                {category.count > 0 && (
-                  <span className="text-sm text-gray-500 ml-2">({category.count})</span>
-                )}
-              </Link>
-              
-              {category.subcategories && category.subcategories.length > 0 && (
-                <ul className="pl-4 space-y-1 border-l border-gray-200">
-                  {category.subcategories.map((sub) => (
-                    <li key={sub.slug}>
-                      <Link
-                        href={`/category/${category.slug}?subcategory=${sub.slug}`}
-                        className={`block text-sm hover:text-primary transition-colors ${
-                          currentSubcategorySlug === sub.slug ? 'text-primary font-semibold' : 'text-gray-600'
-                        }`}
-                      >
-                        {sub.name}
-                        {sub.count > 0 && (
-                          <span className="text-xs text-gray-500 ml-2">({sub.count})</span>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+    <div className="bg-base-100 rounded-lg shadow-lg p-6">
+      <h2 className="text-xl font-bold mb-4">Categories</h2>
+      <div className="space-y-4">
+        {categories.map((category) => (
+          <div key={category._id} className="space-y-2">
+            <Link
+              href={`/category/${category.slug}`}
+              className={`block font-medium hover:text-primary transition-colors ${
+                currentCategorySlug === category.slug ? 'text-primary' : 'text-base-content'
+              }`}
+            >
+              {category.name}
+              {category.count > 0 && (
+                <span className="ml-2 text-sm text-gray-500">({category.count})</span>
               )}
-            </li>
-          ))}
-        </ul>
-      </nav>
+            </Link>
+            
+            {category.subcategories && category.subcategories.length > 0 && (
+              <div className="pl-4 space-y-2">
+                {category.subcategories.map((sub) => (
+                  <Link
+                    key={sub.slug}
+                    href={`/category/${category.slug}?subcategory=${sub.slug}`}
+                    className={`block text-sm hover:text-primary transition-colors ${
+                      currentSubcategorySlug === sub.slug ? 'text-primary' : 'text-base-content'
+                    }`}
+                  >
+                    {sub.name}
+                    {sub.count > 0 && (
+                      <span className="ml-2 text-xs text-gray-500">({sub.count})</span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
       
       {/* Price Range Filter */}
       <div className="mt-8">

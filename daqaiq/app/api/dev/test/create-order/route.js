@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { connectToDatabase } from '../../../lib/mongodb';
-import Order from '../../../lib/models/Order';
-import User from '../../../lib/models/User';
-import Product from '../../../lib/models/Product';
+import { connectToDatabase } from '../../../../lib/mongodb';
+import Order from '../../../../lib/models/Order';
+import User from '../../../../lib/models/User';
+import Product from '../../../../lib/models/Product';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '../../../auth/[...nextauth]/route';
 
 export async function POST() {
   try {

@@ -1,4 +1,4 @@
-import { connectToDatabase } from '@/lib/mongodb';
+import { connectToDatabase } from './mongodb';
 
 export async function getProductBySlug(slug) {
   try {

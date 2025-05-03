@@ -1,220 +1,76 @@
 // ./app/data/productData.js
 
 export const carProducts = {
-  Offers: {
-    title: "عروض السيارات",
-    services: [
-      {
-        id: "car-offer-1",
-        title: "زيت محرك سينثيتك",
-        description: "زيت محرك عالي الجودة لجميع أنواع السيارات",
-        image: "/images/car-oil.jpg",
-        rating: 4.5,
-        reviewCount: 120,
-        discountPrice: 75,
-        originalPrice: 95,
-        discountPercentage: 21,
-        badge: "الأكثر مبيعاً",
-        badgeColor: "#FF6B6B",
-        freeShipping: true,
-        shippingText: "شحن مجاني"
-      },
-      {
-        id: "car-offer-2",
-        title: "منظف داخلي للسيارة",
-        description: "منظف داخلي متعدد الاستخدامات للسيارة",
-        image: "/images/car-cleaner.jpg",
-        rating: 4.2,
-        reviewCount: 84,
-        discountPrice: 45,
-        originalPrice: 60,
-        discountPercentage: 25,
-        freeShipping: false
-      },
-      {
-        id: "car-offer-3",
-        title: "شاحن سيارة USB",
-        description: "شاحن سريع للسيارة مع منفذين USB",
-        image: "/images/car-charger.jpg",
-        rating: 4.7,
-        reviewCount: 156,
-        discountPrice: 35,
-        originalPrice: 50,
-        discountPercentage: 30,
-        freeShipping: true,
-        shippingText: "شحن مجاني"
-      },
-      {
-        id: "car-offer-4",
-        title: "حامل هاتف للسيارة",
-        description: "حامل هاتف مغناطيسي لتثبيت الهاتف أثناء القيادة",
-        image: "/images/car-phone-holder.jpg",
-        rating: 4.0,
-        reviewCount: 92,
-        discountPrice: 40,
-        originalPrice: 65,
-        discountPercentage: 38,
-        freeShipping: true,
-        shippingText: "شحن مجاني"
-      },
-      {
-        id: "car-offer-5",
-        title: "مضخة هواء محمولة",
-        description: "مضخة هواء رقمية لإطارات السيارة",
-        image: "/images/car-air-pump.jpg",
-        rating: 4.6,
-        reviewCount: 78,
-        discountPrice: 120,
-        originalPrice: 150,
-        discountPercentage: 20,
-        badge: "عرض محدود",
-        badgeColor: "#5CB85C",
-        freeShipping: false
-      }
-    ]
-  },
-  SpareParts: {
-    title: "قطع غيار السيارات",
-    services: [
-      {
-        id: "spare-part-1",
-        title: "فلتر زيت بريميوم",
-        description: "فلتر زيت عالي الجودة يناسب معظم السيارات",
-        image: "/images/oil-filter.jpg",
-        rating: 4.8,
-        reviewCount: 203,
-        discountPrice: 25,
-        originalPrice: 35,
-        discountPercentage: 29,
-        freeShipping: true,
-        shippingText: "شحن مجاني"
-      },
-      {
-        id: "spare-part-2",
-        title: "شمعات إشعال إيريديوم",
-        description: "مجموعة من 4 شمعات إشعال عالية الأداء",
-        image: "/images/spark-plugs.jpg",
-        rating: 4.5,
-        reviewCount: 117,
-        discountPrice: 85,
-        originalPrice: 110,
-        discountPercentage: 23,
-        badge: "توصية الخبراء",
-        badgeColor: "#428BCA",
-        freeShipping: false
-      },
-      {
-        id: "spare-part-3",
-        title: "مساحات زجاج أمامي",
-        description: "مساحات سيليكون عالية الجودة مقاومة للماء",
-        image: "/images/wipers.jpg",
-        rating: 4.3,
-        reviewCount: 94,
-        discountPrice: 55,
-        originalPrice: 75,
-        discountPercentage: 27,
-        freeShipping: true,
-        shippingText: "شحن مجاني"
-      },
-      {
-        id: "spare-part-4",
-        title: "فلتر هواء رياضي",
-        description: "فلتر هواء عالي الأداء للسيارات الرياضية",
-        image: "/images/air-filter.jpg",
-        rating: 4.7,
-        reviewCount: 142,
-        discountPrice: 110,
-        originalPrice: 150,
-        discountPercentage: 27,
-        freeShipping: false
-      },
-      {
-        id: "spare-part-5",
-        title: "بطارية سيارة 12 فولت",
-        description: "بطارية سيارة ذات أداء عالي مع ضمان لمدة 3 سنوات",
-        image: "/images/car-battery.jpg",
-        rating: 4.9,
-        reviewCount: 231,
-        discountPrice: 320,
-        originalPrice: 400,
-        discountPercentage: 20,
-        badge: "الأفضل مبيعاً",
-        badgeColor: "#FF6B6B",
-        freeShipping: true,
-        shippingText: "شحن مجاني"
-      }
-    ]
-  },
-  Accessories: {
-    title: "اكسسوارات السيارات",
-    services: [
-      {
-        id: "accessory-1",
-        title: "دعاسات أرضية فاخرة",
-        description: "مجموعة دعاسات أرضية مقاومة للماء وسهلة التنظيف",
-        image: "/images/floor-mats.jpg",
-        rating: 4.4,
-        reviewCount: 87,
-        discountPrice: 95,
-        originalPrice: 120,
-        discountPercentage: 21,
-        freeShipping: true,
-        shippingText: "شحن مجاني"
-      },
-      {
-        id: "accessory-2",
-        title: "غطاء مقود جلد",
-        description: "غطاء مقود من الجلد الفاخر مريح ومقاوم للانزلاق",
-        image: "/images/steering-cover.jpg",
-        rating: 4.2,
-        reviewCount: 63,
-        discountPrice: 65,
-        originalPrice: 90,
-        discountPercentage: 28,
-        freeShipping: false
-      },
-      {
-        id: "accessory-3",
-        title: "مصابيح LED داخلية",
-        description: "مجموعة إضاءة LED داخلية للسيارة مع تحكم عن بعد",
-        image: "/images/interior-lights.jpg",
-        rating: 4.6,
-        reviewCount: 105,
-        discountPrice: 75,
-        originalPrice: 100,
-        discountPercentage: 25,
-        badge: "موصى به",
-        badgeColor: "#5CB85C",
-        freeShipping: true,
-        shippingText: "شحن مجاني"
-      },
-      {
-        id: "accessory-4",
-        title: "وسادة مسند رقبة",
-        description: "وسادة مسند رقبة مريحة للرحلات الطويلة",
-        image: "/images/neck-pillow.jpg",
-        rating: 4.3,
-        reviewCount: 78,
-        discountPrice: 40,
-        originalPrice: 55,
-        discountPercentage: 27,
-        freeShipping: false
-      },
-      {
-        id: "accessory-5",
-        title: "حقيبة تنظيم الأمتعة",
-        description: "حقيبة متينة لتنظيم الأمتعة في صندوق السيارة",
-        image: "/images/trunk-organizer.jpg",
-        rating: 4.5,
-        reviewCount: 92,
-        discountPrice: 85,
-        originalPrice: 110,
-        discountPercentage: 23,
-        freeShipping: true,
-        shippingText: "شحن مجاني"
-      }
-    ]
-  }
+  Offers: [
+    {
+      id: 1,
+      name: 'Premium Brake Kit',
+      slug: 'premium-brake-kit',
+      description: 'Complete brake kit with high-performance pads and rotors',
+      price: 299.99,
+      oldPrice: 399.99,
+      discount: 25,
+      image: '/images/products/brake-kit.webp',
+      category: 'car-parts',
+      subcategory: 'brake-system'
+    },
+    {
+      id: 2,
+      name: 'LED Headlight Set',
+      slug: 'led-headlight-set',
+      description: 'Ultra-bright LED headlight conversion kit',
+      price: 199.99,
+      oldPrice: 249.99,
+      discount: 20,
+      image: '/images/products/led-headlights.webp',
+      category: 'accessories',
+      subcategory: 'exterior-accessories'
+    }
+  ],
+  SpareParts: [
+    {
+      id: 3,
+      name: 'Oil Filter Pack',
+      slug: 'oil-filter-pack',
+      description: 'High-quality oil filters for all major car brands',
+      price: 24.99,
+      image: '/images/products/oil-filter.webp',
+      category: 'maintenance',
+      subcategory: 'filters'
+    },
+    {
+      id: 4,
+      name: 'Spark Plug Set',
+      slug: 'spark-plug-set',
+      description: 'Premium spark plugs for optimal engine performance',
+      price: 49.99,
+      image: '/images/products/spark-plugs.webp',
+      category: 'car-parts',
+      subcategory: 'engine-parts'
+    }
+  ],
+  Accessories: [
+    {
+      id: 5,
+      name: 'Car Cover Deluxe',
+      slug: 'car-cover-deluxe',
+      description: 'All-weather protection for your vehicle',
+      price: 89.99,
+      image: '/images/products/car-cover.webp',
+      category: 'accessories',
+      subcategory: 'exterior-accessories'
+    },
+    {
+      id: 6,
+      name: 'Diagnostic Scanner',
+      slug: 'diagnostic-scanner',
+      description: 'Professional-grade OBD2 scanner',
+      price: 159.99,
+      image: '/images/products/scanner.webp',
+      category: 'tools',
+      subcategory: 'diagnostic-tools'
+    }
+  ]
 };
 
 export const electronicsProducts = {

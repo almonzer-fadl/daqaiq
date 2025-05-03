@@ -1,82 +1,197 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { SUPPLIER_TRANSLATIONS as t } from '../../../../constants/translations';
-import { FormFields } from './components/FormFields';
-import { SuccessMessage } from './components/SuccessMessage';
-import { useSupplierForm } from './hooks/useSupplierForm';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/translations';
 
-export default function SupplierRegister() {
-  const {
-    formData,
-    loading,
-    error,
-    success,
-    handleChange,
-    handleSubmit,
-  } = useSupplierForm();
+export default function SupplierRegistrationPage() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    companyName: '',
+    companyRegistration: ''
+  });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const validateForm = () => {
+    if (!formData.name || !formData.email || !formData.password || !formData.companyName || !formData.companyRegistration) {
+      setError(t.FORM.ERRORS.REQUIRED);
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError(t.FORM.ERRORS.INVALID_EMAIL);
+      return false;
+    }
+
+    if (formData.password.length < 8) {
+      setError(t.FORM.ERRORS.PASSWORD_LENGTH);
+      return false;
+    }
+
+    if (!/\d/.test(formData.password)) {
+      setError(t.FORM.ERRORS.PASSWORD_NUMBER);
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/supplier/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || t.ERROR.GENERIC);
+      }
+
+      setIsSuccess(true);
+      setTimeout(() => {
+        router.push('/auth/signin');
+      }, 3000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full text-center">
+          <h2 className="text-3xl font-bold text-green-600 mb-4">{t.SUCCESS.TITLE}</h2>
+          <p className="text-gray-600 mb-8">{t.SUCCESS.MESSAGE}</p>
+          <p className="text-sm">Redirecting to login page...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8" dir="rtl">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <div className="flex justify-center">
-            <Image
-              src="/images/logo.png"
-              alt="Daqaiq Logo"
-              width={150}
-              height={150}
-              className="h-12 w-auto"
-            />
-          </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {t.registerNewSupplier}
+            {t.FORM.TITLE}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            {t.alreadyHaveAccount}{' '}
-            <Link href="/auth/signin" className="font-medium text-[#4F46E5] hover:text-[#4338CA]">
-              {t.signIn}
-            </Link>
-          </p>
         </div>
 
-        {success ? (
-          <SuccessMessage />
-        ) : (
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="bg-red-50 border-l-4 border-red-400 p-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div className="mr-3">
-                    <p className="text-sm text-red-700">{error}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <FormFields
-              formData={formData}
-              handleChange={handleChange}
-              error={error}
-            />
-
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#4F46E5] hover:bg-[#4338CA] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4F46E5] disabled:bg-[#4F46E5]/70"
-              >
-                {loading ? t.registering : t.register}
-              </button>
+              <label htmlFor="name" className="sr-only">{t.FORM.NAME}</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                placeholder={t.FORM.NAME}
+                value={formData.name}
+                onChange={handleChange}
+              />
             </div>
-          </form>
-        )}
+            <div>
+              <label htmlFor="email" className="sr-only">{t.FORM.EMAIL}</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                placeholder={t.FORM.EMAIL}
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">{t.FORM.PASSWORD}</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                placeholder={t.FORM.PASSWORD}
+                value={formData.password}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="companyName" className="sr-only">{t.FORM.COMPANY_NAME}</label>
+              <input
+                id="companyName"
+                name="companyName"
+                type="text"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                placeholder={t.FORM.COMPANY_NAME}
+                value={formData.companyName}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="companyRegistration" className="sr-only">{t.FORM.COMPANY_REGISTRATION}</label>
+              <input
+                id="companyRegistration"
+                name="companyRegistration"
+                type="text"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                placeholder={t.FORM.COMPANY_REGISTRATION}
+                value={formData.companyRegistration}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          {error && (
+            <div className="text-red-500 text-sm text-center">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-focus focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            >
+              {isLoading ? 'Registering...' : t.FORM.SUBMIT}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

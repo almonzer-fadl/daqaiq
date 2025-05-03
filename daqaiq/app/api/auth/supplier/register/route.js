@@ -1,76 +1,62 @@
-import { NextResponse } from 'next/server';
+import { connectToDatabase } from '@/lib/mongodb';
+import User from '@/lib/models/User';
+import { validateRegistration } from '@/lib/utils/validation';
 import bcrypt from 'bcryptjs';
-import { connectToDB } from '@/lib/mongoose';
-import User from '@/models/user';
-import { validateEmail, validatePassword } from '@/lib/validation';
 
-export async function POST(req) {
+export async function POST(request) {
   try {
-    const { name, email, password, companyName, companyRegistration } = await req.json();
-
-    // Validate required fields
-    if (!name || !email || !password || !companyName || !companyRegistration) {
-      return NextResponse.json(
-        { error: 'All fields are required' },
-        { status: 400 }
-      );
+    const data = await request.json();
+    
+    // Validate registration data
+    const validationError = validateRegistration(data);
+    if (validationError) {
+      return new Response(JSON.stringify({ error: validationError }), {
+        
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
-    // Validate email format
-    if (!validateEmail(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
-
-    // Validate password
-    if (!validatePassword(password)) {
-      return NextResponse.json(
-        { error: 'Password must be at least 8 characters and contain at least one number' },
-        { status: 400 }
-      );
-    }
-
-    await connectToDB();
+    await connectToDatabase();
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: data.email });
     if (existingUser) {
-      return NextResponse.json(
-        { error: 'Email already registered' },
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: 'User already exists' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(data.password, 12);
 
-    // Create new supplier user
-    const newUser = await User.create({
-      name,
-      email,
+    // Create new user
+    const user = await User.create({
+      ...data,
       password: hashedPassword,
-      roles: ['supplier'],
-      companyName,
-      companyRegistration,
-      emailVerified: null, // Requires verification
+      role: 'supplier',
+      isVerified: false,
     });
 
-    // TODO: Send verification email
+    return new Response(JSON.stringify({ 
+      message: 'Supplier registered successfully',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
 
-    return NextResponse.json(
-      { 
-        message: 'Supplier registered successfully. Please check your email for verification.',
-        userId: newUser._id 
-      },
-      { status: 201 }
-    );
   } catch (error) {
-    console.error('Supplier registration error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('Registration error:', error);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 } 

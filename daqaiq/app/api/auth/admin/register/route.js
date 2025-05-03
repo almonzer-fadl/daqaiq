@@ -1,84 +1,51 @@
-import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
 import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/models/user';
+import User from '@/lib/models/User';
+import bcrypt from 'bcryptjs';
 
-export async function POST(req) {
+export async function POST(request) {
   try {
-    const { name, email, password } = await req.json();
-
-    // Validate required fields
-    if (!name || !email || !password) {
-      return NextResponse.json(
-        { error: 'Please provide all required fields' },
-        { status: 400 }
-      );
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Please provide a valid email address' },
-        { status: 400 }
-      );
-    }
-
-    // Validate password strength
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: 'Password must be at least 6 characters long' },
-        { status: 400 }
-      );
-    }
+    const { name, email, password } = await request.json();
 
     await connectToDatabase();
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return NextResponse.json(
-        { error: 'Email already registered' },
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: 'User already exists' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create new admin user
+    // Create new user
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
-      roles: ['main-admin'],
-      isVerified: true,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      role: 'admin',
     });
 
-    // Remove password from response
-    const userWithoutPassword = {
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      roles: user.roles,
-      isVerified: user.isVerified
-    };
-
-    return NextResponse.json(
-      {
-        message: 'Admin registration successful.',
-        user: userWithoutPassword
-      },
-      { status: 201 }
-    );
+    return new Response(JSON.stringify({ 
+      message: 'Admin registered successfully',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
 
   } catch (error) {
-    console.error('Admin Registration Error:', error);
-    return NextResponse.json(
-      { error: 'Something went wrong during registration' },
-      { status: 500 }
-    );
+    console.error('Registration error:', error);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 } 

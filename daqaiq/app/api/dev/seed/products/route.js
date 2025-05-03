@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { seedProducts } from '@/lib/seed/seedProducts';
+import { seedProducts } from '../../../../lib/seed/seedProducts';
 
 export async function POST() {
   try {

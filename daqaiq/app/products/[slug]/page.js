@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation';
-import { connectToDatabase } from '@/lib/mongodb'; // Ensure this is the correct import
+import { connectToDatabase } from '@/lib/mongodb';
 import Image from 'next/image';
-import styles from './ProductDetail.module.css'; // Create this CSS module
-import { StarRating } from '@/components/StarRating';
-import { HeartIcon } from '@/components/icons/HeartIcon';
-import { DeliveryIcon } from '@/components/icons/DeliveryIcon';
+import styles from './ProductDetail.module.css';
+import StarRating from '@/components/StarRating';
+import { HeartIcon } from '../../components/icons/HeartIcon';
+import { DeliveryIcon } from '../../components/icons/DeliveryIcon';
 
 async function getProductBySlug(slug) {
   try {
@@ -49,150 +49,89 @@ export default async function ProductPage({ params }) {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.productDetail}>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Side - Image Gallery */}
-        <div className={styles.imageSection}>
-          <div className={styles.mainImage}>
+        <div className="lg:w-1/2">
+          <div className="relative h-96 rounded-lg overflow-hidden">
             <Image
-              src={product.images[0]}
+              src={product.image}
               alt={product.name}
-              width={500}
-              height={500}
-              className={styles.productImage}
+              fill
+              className="object-cover"
               priority
             />
-          </div>
-          <div className={styles.thumbnails}>
-            {product.images.map((image, index) => (
-              <div key={index} className={styles.thumbnail}>
-                <Image
-                  src={image}
-                  alt={`${product.name} - view ${index + 1}`}
-                  width={60}
-                  height={60}
-                />
-              </div>
-            ))}
           </div>
         </div>
 
         {/* Right Side - Product Info */}
-        <div className={styles.productInfo}>
-          {/* Country Badge */}
-          <div className={styles.countryBadge}>
-            <Image 
-              src="/images/flags/kr.svg" 
-              alt="Made in Korea" 
-              width={24} 
-              height={16} 
-              className={styles.flagIcon} 
-            />
-            <span>Made in Korea</span>
-          </div>
-
-          {/* Product Title */}
-          <h1 className={styles.productName}>{product.name}</h1>
+        <div className="lg:w-1/2">
+          <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
 
           {/* Ratings Section */}
-          <div className={styles.ratingsSection}>
-            <StarRating rating={product.rating || 4.6} />
-            <span className={styles.reviewCount}>(1309)</span>
-            <button className={styles.readReviews}>Read reviews</button>
+          <div className="flex items-center gap-4 mb-6">
+            <StarRating rating={product.rating || 4.5} />
+            <span className="text-gray-600">(50+ reviews)</span>
           </div>
 
           {/* Price Section */}
-          <div className={styles.priceSection}>
-            <div className={styles.priceHeader}>
-              {product.discountPercentage && (
-                <span className={styles.discountBadge}>
-                  -{product.discountPercentage}%
+          <div className="mb-8">
+            <div className="flex items-center gap-4">
+              {product.discount && (
+                <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm">
+                  {product.discount}% OFF
                 </span>
               )}
-              <div className={styles.priceDisplay}>
-                <span className={styles.currentPrice}>
-                  {product.price} SAR
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-primary">
+                  ${product.price}
                 </span>
-                {product.originalPrice && (
-                  <span className={styles.originalPrice}>
-                    {product.originalPrice} SAR
+                {product.oldPrice && (
+                  <span className="text-lg text-gray-400 line-through">
+                    ${product.oldPrice}
                   </span>
                 )}
               </div>
             </div>
-            
-            {/* Bank Offers */}
-            <div className={styles.bankOffers}>
-              <div className={styles.offerCard}>
-                <Image src="/stc-logo.png" alt="STC Bank" width={40} height={20} />
-                <span>STC Bank Exclusive: Enjoy up to 50% off with bank offers!</span>
-              </div>
-              <div className={styles.offerCard}>
-                <Image src="/tabby-logo.png" alt="Tabby" width={40} height={20} />
-                <span>Pay in 4 interest-free payments of 8.90 SAR</span>
-              </div>
-            </div>
           </div>
 
+          {/* Description */}
+          <p className="text-gray-600 mb-8">
+            {product.description}
+          </p>
+
           {/* Actions Section */}
-          <div className={styles.actions}>
-            <div className={styles.quantity}>
-              <button className={styles.quantityBtn}>-</button>
-              <input type="number" defaultValue={1} min={1} className={styles.quantityInput} />
-              <button className={styles.quantityBtn}>+</button>
+          <div className="flex gap-4 mb-8">
+            <div className="flex items-center border rounded-lg">
+              <button className="px-4 py-2 text-lg">-</button>
+              <input
+                type="number"
+                defaultValue={1}
+                min={1}
+                className="w-16 text-center border-x"
+              />
+              <button className="px-4 py-2 text-lg">+</button>
             </div>
-            <button className={styles.addToCartBtn}>ADD TO CART</button>
-            <button className={styles.favoriteBtn}>
-              <HeartIcon />
+            <button className="btn btn-primary flex-1">
+              Add to Cart
             </button>
           </div>
 
-          {/* Delivery Info */}
-          <div className={styles.deliveryInfo}>
-            <div className={styles.deliveryDate}>
-              <span>Delivery: 23 - 26 March</span>
-            </div>
-            <div className={styles.shippingInfo}>
-              <span>Shipped from</span>
-              <Image src="/saudi-flag.png" alt="Saudi Arabia" width={20} height={14} />
-              <span>Saudi Arabia</span>
-              <span className={styles.localDelivery}>Local delivery</span>
-            </div>
-          </div>
-
-          {/* Product Details */}
-          <div className={styles.detailsSection}>
-            <div className={styles.detailsHeader}>
-              <button className={`${styles.detailTab} ${styles.active}`}>
-                Product details
-              </button>
-              <button className={styles.detailTab}>
-                Product information
-              </button>
-              <button className={styles.detailTab}>
-                Ingredients
-              </button>
-            </div>
-            <div className={styles.detailContent}>
-              <p>{product.description}</p>
-              {product.specifications && (
-                <div className={styles.specifications}>
-                  {Object.entries(product.specifications).map(([key, value]) => (
-                    <div key={key} className={styles.specItem}>
-                      <span className={styles.specKey}>{key}</span>
-                      <span className={styles.specValue}>{value}</span>
-                    </div>
-                  ))}
+          {/* Additional Info */}
+          <div className="border-t pt-6">
+            <h2 className="text-xl font-semibold mb-4">Product Details</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <span className="text-gray-600">Category:</span>
+                <span className="ml-2">{product.category}</span>
+              </div>
+              {product.subcategory && (
+                <div>
+                  <span className="text-gray-600">Subcategory:</span>
+                  <span className="ml-2">{product.subcategory}</span>
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Most Viewed Section */}
-          <div className={styles.mostViewed}>
-            <span>#1</span>
-            <span>Most viewed</span>
-            <span>in Face Serums</span>
           </div>
         </div>
       </div>

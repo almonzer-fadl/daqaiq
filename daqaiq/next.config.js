@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    turbo: true
+    turbo: {
+      enabled: true
+    }
   },
   distDir: '.next',
   images: {
@@ -61,17 +63,20 @@ const nextConfig = {
     ];
   },
   webpack: (config, { isServer }) => {
-    // Ensure proper path handling
     config.resolve.extensions = ['.js', '.jsx', '.json'];
-    
-    if (!isServer) {
-      // Polyfills for client-side
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        path: require.resolve('path-browserify'),
-      };
+  
+    if (!config.resolve.fallback) {
+      config.resolve.fallback = {};
     }
-
+  
+    if (!isServer) {
+      // Only polyfill for client-side
+      config.resolve.fallback.path = require.resolve('path-browserify');
+    } else {
+      // Explicitly avoid polyfill on server-side
+      config.resolve.fallback.path = false;
+    }
+  
     return config;
   }
 };

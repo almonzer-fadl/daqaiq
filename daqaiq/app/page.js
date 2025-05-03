@@ -1,58 +1,57 @@
 import Image from "next/image";
-import Hero from "./components/Hero/Hero";
-import Footer from "./components/footer";
-import ProductSlider from './components/ProductSlider';
+import HeroMain from "./components/HeroMain/HeroMain";
+import FooterMain from "./components/FooterMain";
+import SliderProduct from './components/SliderProduct';
 import { carProducts } from './data/productData';
-import Headertop from "./components/headertop";
-import Navbar from "./components/navbar";
-import Navlinks from "./components/navlinks";
+import HeaderTop from "./components/HeaderTop";
+import NavbarMain from "./components/NavbarMain";
+import NavLinks from "./components/NavLinks";
 import styles from './page.module.css'; // Import a CSS module for custom styles
 import { categories } from './data/categories';
 import Link from 'next/link';
-import CategorySlider from './components/CategorySlider/CategorySlider';
-import ProductGridSection from './components/ProductGridSection';
+import SliderCategory from './components/SliderCategory/SliderCategory';
+import SectionProductGrid from './components/SectionProductGrid';
 
 export default function Home() {
   return (
     <div className="page-transition min-h-screen flex flex-col">
-      <Headertop />
-      <Navbar />
-      <Navlinks />
+      <HeaderTop />
+      <NavbarMain />
+      <NavLinks />
       <main className={`flex-grow ${styles.mainContent}`}>
         <div className={styles.contentContainer}>
-          <Hero />
+          <HeroMain />
           
           {/* Category Slider Component */}
-          <CategorySlider />
+          <SliderCategory />
           
-          <ProductSlider categoryData={carProducts.Offers} sectionId="car-products" />
+          <SliderProduct categoryData={carProducts.Offers} sectionId="car-products" />
           
-          
-          <ProductSlider categoryData={carProducts.SpareParts} sectionId="spare-parts" />
+          <SliderProduct categoryData={carProducts.SpareParts} sectionId="spare-parts" />
           
            {/* First two rows of products */}
-           <ProductGridSection startRow={0} numRows={2} />
+           <SectionProductGrid startRow={0} numRows={2} />
            
           {/* Third Slider */}
-          <ProductSlider categoryData={carProducts.Accessories} sectionId="accessories" />
+          <SliderProduct categoryData={carProducts.Accessories} sectionId="accessories" />
           
           {/* Remaining rows of products */}
-          <ProductGridSection startRow={2} numRows={6} />
+          <SectionProductGrid startRow={2} numRows={6} />
 
           {/* Category Slider Component */}
-          <CategorySlider />
+          <SliderCategory />
 
           {/* Remaining rows of products */}
-          <ProductGridSection startRow={6} numRows={7} />
+          <SectionProductGrid startRow={6} numRows={7} />
 
           {/* Last Slider */}
-          <ProductSlider categoryData={carProducts.Accessories} sectionId="accessories" />
+          <SliderProduct categoryData={carProducts.Accessories} sectionId="accessories" />
 
           {/* Remaining rows of products */}
-          <ProductGridSection startRow={7} numRows={38} />
+          <SectionProductGrid startRow={7} numRows={38} />
         </div>
       </main>
-      <Footer />
+      <FooterMain />
     </div>
   );
 }
