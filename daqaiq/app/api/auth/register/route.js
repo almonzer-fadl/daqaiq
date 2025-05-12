@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import { connectToDatabase } from '../../../lib/mongodb';
-import User from '../../../lib/models/User';
-import { sendVerificationEmail } from '../../../lib/email';
+import { connectToDatabase } from '../../../../lib/mongodb';
+import User from '../../../../lib/models/User';
+import { sendVerificationEmail } from '../../../../lib/lib/email';
 
 export async function POST(req) {
   try {

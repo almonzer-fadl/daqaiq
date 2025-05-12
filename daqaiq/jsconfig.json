@@ -2,7 +2,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./app/*"]
+      "@/*": ["./*"],
+      "@/lib/*": ["./lib/*"],
+      "@/models/*": ["./lib/models/*"],
+      "@/app/*": ["./app/*"],
+      "@/components/*": ["./app/components/*"],
+      "@/utils/*": ["./lib/utils/*"]
     },
     "jsx": "react-jsx",
     "module": "ESNext",

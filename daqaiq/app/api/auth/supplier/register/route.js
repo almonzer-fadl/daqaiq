@@ -1,6 +1,6 @@
-import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/lib/models/User';
-import { validateRegistration } from '@/lib/utils/validation';
+import { connectToDatabase } from '../../../../../lib/mongodb';
+import User from '../../../../../lib/models/User';
+import { validateRegistration } from '../../../../../lib/lib/utils/validation';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request) {

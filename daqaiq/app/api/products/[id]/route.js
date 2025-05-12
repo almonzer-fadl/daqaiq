@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
-import Product from '../../../lib/models/Product';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../auth/[...nextauth]/route';
+import { connectToDatabase } from '../../../../lib/mongodb';
+import Product from '../../../../lib/models/Product';
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI);
+// Add segment config to explicitly mark as dynamic
+export const dynamic = 'force-dynamic';
 
 export async function DELETE(request, { params }) {
   try {
+    await connectToDatabase();
     const { id } = params;
     
     const deletedProduct = await Product.findByIdAndDelete(id);
@@ -29,6 +32,7 @@ export async function DELETE(request, { params }) {
 
 export async function PATCH(request, { params }) {
   try {
+    await connectToDatabase();
     const { id } = params;
     const updates = await request.json();
     
@@ -55,9 +59,10 @@ export async function PATCH(request, { params }) {
 }
 
 export async function GET(request, { params }) {
-  const { id } = params;
-
   try {
+    await connectToDatabase();
+    const { id } = params;
+
     const product = await Product.findById(id);
 
     if (!product) {

@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { connectToDatabase } from '@/lib/mongodb';
 import Image from 'next/image';
 import styles from './ProductDetail.module.css';
-import StarRating from '@/components/StarRating';
+import StarRating from '../../components/StarRating';
 import { HeartIcon } from '../../components/icons/HeartIcon';
 import { DeliveryIcon } from '../../components/icons/DeliveryIcon';
 
@@ -24,6 +24,8 @@ async function getProductBySlug(slug) {
     return null;
   }
 }
+
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
   const product = await getProductBySlug(params.slug);

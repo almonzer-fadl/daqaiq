@@ -9,42 +9,40 @@ const categorySchema = new mongoose.Schema({
   slug: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    trim: true
   },
   description: {
-    type: String
+    type: String,
+    trim: true
   },
-  parent: {
+  parentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
     default: null
   },
-  level: {
-    type: Number,
-    default: 1
-  },
-  order: {
-    type: Number,
-    default: 0
+  image: {
+    type: String
   },
   isActive: {
     type: Boolean,
     default: true
   },
-  image: {
-    type: String
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
   }
-}, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
 });
 
 // Virtual for subcategories
 categorySchema.virtual('subcategories', {
   ref: 'Category',
   localField: '_id',
-  foreignField: 'parent'
+  foreignField: 'parentId'
 });
 
 // Pre-save hook to generate slug and set level
@@ -58,8 +56,8 @@ categorySchema.pre('save', async function(next) {
     .replace(/(^-|-$)/g, '');
   
   // Set level based on parent
-  if (this.parent) {
-    const parent = await this.constructor.findById(this.parent);
+  if (this.parentId) {
+    const parent = await this.constructor.findById(this.parentId);
     if (parent) {
       this.level = parent.level + 1;
     }
@@ -67,6 +65,7 @@ categorySchema.pre('save', async function(next) {
     this.level = 1;
   }
   
+  this.updatedAt = new Date();
   next();
 });
 
@@ -75,8 +74,8 @@ categorySchema.methods.getFullPath = async function() {
   const path = [this.name];
   let current = this;
   
-  while (current.parent) {
-    current = await this.constructor.findById(current.parent);
+  while (current.parentId) {
+    current = await this.constructor.findById(current.parentId);
     if (current) {
       path.unshift(current.name);
     } else {
@@ -89,9 +88,8 @@ categorySchema.methods.getFullPath = async function() {
 
 // Indexes
 categorySchema.index({ slug: 1 });
-categorySchema.index({ parent: 1 });
+categorySchema.index({ parentId: 1 });
 categorySchema.index({ level: 1 });
-categorySchema.index({ order: 1 });
 categorySchema.index({ isActive: 1 });
 
 const Category = mongoose.models.Category || mongoose.model('Category', categorySchema);

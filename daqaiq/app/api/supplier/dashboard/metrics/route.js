@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../auth/[...nextauth]/route';
-import { connectToDatabase } from '../../../../lib/mongodb';
-import Product from '../../../../lib/models/Product';
-import Order from '../../../../lib/models/Order';
+import { connectToDatabase } from '../../../../../lib/mongodb';
+import Product from '../../../../../lib/lib/models/Product';
+import Order from '../../../../../lib/lib/models/Order';
 
 export async function GET(request) {
   try {

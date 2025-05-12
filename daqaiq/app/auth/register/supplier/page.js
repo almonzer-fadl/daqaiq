@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { SUPPLIER_TRANSLATIONS as t } from '@/constants/translations';
+import { SUPPLIER_TRANSLATIONS as t } from '../../../constants/translations';
 
 export default function SupplierRegistrationPage() {
   const router = useRouter();

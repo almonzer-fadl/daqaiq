@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
-import { connectToDatabase } from '../../../lib/mongodb';
-import Supplier from '../../../lib/models/Supplier';
-import User from '../../../lib/models/User';
+import { connectToDatabase } from '../../../../../lib/mongodb';
+import Supplier from '../../../../lib/lib/models/Supplier';
+import User from '../../../../../lib/models/User';
 // import { uploadToS3 } from '../../../lib/s3'; // Uncomment if you have S3 upload functionality
+
+export const dynamic = 'force-dynamic';
 
 // GET /api/supplier/profile
 export async function GET(request) {

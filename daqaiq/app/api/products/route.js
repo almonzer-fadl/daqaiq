@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { connectToDatabase } from '../../lib/mongodb';
-import Product from '../../lib/models/Product';
+import { connectToDatabase } from '../../../../lib/mongodb';
+import Product from '../../../../lib/models/Product';
 import mongoose from 'mongoose';
 
 // Add segment config to explicitly mark as dynamic

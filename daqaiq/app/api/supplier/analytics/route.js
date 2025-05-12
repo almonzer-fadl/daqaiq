@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { connectToDatabase } from '../../../lib/mongodb';
-import Product from '../../../lib/models/Product';
-import Order from '../../../lib/models/Order';
+import { connectToDatabase } from '../../../../../lib/mongodb';
+import Product from '../../../../../lib/models/Product';
+import Order from '../../../../lib/models/Order';
 import { authOptions } from '../../auth/[...nextauth]/route';
+
+// Add segment config to explicitly mark as dynamic
+export const dynamic = 'force-dynamic';
 
 export async function GET(request) {
   try {

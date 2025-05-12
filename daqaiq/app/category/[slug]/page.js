@@ -119,6 +119,8 @@ export async function generateMetadata({ params }) {
   };
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function CategoryPage({ params, searchParams }) {
   const resolvedParams = await Promise.resolve(params);
   const resolvedSearchParams = await Promise.resolve(searchParams);

@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { connectToDatabase } from '../../../lib/mongodb';
-import Order from '../../../lib/models/Order';
 import { authOptions } from '../../auth/[...nextauth]/route';
+import { connectToDatabase } from '../../../../../lib/mongodb';
+import Order from '../../../../lib/lib/models/Order';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request) {
   try {
