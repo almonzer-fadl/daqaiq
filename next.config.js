@@ -23,23 +23,22 @@ const nextConfig = {
         pathname: '/**',
       }
     ],
-    domains: ['localhost', 'res.cloudinary.com'],
+    domains: ['localhost', 'res.cloudinary.com', 'daqaiq.com', 'supplier.daqaiq.com', 'admin.daqaiq.com'],
   },
   async rewrites() {
     return {
       beforeFiles: [
-        // Handle supplier subdomain
         {
           source: '/:path*',
-          has: [
-            {
-              type: 'host',
-              value: 'supplier.daqaiq.com',
-            },
-          ],
+          has: [{ type: 'host', value: 'supplier.daqaiq.com' }],
           destination: '/supplier/:path*',
         },
-      ],
+        {
+          source: '/:path*',
+          has: [{ type: 'host', value: 'admin.daqaiq.com' }],
+          destination: '/admin/:path*',
+        }
+      ]
     };
   },
   async redirects() {
