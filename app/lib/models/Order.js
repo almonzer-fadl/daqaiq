@@ -5,11 +5,13 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    index: true
   },
   customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
+    index: true
   },
   supplier: {
     type: mongoose.Schema.Types.ObjectId,
@@ -61,9 +63,6 @@ const orderSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-// Create a compound index on orderNumber
-orderSchema.index({ orderNumber: 1 });
-
+// Export the model
 const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
-
 export default Order; 

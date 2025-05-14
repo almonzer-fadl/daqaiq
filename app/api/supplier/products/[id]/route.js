@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { connectToDatabase } from '../../../../lib/mongodb';
-import Product from '../../../../lib/models/Product';
-import { authOptions } from '../../../auth/[...nextauth]/route';
+import { connectToDatabase } from '../../../../../lib/mongodb';
+import Product from '../../../../../lib/models/Product';
+import { authOptions } from '../../../auth/config/auth';
+import { unlink, writeFile, mkdir } from 'fs/promises';
+import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 // Add segment config to explicitly mark as dynamic

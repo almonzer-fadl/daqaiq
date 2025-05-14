@@ -4,11 +4,14 @@ const productSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    trim: true
   },
   slug: {
     type: String,
     required: true,
     unique: true,
+    trim: true,
+    index: true
   },
   description: {
     type: String,
@@ -57,6 +60,8 @@ const productSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   }
+}, {
+  timestamps: true
 });
 
 // Create or update timestamps
@@ -65,4 +70,6 @@ productSchema.pre('save', function(next) {
   next();
 });
 
-export default mongoose.models.Product || mongoose.model('Product', productSchema); 
+// Export the model
+const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
+export default Product; 
