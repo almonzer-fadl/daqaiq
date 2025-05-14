@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import { connectToDatabase } from '../../../../../lib/mongodb';
-import Order from '../../../../lib/lib/models/Order';
+import Order from '../../../../app/lib/models/Order';
 
 export const dynamic = 'force-dynamic';
 

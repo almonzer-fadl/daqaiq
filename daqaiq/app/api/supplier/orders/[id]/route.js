@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '../../../../../lib/mongodb';
-import Order from '../../../../../lib/lib/models/Order';
+import Order from '../../../../../app/lib/models/Order';
 import Product from '../../../../../lib/lib/models/Product';
 import { authOptions } from '../../../auth/[...nextauth]/route';
 
