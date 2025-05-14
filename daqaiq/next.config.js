@@ -29,20 +29,39 @@ const nextConfig = {
     return config;
   },
   async rewrites() {
-    return [
-      {
-        source: '/supplier/:path*',
-        destination: 'https://supplier.daqaiq.com/:path*',
-      },
-    ];
+    return {
+      beforeFiles: [
+        // Supplier subdomain handling
+        {
+          source: '/:path*',
+          has: [{ type: 'host', value: 'supplier.daqaiq.com' }],
+          destination: '/supplier/:path*',
+        },
+        // Admin subdomain handling
+        {
+          source: '/:path*',
+          has: [{ type: 'host', value: 'admin.daqaiq.com' }],
+          destination: '/admin/:path*',
+        }
+      ]
+    };
   },
   async redirects() {
     return [
+      // Redirect from main domain to supplier subdomain
       {
         source: '/supplier',
+        has: [{ type: 'host', value: 'daqaiq.com' }],
         destination: 'https://supplier.daqaiq.com',
         permanent: true,
       },
+      // Redirect from main domain to admin subdomain
+      {
+        source: '/admin',
+        has: [{ type: 'host', value: 'daqaiq.com' }],
+        destination: 'https://admin.daqaiq.com',
+        permanent: true,
+      }
     ];
   },
 };
