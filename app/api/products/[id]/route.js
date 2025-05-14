@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { connectToDatabase } from '../../../lib/mongodb';
-import Product from '../../../lib/models/Product';
+import { connectToDatabase } from '@/app/lib/mongodb';
+import Product from '@/app/lib/models/Product';
 
 // Add segment config to explicitly mark as dynamic
 export const dynamic = 'force-dynamic';

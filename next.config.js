@@ -1,9 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    turbo: {
-      enabled: true
-    }
+    serverActions: true,
   },
   images: {
     remotePatterns: [
@@ -28,6 +26,7 @@ const nextConfig = {
         pathname: '/**',
       }
     ],
+    domains: ['localhost', 'res.cloudinary.com'],
   },
   async rewrites() {
     return {
@@ -60,7 +59,14 @@ const nextConfig = {
         permanent: true,
       },
     ];
-  }
+  },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': process.cwd(),
+    };
+    return config;
+  },
 };
 
 module.exports = nextConfig; 
