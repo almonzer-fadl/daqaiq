@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { connectToDatabase } from '../../../lib/mongodb';
-import Product from '../../../lib/models/Product';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '../../auth/config/auth';
+import { connectToDatabase } from '../../../../lib/mongodb';
+import Product from '../../../../lib/models/Product';
 
 // Add segment config to explicitly mark as dynamic
 export const dynamic = 'force-dynamic';
