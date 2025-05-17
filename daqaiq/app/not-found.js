@@ -12,12 +12,12 @@ export default function NotFound() {
         <p className="text-gray-600 mb-8">
           عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها.
         </p>
-        <Link 
+        <a 
           href="/"
           className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           العودة للرئيسية
-        </Link>
+        </a>
       </div>
     </div>
   );
