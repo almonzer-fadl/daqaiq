@@ -1,22 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    turbo: true,
-  },
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'daqaiq.com',
       },
       {
-        protocol: 'http',
-        hostname: '**',
-      },
+        protocol: 'https',
+        hostname: '*.daqaiq.com',
+      }
     ],
-    domains: ['*'],
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': process.cwd(),
@@ -28,42 +24,51 @@ const nextConfig = {
     };
     return config;
   },
-  async rewrites() {
-    return {
-      beforeFiles: [
-        // Supplier subdomain handling
-        {
-          source: '/:path*',
-          has: [{ type: 'host', value: 'supplier.daqaiq.com' }],
-          destination: '/supplier/:path*',
-        },
-        // Admin subdomain handling
-        {
-          source: '/:path*',
-          has: [{ type: 'host', value: 'admin.daqaiq.com' }],
-          destination: '/admin/:path*',
-        }
-      ]
-    };
-  },
-  async redirects() {
+  async headers() {
     return [
-      // Redirect from main domain to supplier subdomain
       {
-        source: '/supplier',
-        has: [{ type: 'host', value: 'daqaiq.com' }],
-        destination: 'https://supplier.daqaiq.com',
-        permanent: true,
-      },
-      // Redirect from main domain to admin subdomain
-      {
-        source: '/admin',
-        has: [{ type: 'host', value: 'daqaiq.com' }],
-        destination: 'https://admin.daqaiq.com',
-        permanent: true,
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin'
+          }
+        ]
       }
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: '/supplier/:path*',
+        destination: '/app/supplier/:path*',
+      },
+      {
+        source: '/admin/:path*',
+        destination: '/app/admin/:path*',
+      }
+    ];
+  }
 };
 
 module.exports = nextConfig; 

@@ -1,8 +1,6 @@
-"use client";
 import { Inter } from "next/font/google"; // Using Inter as a fallback since Geist is not available in Google Fonts
 import "./globals.css"; // Import global CSS styles
-import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from './components/AuthProvider';
+import ClientProviders from './components/ClientProviders';
 
 const inter = Inter({
   subsets: ['latin', 'arabic'],
@@ -30,8 +28,9 @@ export default function RootLayout({ children }) { // Define the RootLayout func
   return (
     <html lang="ar" dir="rtl">
       <body className={`${inter.variable} font-sans antialiased`}>
-        <AuthProvider>
+        <ClientProviders>
           {children}
+        </ClientProviders>
           <Toaster position="bottom-left" />
         </AuthProvider>
       </body>
