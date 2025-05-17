@@ -10,7 +10,8 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    trim: true
+    trim: true,
+    index: true
   },
   description: {
     type: String,
@@ -33,12 +34,14 @@ const productSchema = new mongoose.Schema({
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
-    required: true
+    required: true,
+    index: true
   },
   supplier: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: true,
+    index: true
   },
   stock: {
     type: Number,
@@ -76,11 +79,13 @@ const productSchema = new mongoose.Schema({
   },
   isActive: {
     type: Boolean,
-    default: true
+    default: true,
+    index: true
   },
   isFeatured: {
     type: Boolean,
-    default: false
+    default: false,
+    index: true
   },
   tags: [String],
   attributes: [{
@@ -92,7 +97,8 @@ const productSchema = new mongoose.Schema({
       type: Number,
       default: 0,
       min: 0,
-      max: 5
+      max: 5,
+      index: -1
     },
     count: {
       type: Number,
@@ -111,13 +117,7 @@ const productSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Create indexes
-productSchema.index({ slug: 1 });
-productSchema.index({ category: 1 });
-productSchema.index({ supplier: 1 });
-productSchema.index({ isActive: 1 });
-productSchema.index({ isFeatured: 1 });
-productSchema.index({ 'ratings.average': -1 });
+// Create index on createdAt
 productSchema.index({ createdAt: -1 });
 
 // Update timestamps before saving

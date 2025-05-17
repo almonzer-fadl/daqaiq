@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     trim: true,
-    lowercase: true
+    lowercase: true,
+    index: true
   },
   password: {
     type: String,
@@ -20,15 +21,18 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ['mainAdmin', 'admin', 'supplier', 'customer'],
-    default: 'customer'
+    default: 'customer',
+    index: true
   },
   isActive: {
     type: Boolean,
-    default: true
+    default: true,
+    index: true
   },
   isVerified: {
     type: Boolean,
-    default: false
+    default: false,
+    index: true
   },
   verificationToken: String,
   resetPasswordToken: String,
@@ -52,7 +56,8 @@ const userSchema = new mongoose.Schema({
     banner: String,
     isApproved: {
       type: Boolean,
-      default: false
+      default: false,
+      index: true
     },
     approvedAt: Date,
     approvedBy: {
