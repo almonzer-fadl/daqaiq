@@ -11,8 +11,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     trim: true,
-    lowercase: true,
-    index: true
+    lowercase: true
   },
   password: {
     type: String,
@@ -64,25 +63,12 @@ const userSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     }
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
-
-// Create indexes
-userSchema.index({ email: 1 });
-userSchema.index({ role: 1 });
-userSchema.index({ isActive: 1 });
-userSchema.index({ isVerified: 1 });
-userSchema.index({ 'store.isApproved': 1 });
 
 // Update timestamps before saving
 userSchema.pre('save', function(next) {
@@ -90,4 +76,5 @@ userSchema.pre('save', function(next) {
   next();
 });
 
-export default mongoose.models.User || mongoose.model('User', userSchema); 
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+export default User; 

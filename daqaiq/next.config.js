@@ -1,11 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    domains: ['daqaiq.com'],
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'daqaiq.com',
-      },
       {
         protocol: 'https',
         hostname: '*.daqaiq.com',
@@ -58,16 +55,24 @@ const nextConfig = {
     ];
   },
   async rewrites() {
-    return [
-      {
-        source: '/supplier/:path*',
-        destination: '/app/supplier/:path*',
-      },
-      {
-        source: '/admin/:path*',
-        destination: '/app/admin/:path*',
-      }
-    ];
+    return {
+      beforeFiles: [
+        {
+          source: '/supplier/:path*',
+          destination: '/app/supplier/:path*',
+        },
+        {
+          source: '/admin/:path*',
+          destination: '/app/admin/:path*',
+        }
+      ],
+      afterFiles: [
+        {
+          source: '/:path*',
+          destination: '/app/:path*',
+        }
+      ]
+    };
   }
 };
 
