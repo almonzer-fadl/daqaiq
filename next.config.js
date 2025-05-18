@@ -68,7 +68,7 @@ const nextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        // Supplier subdomain routing
+        // Handle supplier subdomain
         {
           source: '/:path*',
           has: [
@@ -77,9 +77,9 @@ const nextConfig = {
               value: 'supplier.daqaiq.com',
             },
           ],
-          destination: '/supplier/:path*',
+          destination: '/:path*',
         },
-        // Admin subdomain routing
+        // Handle admin subdomain
         {
           source: '/:path*',
           has: [
@@ -88,11 +88,11 @@ const nextConfig = {
               value: 'admin.daqaiq.com',
             },
           ],
-          destination: '/admin/:path*',
+          destination: '/:path*',
         }
       ],
       afterFiles: [
-        // Main domain routing
+        // Handle main domain
         {
           source: '/:path*',
           has: [

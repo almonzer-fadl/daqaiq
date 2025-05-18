@@ -54,44 +54,43 @@ export async function middleware(request) {
     return NextResponse.rewrite(url);
   }
 
-  // Check if the path is public
-  if (publicPaths.some(path => pathname.startsWith(path))) {
-    return NextResponse.next();
-  }
-
   // Handle supplier subdomain
   if (isSupplierDomain) {
+    // Allow public paths without authentication
+    if (publicPaths.some(path => pathname.startsWith(path))) {
+      return NextResponse.next();
+    }
+
+    // Check authentication
     if (!token) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
+
+    // Verify supplier role
     if (token.role !== 'supplier') {
       return NextResponse.redirect(new URL('https://daqaiq.com/auth/login', request.url));
     }
-    // Only redirect root path to /supplier
-    if (pathname === '/') {
-      const url = request.nextUrl.clone();
-      url.pathname = '/supplier';
-      return NextResponse.redirect(url);
-    }
-    // Allow all other paths under supplier domain
+
     return NextResponse.next();
   }
 
   // Handle admin subdomain
   if (isAdminDomain) {
+    // Allow public paths without authentication
+    if (publicPaths.some(path => pathname.startsWith(path))) {
+      return NextResponse.next();
+    }
+
+    // Check authentication
     if (!token) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
+
+    // Verify admin role
     if (token.role !== 'main-admin') {
       return NextResponse.redirect(new URL('https://daqaiq.com/auth/login', request.url));
     }
-    // Only redirect root path to /admin
-    if (pathname === '/') {
-      const url = request.nextUrl.clone();
-      url.pathname = '/admin';
-      return NextResponse.redirect(url);
-    }
-    // Allow all other paths under admin domain
+
     return NextResponse.next();
   }
 
@@ -101,6 +100,7 @@ export async function middleware(request) {
     if (pathname.startsWith('/customer') && (!token || token.role !== 'customer')) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
+    return NextResponse.next();
   }
 
   return NextResponse.next();
