@@ -3,6 +3,7 @@ const path = require('path');
 
 const nextConfig = {
   images: {
+    domains: ['daqaiq.com', 'localhost', 'res.cloudinary.com'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -67,6 +68,7 @@ const nextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
+        // Supplier subdomain routing
         {
           source: '/:path*',
           has: [
@@ -77,6 +79,7 @@ const nextConfig = {
           ],
           destination: '/app/supplier/:path*',
         },
+        // Admin subdomain routing
         {
           source: '/:path*',
           has: [
@@ -89,6 +92,7 @@ const nextConfig = {
         }
       ],
       afterFiles: [
+        // Main domain routing
         {
           source: '/:path*',
           has: [
