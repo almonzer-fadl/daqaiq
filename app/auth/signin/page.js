@@ -2,17 +2,19 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
-export default function SignInPage() {
+export default function SignIn() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    setLoading(true);
     setError('');
 
     const formData = new FormData(e.currentTarget);
@@ -20,67 +22,79 @@ export default function SignInPage() {
     const password = formData.get('password');
 
     try {
+      const host = window.location.host;
+      const isSupplier = host.startsWith('supplier.');
+      const isAdmin = host.startsWith('admin.');
+      
+      const callbackUrl = isSupplier ? '/supplier' : isAdmin ? '/admin' : '/';
+      const authEndpoint = isSupplier ? '/api/auth/supplier' : isAdmin ? '/api/auth/admin' : '/api/auth';
+
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false
+        redirect: false,
+        callbackUrl,
       });
 
-      if (result.error) {
-        setError(result.error);
+      if (result?.error) {
+        setError('Invalid email or password');
       } else {
-        router.push('/dashboard');
+        router.push(callbackUrl);
       }
     } catch (error) {
-      setError('An error occurred during sign in');
+      setError('An error occurred. Please try again.');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
+  const host = typeof window !== 'undefined' ? window.location.host : '';
+  const isSupplier = host.startsWith('supplier.');
+  const isAdmin = host.startsWith('admin.');
+  
+  const title = isSupplier ? 'تسجيل دخول المورد' : isAdmin ? 'تسجيل دخول المدير' : 'تسجيل الدخول';
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8" dir="rtl">
       <div className="max-w-md w-full space-y-8">
         <div>
+          <div className="w-32 h-32 relative mx-auto">
+            <Image
+              src="/images/logo.png"
+              alt="Daqaiq Logo"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            {title}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link href="/auth/register" className="font-medium text-primary hover:text-primary-focus">
-              create a new account
-            </Link>
-          </p>
         </div>
-
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
+              <label htmlFor="email" className="sr-only">البريد الإلكتروني</label>
               <input
                 id="email"
                 name="email"
                 type="email"
-                autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="البريد الإلكتروني"
+                dir="ltr"
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
+              <label htmlFor="password" className="sr-only">كلمة المرور</label>
               <input
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                placeholder="Password"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="كلمة المرور"
+                dir="ltr"
               />
             </div>
           </div>
@@ -94,11 +108,20 @@ export default function SignInPage() {
           <div>
             <button
               type="submit"
-              disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-focus focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              disabled={loading}
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {loading ? 'جاري التحميل...' : 'تسجيل الدخول'}
             </button>
+          </div>
+
+          <div className="text-sm text-center">
+            <Link
+              href="/auth/forgot-password"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              نسيت كلمة المرور؟
+            </Link>
           </div>
         </form>
       </div>

@@ -14,7 +14,6 @@ export async function middleware(request) {
 
   // Public paths that don't require authentication
   const publicPaths = [
-    '/auth/login',
     '/auth/signin',
     '/auth/register',
     '/auth/forgot-password',
@@ -22,6 +21,13 @@ export async function middleware(request) {
     '/auth/verify-request',
     '/api/auth',
   ];
+
+  // Handle login path redirections
+  if (pathname === '/auth/login') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/auth/signin';
+    return NextResponse.redirect(url);
+  }
 
   // Check if maintenance mode is enabled
   if (MAINTENANCE_MODE.enabled) {
@@ -63,12 +69,12 @@ export async function middleware(request) {
 
     // Check authentication
     if (!token) {
-      return NextResponse.redirect(new URL('/auth/login', request.url));
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
 
     // Verify supplier role
     if (token.role !== 'supplier') {
-      return NextResponse.redirect(new URL('https://daqaiq.com/auth/login', request.url));
+      return NextResponse.redirect(new URL('https://daqaiq.com/auth/signin', request.url));
     }
 
     return NextResponse.next();
@@ -83,12 +89,12 @@ export async function middleware(request) {
 
     // Check authentication
     if (!token) {
-      return NextResponse.redirect(new URL('/auth/login', request.url));
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
 
     // Verify admin role
     if (token.role !== 'main-admin') {
-      return NextResponse.redirect(new URL('https://daqaiq.com/auth/login', request.url));
+      return NextResponse.redirect(new URL('https://daqaiq.com/auth/signin', request.url));
     }
 
     return NextResponse.next();
@@ -98,7 +104,7 @@ export async function middleware(request) {
   if (isMainDomain) {
     // Protected customer routes
     if (pathname.startsWith('/customer') && (!token || token.role !== 'customer')) {
-      return NextResponse.redirect(new URL('/auth/login', request.url));
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
     return NextResponse.next();
   }
