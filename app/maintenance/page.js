@@ -1,8 +1,8 @@
 import PageMaintenance from '../components/PageMaintenance';
 
 export const metadata = {
-    title: 'Website Under Construction | Coming Soon',
-    description: 'Our website is currently under maintenance. Please visit our store or contact us directly.',
+    title: 'الموقع قيد الإنشاء | نعود قريباً',
+    description: 'موقعنا قيد الصيانة حالياً. يرجى زيارة متجرنا أو الاتصال بنا مباشرة.',
 };
 
 export default function MaintenancePage() {
