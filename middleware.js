@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { MAINTENANCE_MODE } from './app/config/maintenance';
 
 export async function middleware(request) {
   const token = await getToken({ req: request });
@@ -59,6 +60,37 @@ export async function middleware(request) {
     if (pathname.startsWith('/customer') && (!token || token.role !== 'customer')) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
+  }
+
+  // Check if maintenance mode is enabled
+  if (MAINTENANCE_MODE.enabled) {
+    const path = request.nextUrl.pathname;
+
+    // Always allow authentication paths
+    if (publicPaths.some(publicPath => path.startsWith(publicPath))) {
+      return NextResponse.next();
+    }
+
+    // Allow specific paths even in maintenance mode
+    if (MAINTENANCE_MODE.allowedPaths.some(allowedPath => path.startsWith(allowedPath))) {
+      return NextResponse.next();
+    }
+
+    // Check if user is authenticated as admin
+    if (token && MAINTENANCE_MODE.isAdminUser(token)) {
+      return NextResponse.next();
+    }
+
+    // Check IP allowlist as a fallback
+    const ip = request.headers.get('x-forwarded-for') || request.ip;
+    if (MAINTENANCE_MODE.allowedIPs.includes(ip)) {
+      return NextResponse.next();
+    }
+
+    // Show maintenance page for all other requests
+    const url = request.nextUrl.clone();
+    url.pathname = '/maintenance';
+    return NextResponse.rewrite(url);
   }
 
   return NextResponse.next();
