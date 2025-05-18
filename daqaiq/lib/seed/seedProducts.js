@@ -1,81 +1,41 @@
 import { connectToDatabase } from '../mongodb';
-import { Product, Category, User } from '../models';
+import Product from '../models/Product';
+
+const sampleProducts = [
+  {
+    name: 'Oil Filter',
+    description: 'High-quality oil filter for optimal engine protection',
+    price: 15.99,
+    category: 'Filters',
+    brand: 'Bosch',
+    stockQuantity: 100,
+    images: ['/images/products/oil-filter.jpg'],
+  },
+  {
+    name: 'Brake Pads',
+    description: 'Premium brake pads for reliable stopping power',
+    price: 45.99,
+    category: 'Brakes',
+    brand: 'Brembo',
+    stockQuantity: 50,
+    images: ['/images/products/brake-pads.jpg'],
+  },
+  // Add more sample products as needed
+];
 
 export async function seedProducts() {
   try {
     await connectToDatabase();
 
-    // Get a supplier user
-    const supplier = await User.findOne({ role: 'supplier' });
-    if (!supplier) {
-      throw new Error('No supplier found. Please create a supplier first.');
-    }
+    // Clear existing products
+    await Product.deleteMany({});
 
-    // Get or create categories
-    const categories = await Promise.all([
-      Category.findOneAndUpdate(
-        { slug: 'car-parts' },
-        {
-          name: 'Car Parts',
-          slug: 'car-parts',
-          description: 'Essential car parts and components',
-          isActive: true
-        },
-        { upsert: true, new: true }
-      ),
-      Category.findOneAndUpdate(
-        { slug: 'accessories' },
-        {
-          name: 'Accessories',
-          slug: 'accessories',
-          description: 'Car accessories and enhancements',
-          isActive: true
-        },
-        { upsert: true, new: true }
-      )
-    ]);
+    // Insert sample products
+    await Product.insertMany(sampleProducts);
 
-    // Sample products data
-    const productsData = [
-      {
-        name: 'Premium Brake Kit',
-        slug: 'premium-brake-kit',
-        description: 'High-performance brake kit with ceramic pads',
-        price: 299.99,
-        compareAtPrice: 349.99,
-        images: ['/images/products/brake-kit.jpg'],
-        category: categories[0]._id,
-        supplier: supplier._id,
-        stock: 50,
-        isActive: true,
-        isFeatured: true
-      },
-      {
-        name: 'LED Headlight Set',
-        slug: 'led-headlight-set',
-        description: 'Ultra-bright LED headlight conversion kit',
-        price: 199.99,
-        compareAtPrice: 249.99,
-        images: ['/images/products/headlight.jpg'],
-        category: categories[1]._id,
-        supplier: supplier._id,
-        stock: 30,
-        isActive: true,
-        isFeatured: true
-      }
-    ];
-
-    // Insert products
-    await Product.deleteMany({}); // Clear existing products
-    const products = await Product.insertMany(productsData);
-
-    return {
-      success: true,
-      message: `Successfully seeded ${products.length} products`,
-      products
-    };
+    console.log('Products seeded successfully');
   } catch (error) {
-    console.error('Seed products error:', error);
+    console.error('Error seeding products:', error);
     throw error;
   }
 } 

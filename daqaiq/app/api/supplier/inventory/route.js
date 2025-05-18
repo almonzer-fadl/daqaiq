@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
-import { connectToDatabase } from '../../../../../lib/mongodb';
-import Product from '../../../../../lib/models/Product';
+import { authOptions } from '../../auth/config/auth';
+import { connectToDatabase } from '../../../../lib/mongodb';
+import Product from '../../../../lib/models/Product';
 
+// Add segment config to explicitly mark as dynamic
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
-// GET endpoint to fetch inventory status
+// GET endpoint to fetch inventory
 export async function GET(request) {
   try {
     const session = await getServerSession(authOptions);
@@ -16,52 +18,14 @@ export async function GET(request) {
 
     await connectToDatabase();
 
-    // Get query parameters
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page')) || 1;
-    const limit = parseInt(searchParams.get('limit')) || 10;
-    const stockStatus = searchParams.get('stockStatus');
-    const category = searchParams.get('category');
+    const products = await Product.find({ supplier: session.user.id })
+      .select('name stock lowStockThreshold variants')
+      .sort({ stock: 1 });
 
-    // Build query
-    const query = { supplier: session.user.id };
-    if (stockStatus) {
-      if (stockStatus === 'low_stock') {
-        query.stock = { $lte: '$lowStockThreshold' };
-      } else if (stockStatus === 'out_of_stock') {
-        query.stock = 0;
-      }
-    }
-    if (category) {
-      query.category = category;
-    }
-
-    // Execute query with pagination
-    const skip = (page - 1) * limit;
-    const products = await Product.find(query)
-      .select('name stock lowStockThreshold category variants stockHistory')
-      .skip(skip)
-      .limit(limit)
-      .sort({ updatedAt: -1 });
-
-    const total = await Product.countDocuments(query);
-
-    return NextResponse.json({
-      products,
-      pagination: {
-        total,
-        page,
-        pages: Math.ceil(total / limit),
-        hasMore: skip + products.length < total
-      }
-    });
-
+    return NextResponse.json({ products });
   } catch (error) {
     console.error('Error fetching inventory:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch inventory' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -181,7 +145,7 @@ export async function POST(request) {
   }
 }
 
-// POST endpoint for bulk inventory updates
+// PUT endpoint for bulk inventory updates
 export async function PUT(request) {
   try {
     const session = await getServerSession(authOptions);

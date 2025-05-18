@@ -1,0 +1,4 @@
+# Daqaiq local development entries
+127.0.0.1    daqaiq.com
+127.0.0.1    supplier.daqaiq.com
+127.0.0.1    admin.daqaiq.com 

@@ -3,8 +3,8 @@ import mongoose from 'mongoose';
 const productSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
-    trim: true
+    required: [true, 'Please provide a product name'],
+    trim: true,
   },
   slug: {
     type: String,
@@ -14,13 +14,12 @@ const productSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
-    trim: true
+    required: [true, 'Please provide a product description'],
   },
   price: {
     type: Number,
-    required: true,
-    min: 0
+    required: [true, 'Please provide a product price'],
+    min: [0, 'Price cannot be negative'],
   },
   compareAtPrice: {
     type: Number,
@@ -28,25 +27,20 @@ const productSchema = new mongoose.Schema({
   },
   images: [{
     type: String,
-    required: true
+    required: [true, 'Please provide at least one product image'],
   }],
   category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    required: true,
-    index: true
+    type: String,
+    required: [true, 'Please provide a product category'],
   },
-  supplier: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-    index: true
+  brand: {
+    type: String,
+    required: [true, 'Please provide a product brand'],
   },
-  stock: {
+  stockQuantity: {
     type: Number,
-    required: true,
-    min: 0,
-    default: 0
+    required: [true, 'Please provide stock quantity'],
+    min: [0, 'Stock quantity cannot be negative'],
   },
   sku: {
     type: String,
@@ -79,7 +73,6 @@ const productSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true,
-    index: true
   },
   isFeatured: {
     type: Boolean,
@@ -107,18 +100,38 @@ const productSchema = new mongoose.Schema({
     title: String,
     description: String,
     keywords: [String]
-  }
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });
 
-// Indexes
+// Create text search index
 productSchema.index({ name: 'text', description: 'text' });
-productSchema.index({ price: 1 });
-productSchema.index({ createdAt: -1 });
-productSchema.index({ 'ratings.average': -1 });
 
+// Create compound index for efficient sorting and filtering
+productSchema.index({ 
+  category: 1,
+  isActive: 1,
+  isFeatured: 1,
+  createdAt: -1
+});
+
+// Update the updatedAt timestamp before saving
+productSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+// Export the model
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 export default Product; 

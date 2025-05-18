@@ -1,21 +1,5 @@
-import User from './User';
-import Category from './Category';
-import Product from './Product';
-import Supplier from './Supplier';
-import Order from './Order';
-
-export {
-  User,
-  Category,
-  Product,
-  Supplier,
-  Order
-};
-
-export default {
-  User,
-  Category,
-  Product,
-  Supplier,
-  Order
-}; 
+export { default as User } from './User';
+export { default as Category } from './Category';
+export { default as Product } from './Product';
+export { default as Order } from './Order';
+export { default as Supplier } from './Supplier'; 

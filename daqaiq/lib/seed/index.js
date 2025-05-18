@@ -1,20 +1,22 @@
+import { connectToDatabase } from '../mongodb';
+import { User } from '../models';
 import { seedProducts } from './seedProducts';
+import { seedCategories } from './seedCategories';
 
 export async function seedDatabase() {
   try {
-    const productsResult = await seedProducts();
-    
-    return {
-      success: true,
-      message: 'Database seeded successfully',
-      details: {
-        products: productsResult
-      }
-    };
+    await connectToDatabase();
+
+    // Clear existing data
+    await User.deleteMany({});
+
+    // Seed data
+    await seedCategories();
+    await seedProducts();
+
+    return { message: 'Database seeded successfully' };
   } catch (error) {
-    console.error('Seed database error:', error);
+    console.error('Error seeding database:', error);
     throw error;
   }
-}
-
-export { seedProducts }; 
+} 

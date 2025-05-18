@@ -2,7 +2,15 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/app/*": ["./app/*"],
+      "@/components/*": ["./app/components/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/config/*": ["./app/config/*"],
+      "@/constants/*": ["./app/constants/*"],
+      "@/styles/*": ["./app/styles/*"],
+      "@/utils/*": ["./lib/utils/*"],
+      "@/models/*": ["./lib/models/*"]
     }
   }
 } 

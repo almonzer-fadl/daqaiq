@@ -1,42 +1,13 @@
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Order, Product } from '@/lib/models';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '../../../auth/config/auth';
 
-export async function GET(request, { params }) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-    }
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
-    await connectToDatabase();
-
-    const order = await Order.findById(params.id)
-      .populate('user', 'name email')
-      .populate('items.product');
-
-    if (!order) {
-      return new Response(JSON.stringify({ error: 'Order not found' }), { status: 404 });
-    }
-
-    // Check if the supplier owns any products in this order
-    const hasSupplierProducts = order.items.some(item => 
-      item.product.supplier.toString() === session.user.id
-    );
-
-    if (!hasSupplierProducts) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-    }
-
-    return new Response(JSON.stringify(order), { status: 200 });
-  } catch (error) {
-    console.error('Get order error:', error);
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
-  }
-}
-
-export async function PATCH(request, context) {
+export async function GET(request, context) {
   try {
     // Connect to database first
     await connectToDatabase();
@@ -44,54 +15,39 @@ export async function PATCH(request, context) {
     // Check authentication and role
     const session = await getServerSession(authOptions);
     if (!session) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     if (session.user.role !== 'supplier') {
-      return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Get the order ID from params
     const { params } = context;
-    const orderId = await params.id;
+    const orderId = params.id;
 
-    // Get the new status from request body
-    const { status } = await request.json();
-
-    // Validate status
-    const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
-    if (!validStatuses.includes(status)) {
-      return new Response(JSON.stringify({ error: 'Invalid status' }), { status: 400 });
-    }
-
-    // Find and update the order
-    const order = await Order.findOneAndUpdate(
-      {
-        _id: orderId,
-        supplier: session.user.id,
-      },
-      {
-        $set: {
-          status,
-          updatedAt: new Date(),
-        },
-      },
-      { new: true }
-    )
+    // Find the order
+    const order = await Order.findOne({
+      _id: orderId,
+      supplier: session.user.id,
+    })
     .populate('customer', 'name email')
-    .populate({
+    .populate({ 
       path: 'items.product',
       select: 'name price images description'
     });
 
     if (!order) {
-      return new Response(JSON.stringify({ error: 'Order not found' }), { status: 404 });
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    return new Response(JSON.stringify(order), { status: 200 });
+    return NextResponse.json({ order });
 
   } catch (error) {
-    console.error('Error updating order:', error);
-    return new Response(JSON.stringify({ error: 'Failed to update order' }), { status: 500 });
+    console.error('Error fetching order:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch order' },
+      { status: 500 }
+    );
   }
 } 

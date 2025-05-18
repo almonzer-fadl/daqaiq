@@ -12,6 +12,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '*.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'd1muf25xaso8hp.cloudfront.net',
+        pathname: '/**',
       }
     ],
   },
@@ -63,18 +68,39 @@ const nextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
+        // Supplier subdomain routing
         {
-          source: '/supplier/:path*',
+          source: '/:path*',
+          has: [
+            {
+              type: 'host',
+              value: 'supplier.daqaiq.com',
+            },
+          ],
           destination: '/app/supplier/:path*',
         },
+        // Admin subdomain routing
         {
-          source: '/admin/:path*',
+          source: '/:path*',
+          has: [
+            {
+              type: 'host',
+              value: 'admin.daqaiq.com',
+            },
+          ],
           destination: '/app/admin/:path*',
         }
       ],
       afterFiles: [
+        // Main domain routing
         {
           source: '/:path*',
+          has: [
+            {
+              type: 'host',
+              value: 'daqaiq.com',
+            },
+          ],
           destination: '/app/:path*',
         }
       ]
