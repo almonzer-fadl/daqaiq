@@ -32,9 +32,7 @@ export default function PageMaintenance() {
                     <div className="bg-blue-50 p-6 rounded-xl">
                         <h2 className="text-xl font-semibold text-blue-900 mb-3">زيارة المتجر</h2>
                         <p className="text-blue-700">
-                            شارع همام بن الأعقل<br />
-                            الرمال، الرياض 13263<br />
-                            المملكة العربية السعودية<br />
+                        الرياض صناعية الرمال  <br />
                             <Link 
                                 href="https://maps.app.goo.gl/MVLKVnFgV6HNGQ4c6?g_st=iw" 
                                 target="_blank"
@@ -52,16 +50,16 @@ export default function PageMaintenance() {
                             <div>
                                 <span className="font-semibold">الهاتف: </span>
                                 <Link 
-                                    href="tel:+966535763333" 
+                                    href="tel:+966555668785" 
                                     className="hover:text-green-900"
                                     dir="ltr"
                                 >
-                                    +966 53 576 3333
+                                    +966555668785
                                 </Link>
                             </div>
                             <div>
                                 <span className="font-semibold">ساعات العمل: </span>
-                                24/7
+                                8:30am - 10:00pm
                             </div>
                         </p>
                     </div>
