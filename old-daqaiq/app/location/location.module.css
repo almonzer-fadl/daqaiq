@@ -1,0 +1,117 @@
+.container {
+  font-family: var(--font_cairo);
+  color: var(--color_text_default);
+  direction: rtl;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+
+.container {
+  -webkit-locale: "ar";
+  direction: rtl;
+  min-height: 100vh;
+  padding: 6rem 15rem;
+  margin: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+  box-sizing: inherit;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-text-size-adjust: 100%;
+  background: #ffffff;
+  font-family: var(--font_cnJDE0_default, "Cairo");
+
+  @media screen and (max-width: 768px) {
+    padding: 8rem 1rem 6rem;
+  }
+}
+
+.header {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px none;
+  margin-bottom: 2rem;
+  color: black;
+  text-align: right;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #FFFFFF;
+  border-radius: 1rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.infoSection {
+  background-color: #FFFFFF;
+  padding: 2.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+  text-align: right;
+  color: var(--color_text_default);
+}
+
+.infoSection h2 {
+  color: var(--color_cnSmU_default);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.infoSection p {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.mapSection {
+  height: 400px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: #FFFFFF;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+@media (min-width: 768px) {
+  .content {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.workingHours {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color_cnSmm_default);
+}
+
+.workingHours h3 {
+  color: var(--color_cnSmU_default);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.workingHours p {
+  margin-bottom: 0.25rem;
+}
+
+.contactInfo {
+  margin-top: 1.5rem;
+}
+
+.contactInfo a {
+  color: var(--color_cnSmU_default);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.contactInfo a:hover {
+  color: var(--color_cnSmV_default);
+}

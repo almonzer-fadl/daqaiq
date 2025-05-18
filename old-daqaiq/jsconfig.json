@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@/lib/*": ["./lib/*"],
+      "@/models/*": ["./lib/models/*"],
+      "@/app/*": ["./app/*"],
+      "@/components/*": ["./app/components/*"],
+      "@/utils/*": ["./lib/utils/*"]
+    },
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "target": "ES2020",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  },
+  "include": ["app/**/*", "scripts/**/*"],
+  "exclude": ["node_modules", ".next", "out"]
+}

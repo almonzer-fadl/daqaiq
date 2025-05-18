@@ -1,0 +1,52 @@
+.productsGrid {
+  display: grid;
+  grid-template-columns: 1fr; /* Single column for mobile */
+  gap: 1rem;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .productsGrid {
+    grid-template-columns: repeat(3, 1fr); /* Three columns for desktop */
+    gap: 1.5rem;
+  }
+}
+
+.productCard {
+  position: relative;
+  aspect-ratio: 16/9; /* Matches Trendyol's banner aspect ratio */
+  border-radius: 1rem;
+  overflow: hidden;
+  background: linear-gradient(135deg, #051937, #004d7a); /* Dark blue gradient background */
+  cursor: pointer; /* Add cursor pointer */
+  display: block; /* Ensure Link works properly */
+  text-decoration: none; /* Remove default link styling */
+}
+
+.productImage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.productImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.productCard:hover img {
+  transform: scale(1.05);
+}
+
+/* Remove all text-related styles since we're only showing images */
+.productName,
+.price,
+.originalPrice,
+.discountBadge {
+  display: none;
+} 

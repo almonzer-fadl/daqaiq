@@ -1,0 +1,112 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 4px;
+}
+
+.count {
+  font-size: 14px;
+  color: #666;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+}
+
+.sort {
+  display: flex;
+  align-items: center;
+}
+
+.sortLabel {
+  font-size: 14px;
+  color: #666;
+  margin-right: 8px;
+}
+
+.sortSelect {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  min-width: 180px;
+}
+
+.sortSelect:focus {
+  outline: none;
+  border-color: #f27a1a;
+}
+
+.filterButton {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background-color: #f27a1a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 12px;
+}
+
+.filterButton svg {
+  margin-right: 6px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .sortSelect {
+    min-width: 150px;
+  }
+  
+  .filterButton {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 20px;
+  }
+  
+  .sortLabel {
+    display: none;
+  }
+  
+  .sortSelect {
+    min-width: 120px;
+  }
+} 
