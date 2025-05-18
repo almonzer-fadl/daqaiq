@@ -1,98 +1,52 @@
-import { NextResponse } from 'next/server';
+import { connectToDatabase } from '@/lib/mongodb';
+import { sendEmail, validateEmail, validatePassword } from '@/lib/utils';
+import { User } from '@/lib/models';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
-import { connectToDatabase } from '../../../../lib/mongodb';
-import User from '../../../../lib/models/User';
-import { sendVerificationEmail } from '../../../../lib/lib/email';
 
-export async function POST(req) {
+export async function POST(request) {
   try {
-    const { name, email, password, role = 'customer' } = await req.json();
+    const { name, email, password } = await request.json();
 
-    // Validate required fields
-    if (!name || !email || !password) {
-      return NextResponse.json(
-        { error: 'Please provide all required fields' },
-        { status: 400 }
-      );
+    // Validate input
+    if (!validateEmail(email)) {
+      return new Response(JSON.stringify({ error: 'Invalid email format' }), { status: 400 });
     }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Please provide a valid email address' },
-        { status: 400 }
-      );
-    }
-
-    // Validate password strength
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: 'Password must be at least 6 characters long' },
-        { status: 400 }
-      );
+    if (!validatePassword(password)) {
+      return new Response(JSON.stringify({ error: 'Password must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number' }), { status: 400 });
     }
 
     await connectToDatabase();
 
-    // Check if user already exists
+    // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return NextResponse.json(
-        { error: 'Email already registered' },
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: 'Email already registered' }), { status: 400 });
     }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create verification token only for suppliers
-    const verificationToken = role === 'supplier' ? crypto.randomBytes(32).toString('hex') : null;
-
-    // Create new user
+    // Create user
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
-      role,
-      verificationToken,
-      // Set isVerified to true for customers, false for suppliers
-      isVerified: role === 'customer',
-      createdAt: new Date(),
-      updatedAt: new Date()
+      role: 'customer'
     });
 
-    // Send verification email only for suppliers
-    if (role === 'supplier' && verificationToken) {
-      await sendVerificationEmail(email, verificationToken);
-    }
+    // Send welcome email
+    await sendEmail({
+      to: email,
+      subject: 'Welcome to Daqaiq',
+      html: `
+        <h1>Welcome to Daqaiq!</h1>
+        <p>Thank you for registering. We're excited to have you on board.</p>
+      `
+    });
 
-    // Remove password from response
-    const userWithoutPassword = {
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      isVerified: user.isVerified
-    };
-
-    return NextResponse.json(
-      {
-        message: role === 'supplier' 
-          ? 'Registration successful. Please verify your email.'
-          : 'Registration successful. You can now sign in.',
-        user: userWithoutPassword
-      },
-      { status: 201 }
-    );
-
+    return new Response(JSON.stringify({ message: 'Registration successful' }), { status: 201 });
   } catch (error) {
-    console.error('Registration Error:', error);
-    return NextResponse.json(
-      { error: 'Something went wrong during registration' },
-      { status: 500 }
-    );
+    console.error('Registration error:', error);
+    return new Response(JSON.stringify({ error: 'Registration failed' }), { status: 500 });
   }
 } 

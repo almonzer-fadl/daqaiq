@@ -1,24 +1,11 @@
-import { NextResponse } from 'next/server';
-import { seedProducts } from '../../../../lib/lib/seed';
+import { seedDatabase } from '@/lib/seed';
 
 export async function POST() {
   try {
-    const result = await seedProducts();
-    
-    if (result.success) {
-      return NextResponse.json({
-        message: `Successfully seeded ${result.count} products`,
-      });
-    } else {
-      return NextResponse.json(
-        { error: result.error },
-        { status: 500 }
-      );
-    }
+    const result = await seedDatabase();
+    return new Response(JSON.stringify(result), { status: 200 });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to seed database' },
-      { status: 500 }
-    );
+    console.error('Seed database error:', error);
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 } 

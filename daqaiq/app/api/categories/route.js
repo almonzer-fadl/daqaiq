@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 import { connectToDatabase } from '@/lib/mongodb';
-import Category from '@/models/Category';
-import Product from '@/models/Product';
+import Category from '@/lib/models/Category';
+import Product from '@/lib/models/Product';
 
 // Add segment config to explicitly mark as dynamic
 export const dynamic = 'force-dynamic';
@@ -11,25 +11,17 @@ export const runtime = 'nodejs';
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     await connectToDatabase();
 
     const categories = await Category.find({ isActive: true })
-      .sort({ order: 1, name: 1 })
       .populate('subcategories')
+      .sort({ order: 1, name: 1 })
       .lean();
 
-    return NextResponse.json(categories);
+    return new Response(JSON.stringify(categories), { status: 200 });
   } catch (error) {
-    console.error('Error fetching categories:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch categories' },
-      { status: 500 }
-    );
+    console.error('Categories fetch error:', error);
+    return new Response(JSON.stringify({ error: 'Failed to fetch categories' }), { status: 500 });
   }
 }
 

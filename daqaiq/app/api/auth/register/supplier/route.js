@@ -1,172 +1,71 @@
-import { NextResponse } from 'next/server';
+import { connectToDatabase } from '@/lib/mongodb';
+import { sendEmail, validateEmail, validatePassword, validatePhone } from '@/lib/utils';
+import { User, Supplier } from '@/lib/models';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
-import { connectToDatabase } from '../../../../../lib/mongodb';
-import User from '../../../../../lib/models/User';
-import Supplier from '../../../../../lib/lib/models/Supplier';
-import { sendVerificationEmail } from '../../../../../lib/lib/email';
 
-export async function POST(req) {
+export async function POST(request) {
   try {
-    const {
-      name,
-      email,
-      password,
-      businessName,
-      businessType,
-      taxId,
-      phoneNumber,
-    } = await req.json();
-
-    console.log('Registration attempt:', { name, email, businessName, businessType });
+    const body = await request.json();
+    const { name, email, password, phone, businessName, businessType } = body;
 
     // Validate input
-    if (!name || !email || !password || !businessName || !businessType || !taxId) {
-      console.log('Missing required fields:', { name, email, businessName, businessType, taxId });
-      return NextResponse.json(
-        { error: 'Please provide all required fields' },
-        { status: 400 }
-      );
+    if (!validateEmail(email)) {
+      return new Response(JSON.stringify({ error: 'Invalid email format' }), { status: 400 });
+    }
+    if (!validatePassword(password)) {
+      return new Response(JSON.stringify({ error: 'Password must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number' }), { status: 400 });
+    }
+    if (!validatePhone(phone)) {
+      return new Response(JSON.stringify({ error: 'Invalid phone number format' }), { status: 400 });
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Please provide a valid email address' },
-        { status: 400 }
-      );
-    }
+    await connectToDatabase();
 
-    // Validate password strength
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: 'Password must be at least 6 characters long' },
-        { status: 400 }
-      );
-    }
-
-    try {
-      await connectToDatabase();
-    } catch (dbError) {
-      console.error('Database connection error:', dbError);
-      return NextResponse.json(
-        { error: 'Database connection error' },
-        { status: 500 }
-      );
-    }
-
-    // Check if user already exists
+    // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return NextResponse.json(
-        { error: 'User with this email already exists' },
-        { status: 400 }
-      );
-    }
-
-    // Check if tax ID is already registered
-    const existingSupplier = await Supplier.findOne({ taxId });
-    if (existingSupplier) {
-      return NextResponse.json(
-        { error: 'Tax ID is already registered' },
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: 'Email already registered' }), { status: 400 });
     }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-
-    try {
-      // Create new user
-      console.log('Attempting to create user with data:', {
-        name,
-        email,
-        role: 'supplier',
-        phoneNumber
-      });
-
-      const user = await User.create({
-        name,
-        email,
-        password: hashedPassword,
-        roles: ['supplier'],
-        verificationToken,
-        isVerified: true,
-        phoneNumber,
-      });
-
-      console.log('User created successfully:', user._id);
-
-      // Create supplier profile
-      console.log('Attempting to create supplier profile with data:', {
-        userId: user._id,
-        companyName: businessName,
-        businessType,
-        taxId,
-        phone: phoneNumber
-      });
-
-      const supplier = await Supplier.create({
-        userId: user._id,
-        companyName: businessName,
-        businessType: businessType,
-        taxId,
-        phone: phoneNumber,
-        email: email,
-        status: 'pending',
-        verificationStatus: 'unverified'
-      });
-
-      console.log('Supplier profile created successfully:', supplier._id);
-
-      // Send verification email (but don't wait for it)
-      sendVerificationEmail(email, verificationToken).catch(console.error);
-
-      // Remove password from response
-      const userWithoutPassword = {
-        id: user._id.toString(),
-        name: user.name,
-        email: user.email,
-        phone: user.phoneNumber,
-        role: user.role,
-        isVerified: user.isVerified
-      };
-
-      return NextResponse.json(
-        { message: 'Supplier registered successfully', user: userWithoutPassword },
-        { status: 201 }
-      );
-    } catch (createError) {
-      console.error('Detailed error creating user/supplier:', {
-        error: createError,
-        message: createError.message,
-        stack: createError.stack,
-        code: createError.code
-      });
-
-      // Check for specific MongoDB errors
-      if (createError.code === 11000) {
-        return NextResponse.json(
-          { error: 'A user with this email or tax ID already exists' },
-          { status: 400 }
-        );
+    // Create user
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: 'supplier',
+      profile: {
+        phone
       }
+    });
 
-      return NextResponse.json(
-        { error: `Error creating user account: ${createError.message}` },
-        { status: 500 }
-      );
-    }
+    // Create supplier profile
+    await Supplier.create({
+      user: user._id,
+      businessName,
+      businessType,
+      contactInfo: {
+        phone,
+        email
+      }
+    });
 
+    // Send welcome email
+    await sendEmail({
+      to: email,
+      subject: 'Welcome to Daqaiq - Supplier Registration',
+      html: `
+        <h1>Welcome to Daqaiq!</h1>
+        <p>Thank you for registering as a supplier. Your account is currently under review.</p>
+        <p>We will notify you once your account has been verified.</p>
+      `
+    });
+
+    return new Response(JSON.stringify({ message: 'Registration successful' }), { status: 201 });
   } catch (error) {
-    console.error('Registration Error:', error);
-    return NextResponse.json(
-      { error: 'Something went wrong during registration' },
-      { status: 500 }
-    );
+    console.error('Supplier registration error:', error);
+    return new Response(JSON.stringify({ error: 'Registration failed' }), { status: 500 });
   }
 } 

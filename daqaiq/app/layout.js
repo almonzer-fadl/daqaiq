@@ -1,36 +1,27 @@
-import { Inter } from "next/font/google"; // Using Inter as a fallback since Geist is not available in Google Fonts
-import "./globals.css"; // Import global CSS styles
-import ClientProviders from './components/ClientProviders';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { Toaster } from 'react-hot-toast';
+import AuthProvider from './components/providers/AuthProvider';
+import ClientProviders from './components/providers/ClientProviders';
 
-const inter = Inter({
-  subsets: ['latin', 'arabic'],
-  variable: '--font-inter',
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
 });
 
 export const metadata = {
-  title: {
-    template: '%s | دقائق',
-    default: 'دقائق - خدمات فحص السيارات',
-  },
-  description: 'خدمات فحص السيارات في المملكة العربية السعودية',
-  keywords: 'دقائق - دقه في دقائق ,فحص سيارات, صيانة سيارات, دقائق',
-  viewport: 'width=device-width, initial-scale=1',
-  robots: 'index, follow',
-  openGraph: {
-    type: 'website',
-    locale: 'ar_SA',
-    url: 'https://daqaiq.com',
-    siteName: 'دقائق',
-  }
+  title: 'Daqaiq - Your Trusted Auto Parts Marketplace',
+  description: 'Find and buy quality auto parts from trusted suppliers',
 };
 
-export default function RootLayout({ children }) { // Define the RootLayout functional component
+export default function RootLayout({ children }) {
   return (
-    <html lang="ar" dir="rtl">
-      <body className={`${inter.variable} font-sans antialiased`}>
-        <ClientProviders>
-          {children}
-        </ClientProviders>
+    <html lang="en">
+      <body className={inter.className}>
+        <AuthProvider>
+          <ClientProviders>
+            {children}
+          </ClientProviders>
           <Toaster position="bottom-left" />
         </AuthProvider>
       </body>

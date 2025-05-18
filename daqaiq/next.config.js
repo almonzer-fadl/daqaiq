@@ -1,23 +1,29 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
   images: {
-    domains: ['daqaiq.com'],
+    domains: ['daqaiq.com', 'localhost', 'res.cloudinary.com'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '*.daqaiq.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.cloudinary.com',
       }
     ],
   },
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': process.cwd(),
-      '@/lib': process.cwd() + '/lib',
-      '@/models': process.cwd() + '/lib/models',
-      '@/app': process.cwd() + '/app',
-      '@/components': process.cwd() + '/app/components',
-      '@/utils': process.cwd() + '/lib/utils',
+      '@': path.resolve(__dirname),
+      '@/lib': path.resolve(__dirname, 'lib'),
+      '@/models': path.resolve(__dirname, 'lib/models'),
+      '@/app': path.resolve(__dirname, 'app'),
+      '@/components': path.resolve(__dirname, 'app/components'),
+      '@/utils': path.resolve(__dirname, 'lib/utils'),
     };
     return config;
   },

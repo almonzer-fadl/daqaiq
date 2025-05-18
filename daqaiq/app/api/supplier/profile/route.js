@@ -1,47 +1,34 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
-import { connectToDatabase } from '../../../../../lib/mongodb';
-import Supplier from '../../../../lib/lib/models/Supplier';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { connectToDatabase } from '@/lib/mongodb';
+import { Supplier } from '@/lib/models';
 import User from '../../../../../lib/models/User';
 // import { uploadToS3 } from '../../../lib/s3'; // Uncomment if you have S3 upload functionality
 
 export const dynamic = 'force-dynamic';
 
 // GET /api/supplier/profile
-export async function GET(request) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'supplier') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user?.id) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
     }
 
     await connectToDatabase();
-    
-    // First, try to find existing supplier profile
-    let supplier = await Supplier.findOne({ userId: session.user.id });
-    
-    // If no supplier profile exists, create one from user data
-    if (!supplier) {
-      const user = await User.findById(session.user.id);
-      if (!user) {
-        return NextResponse.json({ error: 'User not found' }, { status: 404 });
-      }
 
-      supplier = await Supplier.create({
-        userId: user._id,
-        companyName: user.name || '',
-        contactName: user.name || '',
-        email: user.email,
-        image: user.image || '',
-        status: 'active',
-      });
+    const supplier = await Supplier.findOne({ user: session.user.id })
+      .populate('user', 'name email');
+
+    if (!supplier) {
+      return new Response(JSON.stringify({ error: 'Supplier profile not found' }), { status: 404 });
     }
 
-    return NextResponse.json({ profile: supplier });
+    return new Response(JSON.stringify(supplier), { status: 200 });
   } catch (error) {
-    console.error('Error fetching supplier profile:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Get supplier profile error:', error);
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
 
@@ -49,105 +36,26 @@ export async function GET(request) {
 export async function PUT(request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'supplier') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user?.id) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
     }
 
-    const formData = await request.formData();
-    const updates = {};
-
-    // Process text fields
-    const fields = [
-      'companyName', 'contactName', 'email', 'phone', 'address',
-      'city', 'state', 'country', 'postalCode', 'taxId',
-      'businessType', 'description', 'website'
-    ];
-
-    fields.forEach(field => {
-      const value = formData.get(field);
-      if (value !== null && value !== undefined) {
-        updates[field] = value;
-      }
-    });
-
-    // Process JSON fields
-    ['socialMedia', 'bankInfo'].forEach(field => {
-      const value = formData.get(field);
-      if (value) {
-        try {
-          updates[field] = JSON.parse(value);
-        } catch (e) {
-          console.error(`Error parsing ${field}:`, e);
-        }
-      }
-    });
-
-    // Process image if provided
-    const image = formData.get('image');
-    if (image && image instanceof Blob) {
-      // Convert the image to a data URL for storage
-      const arrayBuffer = await image.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-      const base64Image = buffer.toString('base64');
-      const mimeType = image.type;
-      updates.image = `data:${mimeType};base64,${base64Image}`;
-    }
-
+    const data = await request.json();
     await connectToDatabase();
-    
-    // Find or create supplier profile
-    let supplier = await Supplier.findOne({ userId: session.user.id });
-    
+
+    const supplier = await Supplier.findOneAndUpdate(
+      { user: session.user.id },
+      { $set: data },
+      { new: true, runValidators: true }
+    ).populate('user', 'name email');
+
     if (!supplier) {
-      const user = await User.findById(session.user.id);
-      if (!user) {
-        return NextResponse.json({ error: 'User not found' }, { status: 404 });
-      }
-
-      supplier = await Supplier.create({
-        userId: user._id,
-        companyName: updates.companyName || user.name || '',
-        contactName: updates.contactName || user.name || '',
-        email: updates.email || user.email,
-        image: updates.image || user.image || '',
-        ...updates,
-        status: 'active',
-      });
-    } else {
-      supplier = await Supplier.findOneAndUpdate(
-        { userId: session.user.id },
-        { $set: updates },
-        { new: true, runValidators: true }
-      );
+      return new Response(JSON.stringify({ error: 'Supplier profile not found' }), { status: 404 });
     }
 
-    // Update user name if contactName or companyName was changed
-    if (updates.contactName || updates.companyName) {
-      const newName = updates.contactName || updates.companyName;
-      await User.findByIdAndUpdate(
-        session.user.id,
-        { $set: { name: newName } },
-        { new: true }
-      );
-    }
-
-    // Update user image if image was changed
-    if (updates.image) {
-      await User.findByIdAndUpdate(
-        session.user.id,
-        { $set: { image: updates.image } },
-        { new: true }
-      );
-    }
-
-    return NextResponse.json({ 
-      message: 'Profile updated successfully',
-      profile: supplier
-    });
+    return new Response(JSON.stringify(supplier), { status: 200 });
   } catch (error) {
-    console.error('Error updating supplier profile:', error);
-    return NextResponse.json({ 
-      error: error.message || 'Internal server error' 
-    }, { status: 500 });
+    console.error('Update supplier profile error:', error);
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 } 

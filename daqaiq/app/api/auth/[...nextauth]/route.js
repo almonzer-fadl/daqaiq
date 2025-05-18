@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { connectToDatabase } from '../../../../lib/mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
+import User from '@/lib/models/User';
 import bcrypt from 'bcryptjs';
 
 export const authOptions = {
@@ -16,26 +17,30 @@ export const authOptions = {
           throw new Error('Please enter an email and password');
         }
 
-        await connectToDatabase();
-        const { db } = await connectToDatabase();
-        const user = await db.collection('users').findOne({ email: credentials.email });
+        try {
+          await connectToDatabase();
+          const user = await User.findOne({ email: credentials.email });
 
-        if (!user) {
-          throw new Error('No user found with this email');
+          if (!user) {
+            throw new Error('No user found with this email');
+          }
+
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+
+          if (!isPasswordValid) {
+            throw new Error('Invalid password');
+          }
+
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+            role: user.role
+          };
+        } catch (error) {
+          console.error('Auth error:', error);
+          throw new Error('Authentication failed');
         }
-
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
-
-        if (!isPasswordValid) {
-          throw new Error('Invalid password');
-        }
-
-        return {
-          id: user._id.toString(),
-          email: user.email,
-          name: user.name,
-          role: user.role
-        };
       }
     })
   ],

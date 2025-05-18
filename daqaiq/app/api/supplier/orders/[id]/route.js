@@ -1,52 +1,38 @@
-import { NextResponse } from 'next/server';
+import { connectToDatabase } from '@/lib/mongodb';
+import { Order, Product } from '@/lib/models';
 import { getServerSession } from 'next-auth';
-import { connectToDatabase } from '../../../../../lib/mongodb';
-import Order from '../../../../../app/lib/models/Order';
-import Product from '../../../../../lib/lib/models/Product';
-import { authOptions } from '../../../auth/[...nextauth]/route';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-export async function GET(request, context) {
+export async function GET(request, { params }) {
   try {
-    // Connect to database first
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+    }
+
     await connectToDatabase();
 
-    // Check authentication and role
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    if (session.user.role !== 'supplier') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
-    // Get the order ID from params
-    const { params } = context;
-    const orderId = await params.id;
-
-    // Find the order
-    const order = await Order.findOne({
-      _id: orderId,
-      supplier: session.user.id,
-    })
-    .populate('customer', 'name email')
-    .populate({ 
-      path: 'items.product',
-      select: 'name price images description'
-    });
+    const order = await Order.findById(params.id)
+      .populate('user', 'name email')
+      .populate('items.product');
 
     if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+      return new Response(JSON.stringify({ error: 'Order not found' }), { status: 404 });
     }
 
-    return NextResponse.json({ order });
-
-  } catch (error) {
-    console.error('Error fetching order:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch order' },
-      { status: 500 }
+    // Check if the supplier owns any products in this order
+    const hasSupplierProducts = order.items.some(item => 
+      item.product.supplier.toString() === session.user.id
     );
+
+    if (!hasSupplierProducts) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+    }
+
+    return new Response(JSON.stringify(order), { status: 200 });
+  } catch (error) {
+    console.error('Get order error:', error);
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
 
@@ -58,11 +44,11 @@ export async function PATCH(request, context) {
     // Check authentication and role
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
     }
 
     if (session.user.role !== 'supplier') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403 });
     }
 
     // Get the order ID from params
@@ -75,10 +61,7 @@ export async function PATCH(request, context) {
     // Validate status
     const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
     if (!validStatuses.includes(status)) {
-      return NextResponse.json(
-        { error: 'Invalid status' },
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: 'Invalid status' }), { status: 400 });
     }
 
     // Find and update the order
@@ -102,16 +85,13 @@ export async function PATCH(request, context) {
     });
 
     if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+      return new Response(JSON.stringify({ error: 'Order not found' }), { status: 404 });
     }
 
-    return NextResponse.json({ order });
+    return new Response(JSON.stringify(order), { status: 200 });
 
   } catch (error) {
     console.error('Error updating order:', error);
-    return NextResponse.json(
-      { error: 'Failed to update order' },
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ error: 'Failed to update order' }), { status: 500 });
   }
 } 

@@ -1,54 +1,46 @@
-import { NextResponse } from 'next/server';
+import { connectToDatabase } from '@/lib/mongodb';
+import { sendEmail } from '@/lib/utils/email';
+import User from '@/lib/models/User';
 import crypto from 'crypto';
-import { connectToDatabase } from '../../../../lib/mongodb';
-import User from '../../../../lib/models/User';
-import { sendPasswordResetEmail } from '../../../../lib/lib/email';
 
-export async function POST(req) {
+export async function POST(request) {
   try {
-    const { email } = await req.json();
-
-    if (!email) {
-      return NextResponse.json(
-        { error: 'Please provide an email address' },
-        { status: 400 }
-      );
-    }
+    const { email } = await request.json();
 
     await connectToDatabase();
-
     const user = await User.findOne({ email });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'No user found with this email' },
-        { status: 404 }
-      );
+      return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
     }
 
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetTokenExpiry = Date.now() + 3600000; // 1 hour from now
+    const resetTokenExpiry = Date.now() + 3600000; // 1 hour
 
-    // Save reset token to user
-    await User.findByIdAndUpdate(user._id, {
-      resetPasswordToken: resetToken,
-      resetPasswordExpires: resetTokenExpiry
+    // Update user with reset token
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = resetTokenExpiry;
+    await user.save();
+
+    // Send reset email
+    await sendEmail({
+      to: email,
+      subject: 'Password Reset - Daqaiq',
+      html: `
+        <h1>Password Reset Request</h1>
+        <p>You requested a password reset. Click the link below to reset your password:</p>
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password?token=${resetToken}">
+          Reset Password
+        </a>
+        <p>This link will expire in 1 hour.</p>
+        <p>If you didn't request this, please ignore this email.</p>
+      `
     });
 
-    // Send password reset email
-    await sendPasswordResetEmail(email, resetToken);
-
-    return NextResponse.json(
-      { message: 'Password reset email sent successfully' },
-      { status: 200 }
-    );
-
+    return new Response(JSON.stringify({ message: 'Password reset email sent' }), { status: 200 });
   } catch (error) {
-    console.error('Forgot password error:', error);
-    return NextResponse.json(
-      { error: 'Something went wrong while processing your request' },
-      { status: 500 }
-    );
+    console.error('Password reset error:', error);
+    return new Response(JSON.stringify({ error: 'Failed to process password reset' }), { status: 500 });
   }
 } 
