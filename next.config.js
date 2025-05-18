@@ -77,7 +77,7 @@ const nextConfig = {
               value: 'supplier.daqaiq.com',
             },
           ],
-          destination: '/app/supplier/:path*',
+          destination: '/supplier/:path*',
         },
         // Admin subdomain routing
         {
@@ -88,7 +88,7 @@ const nextConfig = {
               value: 'admin.daqaiq.com',
             },
           ],
-          destination: '/app/admin/:path*',
+          destination: '/admin/:path*',
         }
       ],
       afterFiles: [
@@ -101,7 +101,7 @@ const nextConfig = {
               value: 'daqaiq.com',
             },
           ],
-          destination: '/app/:path*',
+          destination: '/:path*',
         }
       ]
     };

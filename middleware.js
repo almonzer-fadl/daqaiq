@@ -23,45 +23,6 @@ export async function middleware(request) {
     '/api/auth',
   ];
 
-  // Check if the path is public
-  if (publicPaths.some(path => pathname.startsWith(path))) {
-    return NextResponse.next();
-  }
-
-  // Handle supplier subdomain
-  if (isSupplierDomain) {
-    if (!token) {
-      return NextResponse.redirect(new URL('/auth/login', request.url));
-    }
-    if (token.role !== 'supplier') {
-      return NextResponse.redirect(new URL('https://daqaiq.com/auth/login', request.url));
-    }
-    if (pathname === '/') {
-      return NextResponse.redirect(new URL('/supplier', request.url));
-    }
-  }
-
-  // Handle admin subdomain
-  if (isAdminDomain) {
-    if (!token) {
-      return NextResponse.redirect(new URL('/auth/login', request.url));
-    }
-    if (token.role !== 'main-admin') {
-      return NextResponse.redirect(new URL('https://daqaiq.com/auth/login', request.url));
-    }
-    if (pathname === '/') {
-      return NextResponse.redirect(new URL('/admin', request.url));
-    }
-  }
-
-  // Handle main domain
-  if (isMainDomain) {
-    // Protected customer routes
-    if (pathname.startsWith('/customer') && (!token || token.role !== 'customer')) {
-      return NextResponse.redirect(new URL('/auth/login', request.url));
-    }
-  }
-
   // Check if maintenance mode is enabled
   if (MAINTENANCE_MODE.enabled) {
     const path = request.nextUrl.pathname;
@@ -91,6 +52,55 @@ export async function middleware(request) {
     const url = request.nextUrl.clone();
     url.pathname = '/maintenance';
     return NextResponse.rewrite(url);
+  }
+
+  // Check if the path is public
+  if (publicPaths.some(path => pathname.startsWith(path))) {
+    return NextResponse.next();
+  }
+
+  // Handle supplier subdomain
+  if (isSupplierDomain) {
+    if (!token) {
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
+    if (token.role !== 'supplier') {
+      return NextResponse.redirect(new URL('https://daqaiq.com/auth/login', request.url));
+    }
+    // Only redirect root path to /supplier
+    if (pathname === '/') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/supplier';
+      return NextResponse.redirect(url);
+    }
+    // Allow all other paths under supplier domain
+    return NextResponse.next();
+  }
+
+  // Handle admin subdomain
+  if (isAdminDomain) {
+    if (!token) {
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
+    if (token.role !== 'main-admin') {
+      return NextResponse.redirect(new URL('https://daqaiq.com/auth/login', request.url));
+    }
+    // Only redirect root path to /admin
+    if (pathname === '/') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/admin';
+      return NextResponse.redirect(url);
+    }
+    // Allow all other paths under admin domain
+    return NextResponse.next();
+  }
+
+  // Handle main domain
+  if (isMainDomain) {
+    // Protected customer routes
+    if (pathname.startsWith('/customer') && (!token || token.role !== 'customer')) {
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
   }
 
   return NextResponse.next();
