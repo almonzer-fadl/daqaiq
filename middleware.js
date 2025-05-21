@@ -7,7 +7,7 @@ export async function middleware(request) {
   const token = await getToken({ req: request });
   const isLocalhost = host === 'localhost:3000';
 
-  // Check for maintenance mode
+  // Check for maintenance mode FIRST, before any other routing logic
   if (MAINTENANCE_MODE.enabled) {
     // Allow access to maintenance page
     if (pathname === '/maintenance') {
