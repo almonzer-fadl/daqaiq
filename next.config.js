@@ -69,41 +69,45 @@ const nextConfig = {
     ];
   },
   async rewrites() {
-    return [
-      // Handle supplier subdomain
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'supplier.daqaiq.com',
-          },
-        ],
-        destination: '/supplier/:path*',
-      },
-      // Handle admin subdomain
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'admin.daqaiq.com',
-          },
-        ],
-        destination: '/admin/:path*',
-      },
-      // Handle main domain
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'daqaiq.com',
-          },
-        ],
-        destination: '/:path*',
-      }
-    ];
+    return {
+      beforeFiles: [
+        // Handle supplier subdomain
+        {
+          source: '/:path*',
+          has: [
+            {
+              type: 'host',
+              value: 'supplier.daqaiq.com',
+            },
+          ],
+          destination: '/supplier/:path*',
+        },
+        // Handle admin subdomain
+        {
+          source: '/:path*',
+          has: [
+            {
+              type: 'host',
+              value: 'admin.daqaiq.com',
+            },
+          ],
+          destination: '/admin/:path*',
+        },
+      ],
+      afterFiles: [
+        // Handle main domain
+        {
+          source: '/:path*',
+          has: [
+            {
+              type: 'host',
+              value: 'daqaiq.com',
+            },
+          ],
+          destination: '/:path*',
+        }
+      ]
+    };
   }
 };
 
