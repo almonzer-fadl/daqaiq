@@ -3,14 +3,8 @@ import { getToken } from 'next-auth/jwt';
 import { MAINTENANCE_MODE } from './app/config/maintenance';
 
 export async function middleware(request) {
+  const { pathname, host } = request.nextUrl;
   const token = await getToken({ req: request });
-  const { pathname } = request.nextUrl;
-  const host = request.headers.get('host');
-
-  // Determine the domain type
-  const isSupplierDomain = host.startsWith('supplier.');
-  const isAdminDomain = host.startsWith('admin.');
-  const isMainDomain = !isSupplierDomain && !isAdminDomain;
 
   // Public paths that don't require authentication
   const publicPaths = [
@@ -22,57 +16,24 @@ export async function middleware(request) {
     '/api/auth',
   ];
 
-  // Handle login path redirections
-  if (pathname === '/auth/login') {
-    const url = request.nextUrl.clone();
-    url.pathname = '/auth/signin';
-    return NextResponse.redirect(url);
-  }
-
-  // Check if maintenance mode is enabled
-  if (MAINTENANCE_MODE.enabled) {
-    const path = request.nextUrl.pathname;
-
-    // Always allow authentication paths
-    if (publicPaths.some(publicPath => path.startsWith(publicPath))) {
-      return NextResponse.next();
-    }
-
-    // Allow specific paths even in maintenance mode
-    if (MAINTENANCE_MODE.allowedPaths.some(allowedPath => path.startsWith(allowedPath))) {
-      return NextResponse.next();
-    }
-
-    // Check if user is authenticated as admin
-    if (token && MAINTENANCE_MODE.isAdminUser(token)) {
-      return NextResponse.next();
-    }
-
-    // Check IP allowlist as a fallback
-    const ip = request.headers.get('x-forwarded-for') || request.ip;
-    if (MAINTENANCE_MODE.allowedIPs.includes(ip)) {
-      return NextResponse.next();
-    }
-
-    // Show maintenance page for all other requests
-    const url = request.nextUrl.clone();
-    url.pathname = '/maintenance';
-    return NextResponse.rewrite(url);
-  }
-
   // Handle supplier subdomain
-  if (isSupplierDomain) {
-    // If accessing root of supplier domain, redirect to signin
-    if (pathname === '/' || pathname === '') {
+  if (host === 'supplier.daqaiq.com') {
+    // If accessing root path and authenticated as supplier, allow access to dashboard
+    if ((pathname === '/' || pathname === '') && token?.role === 'supplier') {
+      return NextResponse.next();
+    }
+
+    // If accessing root path but not authenticated, redirect to signin
+    if ((pathname === '/' || pathname === '') && !token) {
       return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
 
-    // Allow public paths without authentication
+    // Allow access to public paths without authentication
     if (publicPaths.some(path => pathname.startsWith(path))) {
       return NextResponse.next();
     }
 
-    // Check authentication
+    // For all other supplier routes, check authentication
     if (!token) {
       return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
@@ -86,13 +47,23 @@ export async function middleware(request) {
   }
 
   // Handle admin subdomain
-  if (isAdminDomain) {
-    // Allow public paths without authentication
+  if (host === 'admin.daqaiq.com') {
+    // If accessing root path and authenticated as admin, allow access to dashboard
+    if ((pathname === '/' || pathname === '') && token?.role === 'main-admin') {
+      return NextResponse.next();
+    }
+
+    // If accessing root path but not authenticated, redirect to signin
+    if ((pathname === '/' || pathname === '') && !token) {
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    }
+
+    // Allow access to public paths without authentication
     if (publicPaths.some(path => pathname.startsWith(path))) {
       return NextResponse.next();
     }
 
-    // Check authentication
+    // For all other admin routes, check authentication
     if (!token) {
       return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
@@ -106,12 +77,28 @@ export async function middleware(request) {
   }
 
   // Handle main domain
-  if (isMainDomain) {
+  if (host === 'daqaiq.com') {
+    // If someone tries to access supplier routes on main domain
+    if (pathname.startsWith('/supplier/')) {
+      return NextResponse.redirect(new URL('https://supplier.daqaiq.com' + pathname.replace('/supplier', ''), request.url));
+    }
+
+    // If someone tries to access admin routes on main domain
+    if (pathname.startsWith('/admin/')) {
+      return NextResponse.redirect(new URL('https://admin.daqaiq.com' + pathname.replace('/admin', ''), request.url));
+    }
+
     // Protected customer routes
     if (pathname.startsWith('/customer') && (!token || token.role !== 'customer')) {
       return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
+
     return NextResponse.next();
+  }
+
+  // For any other domain, redirect to main site
+  if (!host.includes('daqaiq.com')) {
+    return NextResponse.redirect(new URL('https://daqaiq.com', request.url));
   }
 
   return NextResponse.next();
@@ -119,6 +106,14 @@ export async function middleware(request) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
   ],
 }; 
