@@ -4,13 +4,7 @@ import { MAINTENANCE_MODE } from './app/config/maintenance';
 
 export async function middleware(request) {
   const token = await getToken({ req: request });
-  const { pathname } = request.nextUrl;
-  const host = request.headers.get('host');
-
-  // Determine the domain type
-  const isSupplierDomain = host.startsWith('supplier.');
-  const isAdminDomain = host.startsWith('admin.');
-  const isMainDomain = !isSupplierDomain && !isAdminDomain;
+  const { pathname, host } = request.nextUrl;
 
   // Public paths that don't require authentication
   const publicPaths = [
@@ -21,6 +15,45 @@ export async function middleware(request) {
     '/auth/verify-request',
     '/api/auth',
   ];
+
+  // Handle supplier subdomain
+  if (host === 'supplier.daqaiq.com') {
+    // Check if the user is trying to access the login page
+    if (pathname === '/supplier' || pathname === '/supplier/') {
+      return NextResponse.redirect(new URL('/supplier/auth/login', request.url));
+    }
+
+    // Check if the user is trying to access auth pages
+    if (pathname.startsWith('/supplier/auth/')) {
+      return NextResponse.next();
+    }
+
+    // For all other supplier routes, check authentication
+    if (!token) {
+      return NextResponse.redirect(new URL('/supplier/auth/login', request.url));
+    }
+
+    return NextResponse.next();
+  }
+
+  // Handle admin subdomain
+  if (host === 'admin.daqaiq.com') {
+    // Similar logic for admin routes
+    if (pathname === '/admin' || pathname === '/admin/') {
+      return NextResponse.redirect(new URL('/admin/auth/login', request.url));
+    }
+
+    if (pathname.startsWith('/admin/auth/')) {
+      return NextResponse.next();
+    }
+
+    const token = await getToken({ req: request });
+    if (!token) {
+      return NextResponse.redirect(new URL('/admin/auth/login', request.url));
+    }
+
+    return NextResponse.next();
+  }
 
   // Handle login path redirections
   if (pathname === '/auth/login') {
@@ -60,48 +93,8 @@ export async function middleware(request) {
     return NextResponse.rewrite(url);
   }
 
-  // Handle supplier subdomain
-  if (isSupplierDomain) {
-    // Allow public paths without authentication
-    if (publicPaths.some(path => pathname.startsWith(path))) {
-      return NextResponse.next();
-    }
-
-    // Check authentication
-    if (!token) {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
-    }
-
-    // Verify supplier role
-    if (token.role !== 'supplier') {
-      return NextResponse.redirect(new URL('https://daqaiq.com/auth/signin', request.url));
-    }
-
-    return NextResponse.next();
-  }
-
-  // Handle admin subdomain
-  if (isAdminDomain) {
-    // Allow public paths without authentication
-    if (publicPaths.some(path => pathname.startsWith(path))) {
-      return NextResponse.next();
-    }
-
-    // Check authentication
-    if (!token) {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
-    }
-
-    // Verify admin role
-    if (token.role !== 'main-admin') {
-      return NextResponse.redirect(new URL('https://daqaiq.com/auth/signin', request.url));
-    }
-
-    return NextResponse.next();
-  }
-
   // Handle main domain
-  if (isMainDomain) {
+  if (host === 'daqaiq.com') {
     // Protected customer routes
     if (pathname.startsWith('/customer') && (!token || token.role !== 'customer')) {
       return NextResponse.redirect(new URL('/auth/signin', request.url));
@@ -114,6 +107,14 @@ export async function middleware(request) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
   ],
 }; 
