@@ -1,0 +1,38 @@
+{
+  "common": {
+    "email": "Email address",
+    "password": "Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password"
+  },
+  "supplier": {
+    "login": {
+      "title": "Supplier Login",
+      "signIn": "Sign in",
+      "signingIn": "Signing in...",
+      "forgotPassword": "Forgot your password?"
+    },
+    "forgotPassword": {
+      "title": "Reset Your Password",
+      "description": "Enter your email address and we will send you instructions to reset your password.",
+      "sendInstructions": "Send Reset Instructions",
+      "sending": "Sending...",
+      "success": "Password reset instructions have been sent to your email.",
+      "error": "An error occurred. Please try again.",
+      "backToLogin": "Back to login"
+    },
+    "resetPassword": {
+      "title": "Reset Your Password",
+      "resetButton": "Reset Password",
+      "resetting": "Resetting...",
+      "success": "Password has been reset successfully. You can now login with your new password.",
+      "error": "An error occurred while resetting your password.",
+      "passwordMismatch": "Passwords do not match.",
+      "passwordTooShort": "Password must be at least 8 characters long.",
+      "invalidToken": "Invalid or missing reset token.",
+      "invalidTokenTitle": "Invalid Reset Link",
+      "invalidTokenMessage": "This password reset link is invalid or has expired.",
+      "requestNewLink": "Request a new password reset link"
+    }
+  }
+} 
