@@ -7,24 +7,38 @@ export async function middleware(request) {
   const token = await getToken({ req: request });
   const isLocalhost = host === 'localhost:3000';
 
+  // Debug logging
+  console.log('Middleware executing:', {
+    pathname,
+    host,
+    maintenance: MAINTENANCE_MODE.enabled,
+    env: process.env.MAINTENANCE_MODE
+  });
+
   // Check for maintenance mode FIRST, before any other routing logic
   if (MAINTENANCE_MODE.enabled) {
+    console.log('Maintenance mode is enabled');
+    
     // Allow access to maintenance page
     if (pathname === '/maintenance') {
+      console.log('Allowing access to maintenance page');
       return NextResponse.next();
     }
 
     // Allow access to allowed paths (API routes, assets, etc.)
     if (MAINTENANCE_MODE.allowedPaths.some(path => pathname.startsWith(path))) {
+      console.log('Allowing access to allowed path:', pathname);
       return NextResponse.next();
     }
 
     // Allow access if user is admin
     if (token && MAINTENANCE_MODE.isAdminUser(token)) {
+      console.log('Allowing access to admin user');
       return NextResponse.next();
     }
 
     // Redirect all other requests to maintenance page
+    console.log('Redirecting to maintenance page');
     return NextResponse.redirect(new URL('/maintenance', request.url));
   }
 
