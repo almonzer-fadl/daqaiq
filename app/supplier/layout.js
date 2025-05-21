@@ -4,17 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { signOut } from 'next-auth/react';
-import { getServerSession } from 'next-auth';
-import { redirect } from 'next/navigation';
-import { authOptions } from '../api/auth/[...nextauth]/route';
 import Navigation from '../components/supplier/Navigation';
-import { SUPPLIER_TRANSLATIONS as t } from '../constants/translations';
-import { AUTH_URLS } from '../config/urls';
-
-export const metadata = {
-  title: 'منصة الموردين - دقائق',
-  description: 'إدارة المنتجات والطلبات في منصة دقائق',
-};
 
 export default function SupplierLayout({ children }) {
   const { data: session, status } = useSession();
