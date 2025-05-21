@@ -38,8 +38,18 @@ export async function middleware(request) {
     }
 
     // Redirect all other requests to maintenance page
-    console.log('Redirecting to maintenance page');
-    return NextResponse.redirect(new URL('/maintenance', request.url));
+    // Handle subdomain-specific redirects
+    let maintenanceUrl;
+    if (host === 'supplier.daqaiq.com' || (isLocalhost && pathname.startsWith('/supplier'))) {
+      maintenanceUrl = new URL('/maintenance', 'https://supplier.daqaiq.com');
+    } else if (host === 'admin.daqaiq.com' || (isLocalhost && pathname.startsWith('/admin'))) {
+      maintenanceUrl = new URL('/maintenance', 'https://admin.daqaiq.com');
+    } else {
+      maintenanceUrl = new URL('/maintenance', request.url);
+    }
+    
+    console.log('Redirecting to maintenance page:', maintenanceUrl.toString());
+    return NextResponse.redirect(maintenanceUrl);
   }
 
   // Public paths that don't require authentication
@@ -152,14 +162,9 @@ export async function middleware(request) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
+    // Match all paths
+    '/:path*',
+    // But still exclude Next.js internal routes and static files
+    '/((?!_next/static|_next/image).*)',
   ],
 }; 

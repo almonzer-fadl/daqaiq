@@ -10,12 +10,22 @@ export const MAINTENANCE_MODE = {
         '/images',          // Allow image assets
         '/assets',          // Allow static assets
         '/public',          // Allow public assets
+        '/static',          // Allow static assets
+        '.png',             // Allow image files
+        '.jpg',             // Allow image files
+        '.jpeg',            // Allow image files
+        '.gif',             // Allow image files
+        '.svg',             // Allow image files
+        '.css',             // Allow stylesheets
+        '.js',              // Allow JavaScript files
+        '.ico',             // Allow icons
     ],
     // Admin IPs that can bypass maintenance mode
     allowedIPs: process.env.ADMIN_IPS ? process.env.ADMIN_IPS.split(',') : [],
     // Check if user is authenticated as admin
     isAdminUser: (token) => {
-        return token?.role === 'main-admin' || token?.role === 'supplier';
+        if (!token) return false;
+        return ['main-admin', 'supplier'].includes(token.role);
     }
 }; 
 
