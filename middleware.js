@@ -62,6 +62,11 @@ export async function middleware(request) {
 
   // Handle supplier subdomain
   if (isSupplierDomain) {
+    // If accessing root of supplier domain, redirect to signin
+    if (pathname === '/' || pathname === '') {
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    }
+
     // Allow public paths without authentication
     if (publicPaths.some(path => pathname.startsWith(path))) {
       return NextResponse.next();
