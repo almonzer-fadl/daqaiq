@@ -15,44 +15,55 @@ export async function middleware(request) {
     return NextResponse.next();
   }
 
+  // Prevent authenticated users from accessing auth pages
+  if (token && pathname.includes('/auth/')) {
+    const role = token.role;
+    if (role === 'supplier') {
+      return NextResponse.redirect(new URL('/supplier/dashboard', request.url));
+    }
+    if (role === 'main-admin') {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+    }
+    if (role === 'customer') {
+      return NextResponse.redirect(new URL('/customer/dashboard', request.url));
+    }
+  }
+
   // Handle supplier routes
   if (pathname.startsWith('/supplier')) {
-    // If user is already logged in as supplier, allow access
     if (token?.role === 'supplier') {
-      // If at root supplier path, redirect to dashboard
       if (pathname === '/supplier') {
         return NextResponse.redirect(new URL('/supplier/dashboard', request.url));
       }
       return NextResponse.next();
     }
-    // Not logged in or not a supplier, redirect to supplier signin
-    const redirectUrl = new URL('/supplier/auth/signin', request.url);
-    redirectUrl.searchParams.set('callbackUrl', pathname);
-    return NextResponse.redirect(redirectUrl);
+    const currentUrl = encodeURIComponent(pathname);
+    return NextResponse.redirect(
+      new URL(`/supplier/auth/signin?callbackUrl=${currentUrl}`, request.url)
+    );
   }
 
   // Handle admin routes
   if (pathname.startsWith('/admin')) {
-    // If user is already logged in as admin, allow access
     if (token?.role === 'main-admin') {
-      // If at root admin path, redirect to dashboard
       if (pathname === '/admin') {
         return NextResponse.redirect(new URL('/admin/dashboard', request.url));
       }
       return NextResponse.next();
     }
-    // Not logged in or not an admin, redirect to admin signin
-    const redirectUrl = new URL('/admin/auth/signin', request.url);
-    redirectUrl.searchParams.set('callbackUrl', pathname);
-    return NextResponse.redirect(redirectUrl);
+    const currentUrl = encodeURIComponent(pathname);
+    return NextResponse.redirect(
+      new URL(`/admin/auth/signin?callbackUrl=${currentUrl}`, request.url)
+    );
   }
 
   // Handle customer routes
   if (pathname.startsWith('/customer')) {
     if (!token || token.role !== 'customer') {
-      const redirectUrl = new URL('/auth/signin', request.url);
-      redirectUrl.searchParams.set('callbackUrl', pathname);
-      return NextResponse.redirect(redirectUrl);
+      const currentUrl = encodeURIComponent(pathname);
+      return NextResponse.redirect(
+        new URL(`/auth/signin?callbackUrl=${currentUrl}`, request.url)
+      );
     }
     return NextResponse.next();
   }

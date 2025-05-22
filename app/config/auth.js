@@ -47,27 +47,48 @@ export const authOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Always allow auth-related URLs to proceed as is
-      if (url.includes('/auth/')) {
-        return url;
+      // Get the intended URL from the callback parameter
+      const callbackUrl = new URL(url, baseUrl).searchParams.get('callbackUrl');
+      
+      // If there's a callback URL and it's for our domain, use it
+      if (callbackUrl && callbackUrl.startsWith('/')) {
+        // Check role-specific paths
+        if (callbackUrl.startsWith('/supplier/') && token?.role !== 'supplier') {
+          return '/supplier/auth/signin';
+        }
+        if (callbackUrl.startsWith('/admin/') && token?.role !== 'main-admin') {
+          return '/admin/auth/signin';
+        }
+        if (callbackUrl.startsWith('/customer/') && token?.role !== 'customer') {
+          return '/auth/signin';
+        }
+        return callbackUrl;
       }
 
-      // If URL is already absolute, verify it's for our domain
-      if (url.startsWith('http')) {
-        return url.startsWith(baseUrl) ? url : baseUrl;
+      // Default redirects based on role
+      if (token?.role === 'supplier') {
+        return '/supplier/dashboard';
+      }
+      if (token?.role === 'main-admin') {
+        return '/admin/dashboard';
+      }
+      if (token?.role === 'customer') {
+        return '/customer/dashboard';
       }
 
-      // Handle relative URLs
-      return `${baseUrl}${url}`;
+      // If no specific redirect is determined, stay on current URL
+      return url;
     }
   },
   pages: {
     signIn: (request) => {
-      const { url } = request;
-      if (url.includes('/supplier/')) {
+      if (!request) return '/auth/signin';
+      
+      const path = request.url || '';
+      if (path.includes('/supplier/')) {
         return '/supplier/auth/signin';
       }
-      if (url.includes('/admin/')) {
+      if (path.includes('/admin/')) {
         return '/admin/auth/signin';
       }
       return '/auth/signin';
