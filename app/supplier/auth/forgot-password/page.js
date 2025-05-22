@@ -15,28 +15,28 @@ const translations = {
     backToLogin: 'Back to login'
   },
   ar: {
-    title: 'إعادة تعيين كلمة المرور',
-    description: 'أدخل عنوان بريدك الإلكتروني وسنرسل لك تعليمات إعادة تعيين كلمة المرور.',
+    title: 'نسيت كلمة المرور؟',
+    description: 'أدخل عنوان بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.',
     email: 'البريد الإلكتروني',
-    sendInstructions: 'إرسال تعليمات إعادة التعيين',
+    sendLink: 'إرسال رابط إعادة التعيين',
     sending: 'جاري الإرسال...',
-    success: 'تم إرسال تعليمات إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.',
-    error: 'حدث خطأ. يرجى المحاولة مرة أخرى.',
-    backToLogin: 'العودة إلى تسجيل الدخول'
+    success: 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.',
+    error: 'حدث خطأ. يرجى التحقق من البريد الإلكتروني والمحاولة مرة أخرى.',
+    backToLogin: 'العودة إلى تسجيل الدخول',
+    emailPlaceholder: 'أدخل بريدك الإلكتروني'
   }
 };
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState({ type: '', text: '' });
-  // Default to Arabic, can be made dynamic based on user preference or URL
+  const [status, setStatus] = useState({ type: '', message: '' });
   const t = translations.ar;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setMessage({ type: '', text: '' });
+    setStatus({ type: '', message: '' });
 
     try {
       const response = await fetch('/api/supplier/auth/forgot-password', {
@@ -50,21 +50,21 @@ export default function ForgotPassword() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({
+        setStatus({
           type: 'success',
-          text: t.success
+          message: t.success
         });
         setEmail('');
       } else {
-        setMessage({
+        setStatus({
           type: 'error',
-          text: data.message || t.error
+          message: data.message || t.error
         });
       }
     } catch (error) {
-      setMessage({
+      setStatus({
         type: 'error',
-        text: t.error
+        message: t.error
       });
     } finally {
       setIsLoading(false);
@@ -72,30 +72,32 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+        <div className="text-center">
+          <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
             {t.title}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="text-sm text-gray-600">
             {t.description}
           </p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {message.text && (
-            <div className={`rounded-md p-4 ${
-              message.type === 'success' 
-                ? 'bg-green-100 border border-green-400 text-green-700' 
-                : 'bg-red-100 border border-red-400 text-red-700'
-            }`}>
-              {message.text}
+          {status.message && (
+            <div
+              className={`p-4 rounded-lg ${
+                status.type === 'success'
+                  ? 'bg-green-50 text-green-800 border border-green-200'
+                  : 'bg-red-50 text-red-800 border border-red-200'
+              }`}
+            >
+              {status.message}
             </div>
           )}
 
-          <div>
-            <label htmlFor="email" className="sr-only">
+          <div className="rounded-md shadow-sm">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
               {t.email}
             </label>
             <input
@@ -103,19 +105,21 @@ export default function ForgotPassword() {
               name="email"
               type="email"
               required
-              className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              placeholder={t.email}
+              className="appearance-none relative block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              placeholder={t.emailPlaceholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
             />
           </div>
 
-          <div>
+          <div className="flex flex-col space-y-4">
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               disabled={isLoading}
+              className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                isLoading ? 'opacity-75 cursor-not-allowed' : ''
+              }`}
             >
               {isLoading ? (
                 <span className="flex items-center">
@@ -126,15 +130,13 @@ export default function ForgotPassword() {
                   {t.sending}
                 </span>
               ) : (
-                t.sendInstructions
+                t.sendLink
               )}
             </button>
-          </div>
 
-          <div className="text-sm text-center">
             <Link
-              href="/supplier/auth/login"
-              className="font-medium text-blue-600 hover:text-blue-500"
+              href="/supplier/auth/signin"
+              className="text-center text-sm text-blue-600 hover:text-blue-500 font-medium"
             >
               {t.backToLogin}
             </Link>

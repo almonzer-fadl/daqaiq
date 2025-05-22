@@ -12,7 +12,9 @@ const translations = {
     signin: 'Sign in',
     signingIn: 'Signing in...',
     forgotPassword: 'Forgot your password?',
-    error: 'Invalid email or password'
+    error: 'Invalid email or password',
+    noAccount: 'Don\'t have an account?',
+    register: 'Register now'
   },
   ar: {
     title: 'تسجيل الدخول إلى حسابك',
@@ -21,7 +23,9 @@ const translations = {
     signin: 'تسجيل الدخول',
     signingIn: 'جاري تسجيل الدخول...',
     forgotPassword: 'نسيت كلمة المرور؟',
-    error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة'
+    error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+    noAccount: 'ليس لديك حساب؟',
+    register: 'سجل الآن'
   }
 };
 
@@ -74,7 +78,7 @@ export default function SignIn() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="rounded-md bg-red-100 border border-red-400 p-4 text-red-700">
+            <div className="rounded-md bg-red-50 border border-red-200 p-4 text-red-800">
               {error}
             </div>
           )}
@@ -145,6 +149,18 @@ export default function SignIn() {
             </button>
           </div>
         </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600">
+            {t.noAccount}{' '}
+            <Link
+              href="/auth/register/supplier"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              {t.register}
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
