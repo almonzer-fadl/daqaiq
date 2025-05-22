@@ -1,42 +1,37 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/config/auth';
-import { connectToDatabase } from '@/lib/mongodb';
-import Product from '../../../../lib/models/Product';
-import { Order } from '@/lib/models';
+import { getToken } from 'next-auth/jwt';
+import dbConnect from '@/lib/dbConnect';
+import Supplier from '@/models/Supplier';
 
 // Add segment config to explicitly mark as dynamic
 export const dynamic = 'force-dynamic';
 
-export async function GET(request) {
+export async function GET(req) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'supplier') {
+    const token = await getToken({ req });
+
+    if (!token || token.role !== 'supplier') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await connectToDatabase();
+    await dbConnect();
 
-    // Fetch analytics data for the supplier
-    const orders = await Order.find({ supplier: session.user.id })
-      .select('totalAmount createdAt status')
-      .sort({ createdAt: -1 });
+    // Get supplier data
+    const supplier = await Supplier.findById(token.id);
+    if (!supplier) {
+      return NextResponse.json({ error: 'Supplier not found' }, { status: 404 });
+    }
 
-    const products = await Product.find({ supplier: session.user.id })
-      .select('name stock');
-
-    // Calculate total sales and total orders
-    const totalSales = orders.reduce((acc, order) => acc + order.totalAmount, 0);
-    const totalOrders = orders.length;
-
+    // Return analytics data
     return NextResponse.json({
-      totalSales,
-      totalOrders,
-      products,
-      orders,
+      stats: supplier.stats,
+      lastLoginAt: supplier.lastLoginAt,
     });
   } catch (error) {
-    console.error('Error fetching supplier analytics:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Analytics error:', error);
+    return NextResponse.json(
+      { error: 'Error fetching analytics' },
+      { status: 500 }
+    );
   }
 }
