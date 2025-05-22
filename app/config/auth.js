@@ -47,17 +47,26 @@ export const authOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Handle path-based routing redirects
-      if (url.startsWith('/supplier')) {
-        return `${baseUrl}${url}`;
+      // Handle role-specific redirects
+      if (url.startsWith(baseUrl)) {
+        const path = url.substring(baseUrl.length);
+        
+        // If trying to access supplier area
+        if (path.startsWith('/supplier')) {
+          return `${baseUrl}/supplier/auth/signin`;
+        }
+        
+        // If trying to access admin area
+        if (path.startsWith('/admin')) {
+          return `${baseUrl}/admin/auth/signin`;
+        }
+        
+        // If trying to access customer area
+        if (path.startsWith('/customer')) {
+          return `${baseUrl}/auth/signin`;
+        }
       }
-      if (url.startsWith('/admin')) {
-        return `${baseUrl}${url}`;
-      }
-      if (url.startsWith('/customer')) {
-        return `${baseUrl}${url}`;
-      }
-      // Default redirect
+      
       return url.startsWith(baseUrl) ? url : baseUrl;
     }
   },
