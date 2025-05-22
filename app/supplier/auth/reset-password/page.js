@@ -1,15 +1,48 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'next-i18next';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
+const translations = {
+  en: {
+    title: 'Reset Your Password',
+    newPassword: 'New Password',
+    confirmPassword: 'Confirm Password',
+    passwordMismatch: 'Passwords do not match.',
+    passwordTooShort: 'Password must be at least 8 characters long.',
+    success: 'Password has been reset successfully. You can now login with your new password.',
+    error: 'An error occurred while resetting your password.',
+    invalidToken: 'Invalid or missing reset token.',
+    invalidTokenTitle: 'Invalid Reset Link',
+    invalidTokenMessage: 'This password reset link is invalid or has expired.',
+    requestNewLink: 'Request a new password reset link',
+    resetButton: 'Reset Password',
+    resetting: 'Resetting...'
+  },
+  ar: {
+    title: 'إعادة تعيين كلمة المرور',
+    newPassword: 'كلمة المرور الجديدة',
+    confirmPassword: 'تأكيد كلمة المرور',
+    passwordMismatch: 'كلمات المرور غير متطابقة.',
+    passwordTooShort: 'يجب أن تكون كلمة المرور 8 أحرف على الأقل.',
+    success: 'تم إعادة تعيين كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول باستخدام كلمة المرور الجديدة.',
+    error: 'حدث خطأ أثناء إعادة تعيين كلمة المرور.',
+    invalidToken: 'رمز إعادة التعيين غير صالح أو مفقود.',
+    invalidTokenTitle: 'رابط إعادة التعيين غير صالح',
+    invalidTokenMessage: 'رابط إعادة تعيين كلمة المرور هذا غير صالح أو منتهي الصلاحية.',
+    requestNewLink: 'طلب رابط إعادة تعيين جديد',
+    resetButton: 'إعادة تعيين كلمة المرور',
+    resetting: 'جاري إعادة التعيين...'
+  }
+};
+
 export default function ResetPassword() {
-  const { t } = useTranslation('common');
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
+  // Default to Arabic
+  const t = translations.ar;
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,7 +55,7 @@ export default function ResetPassword() {
       setIsTokenValid(false);
       setMessage({
         type: 'error',
-        text: t('supplier.resetPassword.invalidToken', 'Invalid or missing reset token.')
+        text: t.invalidToken
       });
     }
   }, [token, t]);
@@ -35,7 +68,7 @@ export default function ResetPassword() {
     if (password !== confirmPassword) {
       setMessage({
         type: 'error',
-        text: t('supplier.resetPassword.passwordMismatch', 'Passwords do not match.')
+        text: t.passwordMismatch
       });
       setIsLoading(false);
       return;
@@ -44,7 +77,7 @@ export default function ResetPassword() {
     if (password.length < 8) {
       setMessage({
         type: 'error',
-        text: t('supplier.resetPassword.passwordTooShort', 'Password must be at least 8 characters long.')
+        text: t.passwordTooShort
       });
       setIsLoading(false);
       return;
@@ -64,7 +97,7 @@ export default function ResetPassword() {
       if (response.ok) {
         setMessage({
           type: 'success',
-          text: t('supplier.resetPassword.success', 'Password has been reset successfully. You can now login with your new password.')
+          text: t.success
         });
         // Redirect to login page after 3 seconds
         setTimeout(() => {
@@ -73,13 +106,13 @@ export default function ResetPassword() {
       } else {
         setMessage({
           type: 'error',
-          text: data.message || t('supplier.resetPassword.error', 'An error occurred while resetting your password.')
+          text: data.message || t.error
         });
       }
     } catch (error) {
       setMessage({
         type: 'error',
-        text: t('supplier.resetPassword.error', 'An error occurred while resetting your password.')
+        text: t.error
       });
     } finally {
       setIsLoading(false);
@@ -92,17 +125,17 @@ export default function ResetPassword() {
         <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
           <div className="text-center">
             <h2 className="text-3xl font-extrabold text-gray-900">
-              {t('supplier.resetPassword.invalidTokenTitle', 'Invalid Reset Link')}
+              {t.invalidTokenTitle}
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              {t('supplier.resetPassword.invalidTokenMessage', 'This password reset link is invalid or has expired.')}
+              {t.invalidTokenMessage}
             </p>
             <div className="mt-4">
               <Link
                 href="/supplier/auth/forgot-password"
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
-                {t('supplier.resetPassword.requestNewLink', 'Request a new password reset link')}
+                {t.requestNewLink}
               </Link>
             </div>
           </div>
@@ -116,7 +149,7 @@ export default function ResetPassword() {
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {t('supplier.resetPassword.title', 'Reset Your Password')}
+            {t.title}
           </h2>
         </div>
 
@@ -134,7 +167,7 @@ export default function ResetPassword() {
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="password" className="sr-only">
-                {t('common.newPassword', 'New Password')}
+                {t.newPassword}
               </label>
               <input
                 id="password"
@@ -142,7 +175,7 @@ export default function ResetPassword() {
                 type="password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder={t('common.newPassword', 'New Password')}
+                placeholder={t.newPassword}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
@@ -150,7 +183,7 @@ export default function ResetPassword() {
             </div>
             <div>
               <label htmlFor="confirmPassword" className="sr-only">
-                {t('common.confirmPassword', 'Confirm Password')}
+                {t.confirmPassword}
               </label>
               <input
                 id="confirmPassword"
@@ -158,7 +191,7 @@ export default function ResetPassword() {
                 type="password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder={t('common.confirmPassword', 'Confirm Password')}
+                placeholder={t.confirmPassword}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
@@ -178,10 +211,10 @@ export default function ResetPassword() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  {t('supplier.resetPassword.resetting', 'Resetting...')}
+                  {t.resetting}
                 </span>
               ) : (
-                t('supplier.resetPassword.resetButton', 'Reset Password')
+                t.resetButton
               )}
             </button>
           </div>
