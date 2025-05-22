@@ -1,24 +1,33 @@
-'use client';
-
-import Link from 'next/link';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import HeroSlider from '@/components/HeroSlider';
 import CategorySlider from '@/components/category-slider/CategorySlider';
 import ProductSlider from '@/components/products/ProductSlider';
 
-export default function Home() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+// Dummy data for initial render
+const dummyProducts = [
+  {
+    id: 1,
+    name: "زيت محرك سينثيتك",
+    price: 149.99,
+    image: "/images/products/oil.jpg",
+    category: "oils"
+  },
+  {
+    id: 2,
+    name: "فلتر زيت عالي الجودة",
+    price: 49.99,
+    image: "/images/products/filter.jpg",
+    category: "filters"
+  },
+  {
+    id: 3,
+    name: "بطارية سيارة متميزة",
+    price: 599.99,
+    image: "/images/products/battery.jpg",
+    category: "batteries"
+  }
+];
 
-  // If authenticated supplier, redirect to dashboard
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user?.role === 'supplier') {
-      router.push('/dashboard');
-    }
-  }, [session, status, router]);
-
+export default async function Home() {
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
@@ -36,7 +45,7 @@ export default function Home() {
         <ProductSlider 
           categoryData={{
             title: "منتجات مميزة",
-            products: [] // Will be fetched from API
+            products: dummyProducts
           }}
           sectionId="featured"
         />
@@ -47,7 +56,7 @@ export default function Home() {
         <ProductSlider 
           categoryData={{
             title: "وصل حديثاً",
-            products: [] // Will be fetched from API
+            products: dummyProducts
           }}
           sectionId="new-arrivals"
         />
@@ -58,7 +67,7 @@ export default function Home() {
         <ProductSlider 
           categoryData={{
             title: "الأكثر مبيعاً",
-            products: [] // Will be fetched from API
+            products: dummyProducts
           }}
           sectionId="best-sellers"
         />

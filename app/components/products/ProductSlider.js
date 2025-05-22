@@ -106,7 +106,7 @@ export default function ProductSlider({ categoryData, sectionId }) {
         <div className={styles.categorySection}>
           <div className={styles.categoryHeader}>
             <h2 className={styles.categoryTitle}>{categoryData.title}</h2>
-            <Link href={`/services/${sectionId}`} className={styles.viewAllButton}>
+            <Link href={`/products/${sectionId}`} className={styles.viewAllButton}>
               اكتشف المزيد
               <span className={styles.viewAllArrow}>←</span>
             </Link>
@@ -123,82 +123,77 @@ export default function ProductSlider({ categoryData, sectionId }) {
               </button>
             )}
 
-            <div className={styles.servicesContainer} ref={scrollRef}>
-              <div className={styles.servicesRow}>
-                {categoryData.services.map((product) => (
-                  <Link 
-                    key={product.id} 
-                    href={`/products/${product.id}`}
-                    className={styles.productCard}
-                  >
-                    <div className={styles.productImageWrapper}>
-                      <button 
-                        className={styles.wishlistButton} 
-                        aria-label="Add to wishlist"
-                        onClick={(e) => {
-                          e.preventDefault(); // Prevent navigation
-                          e.stopPropagation(); // Prevent card click event
-                          // Handle wishlist logic here
-                        }}
+            <div className={styles.servicesRow} ref={scrollRef}>
+              {categoryData.products?.map((product) => (
+                <Link 
+                  key={product.id} 
+                  href={`/products/${product.id}`}
+                  className={styles.productCard}
+                >
+                  <div className={styles.productImageWrapper}>
+                    <button 
+                      className={styles.wishlistButton} 
+                      aria-label="Add to wishlist"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={styles.heartIcon}
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className={styles.heartIcon}
-                        >
-                          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                        </svg>
-                      </button>
+                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                      </svg>
+                    </button>
 
-                      {product.badge && (
-                        <div className={styles.badgeWrapper} style={{ backgroundColor: product.badgeColor }}>
-                          <span className={styles.badgeText}>{product.badge}</span>
-                        </div>
-                      )}
-
-                      <div className={styles.productImage}>
-                        <Image
-                          src={product.image || "/images/products/placeholder.jpg"}
-                          alt={product.title}
-                          width={200}
-                          height={200}
-                          className={styles.image}
-                        />
+                    {product.badge && (
+                      <div className={styles.badgeWrapper} style={{ backgroundColor: product.badgeColor }}>
+                        <span className={styles.badgeText}>{product.badge}</span>
                       </div>
+                    )}
 
-                      {product.freeShipping && (
-                        <div className={styles.shippingBadge}>
-                          <span className={styles.shippingIcon}>🚚</span>
-                          <span>{product.shippingText}</span>
-                        </div>
-                      )}
+                    <Image
+                      src={product.image || "/images/products/placeholder.jpg"}
+                      alt={product.name}
+                      width={200}
+                      height={200}
+                      className={styles.image}
+                    />
+
+                    {product.freeShipping && (
+                      <div className={styles.shippingBadge}>
+                        <span className={styles.shippingIcon}>🚚</span>
+                        <span>{product.shippingText}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className={styles.productInfo}>
+                    <h3 className={styles.productTitle}>{product.name}</h3>
+                    <p className={styles.productDescription}>{product.description}</p>
+
+                    <div className={styles.ratingsRow}>
+                      <div className={styles.rating}>{renderStars(product.rating)}</div>
+                      <span className={styles.reviewCount}>({product.reviewCount})</span>
                     </div>
 
-                    <div className={styles.productInfo}>
-                      <h3 className={styles.productTitle}>{product.title}</h3>
-                      <p className={styles.productDescription}>{product.description}</p>
-
-                      <div className={styles.ratingsRow}>
-                        <div className={styles.rating}>{renderStars(product.rating)}</div>
-                        <span className={styles.reviewCount}>({product.reviewCount})</span>
-                      </div>
-
-                      <div className={styles.priceWrapper}>
-                        <span className={styles.discountPrice}>{product.discountPrice} SAR</span>
-                        <span className={styles.originalPrice}>{product.originalPrice} SAR</span>
-                        <span className={styles.discountBadge}>%{product.discountPercentage}</span>
-                      </div>
+                    <div className={styles.priceWrapper}>
+                      <span className={styles.discountPrice}>{product.discountPrice} SAR</span>
+                      <span className={styles.originalPrice}>{product.originalPrice} SAR</span>
+                      <span className={styles.discountBadge}>%{product.discountPercentage}</span>
                     </div>
-                  </Link>
-                ))}
-              </div>
+                  </div>
+                </Link>
+              ))}
             </div>
 
             {showRightArrow && (
