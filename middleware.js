@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { MAINTENANCE_MODE } from './app/config/maintenance';
 
 // Helper to get subdomain
 function getSubdomain(host) {
@@ -15,63 +16,52 @@ function getSubdomain(host) {
 }
 
 export async function middleware(request) {
-  const { pathname, host } = request.nextUrl;
-  const subdomain = getSubdomain(host);
-  const token = await getToken({ req: request });
+  const { pathname } = request.nextUrl;
+  
+  // Check if in maintenance mode
+  if (MAINTENANCE_MODE.enabled) {
+    // Allow access to maintenance page and static assets
+    const isAllowedPath = MAINTENANCE_MODE.allowedPaths.some(path => 
+      pathname.startsWith(path) || pathname.endsWith(path)
+    );
 
-  // Handle supplier subdomain
-  if (subdomain === 'supplier') {
-    // If trying to access main store routes from supplier subdomain, redirect to main domain
-    if (pathname.startsWith('/store') || pathname.startsWith('/products') || pathname.startsWith('/cart')) {
-      const mainDomain = host.replace('supplier.', '');
-      return NextResponse.redirect(new URL(pathname, `https://${mainDomain}`));
-    }
+    // Get auth token from session
+    const token = request.cookies.get('next-auth.session-token')?.value;
+    let isAdmin = false;
 
-    // Allow access to auth pages and static files
-    if (
-      pathname.startsWith('/auth/') ||
-      pathname.startsWith('/api/auth/') ||
-      pathname.startsWith('/_next/') ||
-      pathname === '/' ||  // Allow landing page
-      pathname.includes('/static/')
-    ) {
-      return NextResponse.next();
-    }
-
-    // For dashboard and other protected routes
-    if (pathname.startsWith('/dashboard')) {
-      if (!token || token.role !== 'supplier') {
-        // Store the intended URL and redirect to signin
-        const signinUrl = new URL('/auth/signin', request.url);
-        signinUrl.searchParams.set('callbackUrl', pathname);
-        return NextResponse.redirect(signinUrl);
+    if (token) {
+      try {
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        isAdmin = MAINTENANCE_MODE.isAdminUser(decodedToken);
+      } catch (error) {
+        console.error('Error decoding token:', error);
       }
-      return NextResponse.next();
     }
 
-    // Allow access to public pages in supplier subdomain
-    return NextResponse.next();
+    // Check client IP
+    const clientIP = request.headers.get('x-forwarded-for') || request.ip;
+    const isAllowedIP = MAINTENANCE_MODE.allowedIPs.includes(clientIP);
+
+    // If not allowed path and not admin/allowed IP, redirect to maintenance page
+    if (!isAllowedPath && !isAdmin && !isAllowedIP && pathname !== '/maintenance') {
+      return NextResponse.redirect(new URL('/maintenance', request.url));
+    }
   }
 
-  // Handle main domain (no subdomain)
-  if (!subdomain) {
-    // If trying to access supplier routes from main domain, redirect to supplier subdomain
-    if (pathname.startsWith('/dashboard') || pathname.startsWith('/auth/supplier')) {
-      return NextResponse.redirect(new URL(pathname, `https://supplier.${host}`));
+  // Handle domain/subdomain routing
+  const hostname = request.headers.get('host');
+  const isSupplierDomain = hostname.startsWith('supplier.');
+
+  if (isSupplierDomain) {
+    // Supplier subdomain handling
+    if (!pathname.startsWith('/supplier') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
+      return NextResponse.redirect(new URL('/supplier', request.url));
     }
-
-    // If accessing root path on main domain, show the store home page
-    if (pathname === '/') {
-      return NextResponse.rewrite(new URL('/store', request.url));
+  } else {
+    // Main domain handling
+    if (pathname === '/supplier') {
+      return NextResponse.redirect(new URL('/', request.url));
     }
-
-    return NextResponse.next();
-  }
-
-  // Handle admin subdomain (similar logic as supplier)
-  if (subdomain === 'admin') {
-    // Similar logic as supplier, implement when needed
-    return NextResponse.next();
   }
 
   return NextResponse.next();
@@ -79,6 +69,13 @@ export async function middleware(request) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    /*
+     * Match all request paths except:
+     * 1. _next/static (static files)
+     * 2. _next/image (image optimization files)
+     * 3. favicon.ico (favicon file)
+     * 4. public folder
+     */
+    '/((?!_next/static|_next/image|favicon.ico|public/|assets/).*)',
   ],
 }; 
