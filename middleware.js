@@ -3,14 +3,12 @@ import { getToken } from 'next-auth/jwt';
 import { MAINTENANCE_MODE } from './app/config/maintenance';
 
 export async function middleware(request) {
-  const { pathname, host } = request.nextUrl;
+  const { pathname } = request.nextUrl;
   const token = await getToken({ req: request });
-  const isLocalhost = host === 'localhost:3000';
 
   // Debug logging
   console.log('Middleware executing:', {
     pathname,
-    host,
     maintenance: MAINTENANCE_MODE.enabled,
     env: process.env.MAINTENANCE_MODE
   });
@@ -38,16 +36,7 @@ export async function middleware(request) {
     }
 
     // Redirect all other requests to maintenance page
-    // Handle subdomain-specific redirects
-    let maintenanceUrl;
-    if (host === 'supplier.daqaiq.com' || (isLocalhost && pathname.startsWith('/supplier'))) {
-      maintenanceUrl = new URL('/maintenance', 'https://supplier.daqaiq.com');
-    } else if (host === 'admin.daqaiq.com' || (isLocalhost && pathname.startsWith('/admin'))) {
-      maintenanceUrl = new URL('/maintenance', 'https://admin.daqaiq.com');
-    } else {
-      maintenanceUrl = new URL('/maintenance', request.url);
-    }
-    
+    const maintenanceUrl = new URL('/maintenance', request.url);
     console.log('Redirecting to maintenance page:', maintenanceUrl.toString());
     return NextResponse.redirect(maintenanceUrl);
   }
@@ -62,99 +51,69 @@ export async function middleware(request) {
     '/api/auth',
   ];
 
-  // Handle supplier routes (both localhost and production)
-  if (host === 'supplier.daqaiq.com' || (isLocalhost && pathname.startsWith('/supplier'))) {
-    const supplierPath = isLocalhost ? pathname.replace('/supplier', '') : pathname;
-
-    // If accessing root path and authenticated as supplier, allow access to dashboard
-    if ((supplierPath === '/' || supplierPath === '') && token?.role === 'supplier') {
-      return NextResponse.next();
+  // Handle supplier routes
+  if (pathname.startsWith('/supplier')) {
+    // If accessing supplier root and authenticated as supplier, allow access
+    if (pathname === '/supplier' && token?.role === 'supplier') {
+      return NextResponse.redirect(new URL('/supplier/dashboard', request.url));
     }
 
-    // If accessing root path but not authenticated, redirect to signin
-    if ((supplierPath === '/' || supplierPath === '') && !token) {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    // If accessing supplier root but not authenticated, redirect to signin
+    if (pathname === '/supplier' && !token) {
+      return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
     }
 
-    // Allow access to public paths without authentication
-    if (publicPaths.some(path => supplierPath.startsWith(path))) {
+    // Allow access to supplier public paths without authentication
+    if (publicPaths.some(path => pathname.startsWith(`/supplier${path}`))) {
       return NextResponse.next();
     }
 
     // For all other supplier routes, check authentication
-    if (!token) {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    if (!token && !pathname.startsWith('/supplier/auth/')) {
+      return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
     }
 
-    // Verify supplier role
-    if (token.role !== 'supplier') {
-      return NextResponse.redirect(new URL(isLocalhost ? '/auth/signin' : 'https://daqaiq.com/auth/signin', request.url));
+    // Verify supplier role for protected routes
+    if (token?.role !== 'supplier' && !pathname.startsWith('/supplier/auth/')) {
+      return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
     }
 
     return NextResponse.next();
   }
 
-  // Handle admin routes (both localhost and production)
-  if (host === 'admin.daqaiq.com' || (isLocalhost && pathname.startsWith('/admin'))) {
-    const adminPath = isLocalhost ? pathname.replace('/admin', '') : pathname;
-    
-    // If accessing root path and authenticated as admin, allow access to dashboard
-    if ((adminPath === '/' || adminPath === '') && token?.role === 'main-admin') {
-      return NextResponse.next();
+  // Handle admin routes
+  if (pathname.startsWith('/admin')) {
+    // If accessing admin root and authenticated as admin, allow access
+    if (pathname === '/admin' && token?.role === 'main-admin') {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
     }
 
-    // If accessing root path but not authenticated, redirect to signin
-    if ((adminPath === '/' || adminPath === '') && !token) {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    // If accessing admin root but not authenticated, redirect to signin
+    if (pathname === '/admin' && !token) {
+      return NextResponse.redirect(new URL('/admin/auth/signin', request.url));
     }
 
-    // Allow access to public paths without authentication
-    if (publicPaths.some(path => adminPath.startsWith(path))) {
+    // Allow access to admin public paths without authentication
+    if (publicPaths.some(path => pathname.startsWith(`/admin${path}`))) {
       return NextResponse.next();
     }
 
     // For all other admin routes, check authentication
-    if (!token) {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    if (!token && !pathname.startsWith('/admin/auth/')) {
+      return NextResponse.redirect(new URL('/admin/auth/signin', request.url));
     }
 
-    // Verify admin role
-    if (token.role !== 'main-admin') {
-      return NextResponse.redirect(new URL(isLocalhost ? '/auth/signin' : 'https://daqaiq.com/auth/signin', request.url));
-    }
-
-    return NextResponse.next();
-  }
-
-  // Handle main domain and localhost root
-  if (host === 'daqaiq.com' || isLocalhost) {
-    // If someone tries to access supplier routes on main domain
-    if (pathname.startsWith('/supplier/')) {
-      return NextResponse.redirect(new URL(
-        isLocalhost ? pathname : 'https://supplier.daqaiq.com' + pathname.replace('/supplier', ''),
-        request.url
-      ));
-    }
-
-    // If someone tries to access admin routes on main domain
-    if (pathname.startsWith('/admin/')) {
-      return NextResponse.redirect(new URL(
-        isLocalhost ? pathname : 'https://admin.daqaiq.com' + pathname.replace('/admin', ''),
-        request.url
-      ));
-    }
-
-    // Protected customer routes
-    if (pathname.startsWith('/customer') && (!token || token.role !== 'customer')) {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    // Verify admin role for protected routes
+    if (token?.role !== 'main-admin' && !pathname.startsWith('/admin/auth/')) {
+      return NextResponse.redirect(new URL('/admin/auth/signin', request.url));
     }
 
     return NextResponse.next();
   }
 
-  // For any other domain, redirect to main site
-  if (!host.includes('daqaiq.com') && !isLocalhost) {
-    return NextResponse.redirect(new URL('https://daqaiq.com', request.url));
+  // Protected customer routes
+  if (pathname.startsWith('/customer') && (!token || token.role !== 'customer')) {
+    return NextResponse.redirect(new URL('/auth/signin', request.url));
   }
 
   // If accessing the root URL
