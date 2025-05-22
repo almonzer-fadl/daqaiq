@@ -2,7 +2,11 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import AuthProvider from '@/components/AuthProvider';
-import ClientProviders from '@/components/ClientProviders';
+import ClientProviders from '@/components/providers/ClientProviders';
+import HeaderTop from '@/components/navigation/HeaderTop';
+import NavbarMain from '@/components/navigation/NavbarMain';
+import NavLinks from '@/components/navigation/NavLinks';
+import FooterMain from '@/components/FooterMain';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -10,17 +14,21 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: 'Daqaiq - Your Trusted Auto Parts Marketplace',
-  description: 'Find and buy quality auto parts from trusted suppliers',
+  title: 'دقائق - قطع غيار السيارات',
+  description: 'متجر دقائق لقطع غيار السيارات - جودة عالية وأسعار منافسة',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="ar" dir="rtl">
       <body className={inter.className}>
         <AuthProvider>
           <ClientProviders>
-            {children}
+            <HeaderTop />
+            <NavbarMain />
+            <NavLinks />
+            <main>{children}</main>
+            <FooterMain />
           </ClientProviders>
           <Toaster position="bottom-left" />
         </AuthProvider>

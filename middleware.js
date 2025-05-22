@@ -3,6 +3,10 @@ import { getToken } from 'next-auth/jwt';
 
 // Helper to get subdomain
 function getSubdomain(host) {
+  // Handle localhost or IP
+  if (host.includes('localhost') || /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(host)) {
+    return null;
+  }
   const hostParts = host.split('.');
   if (hostParts.length > 2) {
     return hostParts[0];
@@ -17,10 +21,16 @@ export async function middleware(request) {
 
   // Handle supplier subdomain
   if (subdomain === 'supplier') {
+    // If trying to access main store routes from supplier subdomain, redirect to main domain
+    if (pathname.startsWith('/store') || pathname.startsWith('/products') || pathname.startsWith('/cart')) {
+      const mainDomain = host.replace('supplier.', '');
+      return NextResponse.redirect(new URL(pathname, `https://${mainDomain}`));
+    }
+
     // Allow access to auth pages and static files
     if (
       pathname.startsWith('/auth/') ||
-      pathname.startsWith('/api/') ||
+      pathname.startsWith('/api/auth/') ||
       pathname.startsWith('/_next/') ||
       pathname === '/' ||  // Allow landing page
       pathname.includes('/static/')
@@ -43,13 +53,27 @@ export async function middleware(request) {
     return NextResponse.next();
   }
 
+  // Handle main domain (no subdomain)
+  if (!subdomain) {
+    // If trying to access supplier routes from main domain, redirect to supplier subdomain
+    if (pathname.startsWith('/dashboard') || pathname.startsWith('/auth/supplier')) {
+      return NextResponse.redirect(new URL(pathname, `https://supplier.${host}`));
+    }
+
+    // If accessing root path on main domain, show the store home page
+    if (pathname === '/') {
+      return NextResponse.rewrite(new URL('/store', request.url));
+    }
+
+    return NextResponse.next();
+  }
+
   // Handle admin subdomain (similar logic as supplier)
   if (subdomain === 'admin') {
     // Similar logic as supplier, implement when needed
     return NextResponse.next();
   }
 
-  // For main domain, allow all access
   return NextResponse.next();
 }
 
