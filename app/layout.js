@@ -1,8 +1,8 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
-import AuthProvider from '@/app/components/providers/AuthProvider';
-import ClientProviders from '@/app/components/providers/ClientProviders';
+import AuthProvider from '@/components/AuthProvider';
+import ClientProviders from '@/components/ClientProviders';
 
 const inter = Inter({ 
   subsets: ['latin'],
