@@ -41,40 +41,25 @@ export async function middleware(request) {
     return NextResponse.redirect(maintenanceUrl);
   }
 
-  // Public paths that don't require authentication
-  const publicPaths = [
-    '/auth/signin',
-    '/auth/register',
-    '/auth/forgot-password',
-    '/auth/reset-password',
-    '/auth/verify-request',
-    '/api/auth',
-  ];
-
   // Handle supplier routes
   if (pathname.startsWith('/supplier')) {
-    // If accessing supplier root and authenticated as supplier, allow access
+    // Skip auth check for supplier auth routes
+    if (pathname.startsWith('/supplier/auth/')) {
+      return NextResponse.next();
+    }
+
+    // If accessing supplier root and authenticated as supplier, redirect to dashboard
     if (pathname === '/supplier' && token?.role === 'supplier') {
       return NextResponse.redirect(new URL('/supplier/dashboard', request.url));
     }
 
-    // If accessing supplier root but not authenticated, redirect to signin
-    if (pathname === '/supplier' && !token) {
+    // If not authenticated, redirect to supplier signin
+    if (!token) {
       return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
     }
 
-    // Allow access to supplier public paths without authentication
-    if (publicPaths.some(path => pathname.startsWith(`/supplier${path}`))) {
-      return NextResponse.next();
-    }
-
-    // For all other supplier routes, check authentication
-    if (!token && !pathname.startsWith('/supplier/auth/')) {
-      return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
-    }
-
-    // Verify supplier role for protected routes
-    if (token?.role !== 'supplier' && !pathname.startsWith('/supplier/auth/')) {
+    // If authenticated but not a supplier, redirect to supplier signin
+    if (token.role !== 'supplier') {
       return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
     }
 
@@ -83,45 +68,50 @@ export async function middleware(request) {
 
   // Handle admin routes
   if (pathname.startsWith('/admin')) {
-    // If accessing admin root and authenticated as admin, allow access
+    // Skip auth check for admin auth routes
+    if (pathname.startsWith('/admin/auth/')) {
+      return NextResponse.next();
+    }
+
+    // If accessing admin root and authenticated as admin, redirect to dashboard
     if (pathname === '/admin' && token?.role === 'main-admin') {
       return NextResponse.redirect(new URL('/admin/dashboard', request.url));
     }
 
-    // If accessing admin root but not authenticated, redirect to signin
-    if (pathname === '/admin' && !token) {
+    // If not authenticated, redirect to admin signin
+    if (!token) {
       return NextResponse.redirect(new URL('/admin/auth/signin', request.url));
     }
 
-    // Allow access to admin public paths without authentication
-    if (publicPaths.some(path => pathname.startsWith(`/admin${path}`))) {
-      return NextResponse.next();
-    }
-
-    // For all other admin routes, check authentication
-    if (!token && !pathname.startsWith('/admin/auth/')) {
-      return NextResponse.redirect(new URL('/admin/auth/signin', request.url));
-    }
-
-    // Verify admin role for protected routes
-    if (token?.role !== 'main-admin' && !pathname.startsWith('/admin/auth/')) {
+    // If authenticated but not an admin, redirect to admin signin
+    if (token.role !== 'main-admin') {
       return NextResponse.redirect(new URL('/admin/auth/signin', request.url));
     }
 
     return NextResponse.next();
   }
 
-  // Protected customer routes
-  if (pathname.startsWith('/customer') && (!token || token.role !== 'customer')) {
-    return NextResponse.redirect(new URL('/auth/signin', request.url));
+  // Handle customer-specific routes (not the main website)
+  if (pathname.startsWith('/customer')) {
+    // Skip auth check for customer auth routes
+    if (pathname.startsWith('/customer/auth/')) {
+      return NextResponse.next();
+    }
+
+    // If not authenticated, redirect to customer signin
+    if (!token) {
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    }
+
+    // If authenticated but not a customer, redirect to customer signin
+    if (token.role !== 'customer') {
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    }
+
+    return NextResponse.next();
   }
 
-  // If accessing the root URL
-  if (pathname === '/') {
-    // Redirect to the supplier signin page
-    return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
-  }
-
+  // Allow access to all other routes (main website)
   return NextResponse.next();
 }
 
