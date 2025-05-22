@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { connectToDatabase } from '../../../../../lib/mongodb';
-import Product from '../../../../../lib/models/Product';
-import { authOptions } from '../../../auth/config/auth';
+import { getToken } from 'next-auth/jwt';
+import dbConnect from '@/lib/dbConnect';
+import Product from '@/models/Product';
+import Supplier from '@/models/Supplier';
 import { unlink, writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
@@ -30,17 +30,19 @@ async function processUploadedFile(file) {
 }
 
 // GET handler
-export async function GET(request, { params }) {
+export async function GET(req, { params }) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'supplier') {
+    const token = await getToken({ req });
+
+    if (!token || token.role !== 'supplier') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await connectToDatabase();
+    await dbConnect();
+
     const product = await Product.findOne({
       _id: params.id,
-      supplier: session.user.id
+      supplierId: token.id
     });
 
     if (!product) {
@@ -49,23 +51,26 @@ export async function GET(request, { params }) {
 
     return NextResponse.json(product);
   } catch (error) {
-    console.error('Error fetching product:', error);
+    console.error('Product details error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch product' },
+      { error: 'Error fetching product details' },
       { status: 500 }
     );
   }
 }
 
 // PUT handler
-export async function PUT(request, { params }) {
+export async function PUT(req, { params }) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'supplier') {
+    const token = await getToken({ req });
+
+    if (!token || token.role !== 'supplier') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const formData = await request.formData();
+    await dbConnect();
+
+    const formData = await req.formData();
     const updates = {};
 
     // Process basic fields
@@ -102,18 +107,9 @@ export async function PUT(request, { params }) {
       updates.additionalImages = processedImages.filter(Boolean);
     }
 
-    await connectToDatabase();
     const product = await Product.findOneAndUpdate(
-      {
-        _id: params.id,
-        supplier: session.user.id
-      },
-      {
-        $set: {
-          ...updates,
-          updatedAt: new Date()
-        }
-      },
+      { _id: params.id, supplierId: token.id },
+      { $set: { ...updates, updatedAt: new Date() } },
       { new: true }
     );
 
@@ -123,37 +119,44 @@ export async function PUT(request, { params }) {
 
     return NextResponse.json(product);
   } catch (error) {
-    console.error('Error updating product:', error);
+    console.error('Update product error:', error);
     return NextResponse.json(
-      { error: 'Failed to update product' },
+      { error: 'Error updating product' },
       { status: 500 }
     );
   }
 }
 
 // DELETE handler
-export async function DELETE(request, { params }) {
+export async function DELETE(req, { params }) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'supplier') {
+    const token = await getToken({ req });
+
+    if (!token || token.role !== 'supplier') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await connectToDatabase();
+    await dbConnect();
+
     const product = await Product.findOneAndDelete({
       _id: params.id,
-      supplier: session.user.id
+      supplierId: token.id
     });
 
     if (!product) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
+    // Update supplier stats
+    await Supplier.findByIdAndUpdate(token.id, {
+      $inc: { 'stats.totalProducts': -1 }
+    });
+
     return NextResponse.json({ message: 'Product deleted successfully' });
   } catch (error) {
-    console.error('Error deleting product:', error);
+    console.error('Delete product error:', error);
     return NextResponse.json(
-      { error: 'Failed to delete product' },
+      { error: 'Error deleting product' },
       { status: 500 }
     );
   }

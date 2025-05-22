@@ -1,27 +1,28 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../auth/config/auth';
-import { connectToDatabase } from '../../../../../lib/mongodb';
-import Product from '../../../../../lib/models/Product';
+import { getToken } from 'next-auth/jwt';
+import dbConnect from '@/lib/dbConnect';
+import Product from '@/models/Product';
+import Supplier from '@/models/Supplier';
 
 // Add segment config to explicitly mark as dynamic
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function POST(request) {
+export async function POST(req) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'supplier') {
+    const token = await getToken({ req });
+
+    if (!token || token.role !== 'supplier') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await connectToDatabase();
+    await dbConnect();
 
-    const { items } = await request.json();
+    const { products } = await req.json();
 
-    if (!Array.isArray(items)) {
+    if (!Array.isArray(products)) {
       return NextResponse.json(
-        { error: 'Invalid items format' },
+        { error: 'Invalid products format' },
         { status: 400 }
       );
     }
@@ -31,53 +32,47 @@ export async function POST(request) {
       failed: []
     };
 
-    for (const item of items) {
-      try {
-        // Validate required fields
-        const requiredFields = ['name', 'description', 'price', 'category', 'stock'];
-        const missingFields = requiredFields.filter(field => !item[field]);
+    // Add supplier ID to each product
+    const productsWithSupplierId = products.map(product => ({
+      ...product,
+      supplierId: token.id
+    }));
 
-        if (missingFields.length > 0) {
-          results.failed.push({
-            name: item.name || 'Unknown',
-            error: `Missing required fields: ${missingFields.join(', ')}`
-          });
-          continue;
-        }
-
-        // Create new product
-        const product = await Product.create({
-          ...item,
-          supplier: session.user.id,
-          lowStockThreshold: item.lowStockThreshold || 10,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        });
-
-        results.successful.push({
-          name: product.name,
-          id: product._id,
-          stock: product.stock
-        });
-
-      } catch (error) {
-        results.failed.push({
-          name: item.name || 'Unknown',
-          error: error.message
-        });
+    // Create products in bulk
+    const createdProducts = await Product.insertMany(productsWithSupplierId, {
+      ordered: false
+    }).catch(error => {
+      if (error.writeErrors) {
+        // Handle partial success
+        results.failed = error.writeErrors.map(err => ({
+          index: err.index,
+          error: err.errmsg
+        }));
+        return error.insertedDocs;
       }
+      throw error;
+    });
+
+    if (createdProducts) {
+      results.successful = createdProducts.map(product => ({
+        _id: product._id,
+        name: product.name
+      }));
+
+      // Update supplier stats
+      await Supplier.findByIdAndUpdate(token.id, {
+        $inc: { 'stats.totalProducts': createdProducts.length }
+      });
     }
 
     return NextResponse.json({
-      message: 'Bulk product creation completed',
+      message: 'Bulk create completed',
       results
     });
-
   } catch (error) {
-    console.error('Error performing bulk product creation:', error);
+    console.error('Bulk create error:', error);
     return NextResponse.json(
-      { error: 'Failed to perform bulk product creation' },
+      { error: 'Error creating products' },
       { status: 500 }
     );
   }

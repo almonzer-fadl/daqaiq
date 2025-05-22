@@ -1,41 +1,33 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../auth/config/auth';
-import { connectToDatabase } from '@/lib/mongodb';
-import { Order } from '@/lib/models';
+import { getToken } from 'next-auth/jwt';
+import dbConnect from '@/lib/dbConnect';
+import Order from '@/models/Order';
 
 // Add segment config to explicitly mark as dynamic
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-export async function GET(request) {
+export async function GET(req) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'supplier') {
+    const token = await getToken({ req });
+
+    if (!token || token.role !== 'supplier') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await connectToDatabase();
+    await dbConnect();
 
-    // Get the 5 most recent orders
-    const orders = await Order.find({ supplier: session.user.id })
+    const recentOrders = await Order.find({ supplierId: token.id })
       .sort({ createdAt: -1 })
       .limit(5)
-      .populate('customer', 'name email')
-      .lean();
+      .populate('products.productId');
 
-    // Format the orders for the frontend
-    const formattedOrders = orders.map(order => ({
-      id: order._id.toString(),
-      customer: order.customer?.name || 'Anonymous',
-      amount: order.total,
-      status: order.status,
-      date: order.createdAt,
-    }));
-
-    return NextResponse.json({ orders: formattedOrders });
+    return NextResponse.json({ orders: recentOrders });
   } catch (error) {
-    console.error('Error fetching recent orders:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Recent orders error:', error);
+    return NextResponse.json(
+      { error: 'Error fetching recent orders' },
+      { status: 500 }
+    );
   }
 } 
