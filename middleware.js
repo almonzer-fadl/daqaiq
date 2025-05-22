@@ -41,6 +41,16 @@ export async function middleware(request) {
     return NextResponse.redirect(maintenanceUrl);
   }
 
+  // Always allow access to auth-related paths and API routes
+  if (
+    pathname.includes('/auth/') ||
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/') ||
+    pathname.includes('/static/')
+  ) {
+    return NextResponse.next();
+  }
+
   // Handle supplier routes
   if (pathname.startsWith('/supplier')) {
     // Skip auth check for supplier auth routes
@@ -53,14 +63,12 @@ export async function middleware(request) {
       return NextResponse.redirect(new URL('/supplier/dashboard', request.url));
     }
 
-    // If not authenticated, redirect to supplier signin
-    if (!token) {
-      return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
-    }
-
-    // If authenticated but not a supplier, redirect to supplier signin
-    if (token.role !== 'supplier') {
-      return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
+    // If not authenticated or not a supplier, redirect to supplier signin
+    if (!token || token.role !== 'supplier') {
+      const signinUrl = new URL('/supplier/auth/signin', request.url);
+      // Preserve the original URL as the callback
+      signinUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(signinUrl);
     }
 
     return NextResponse.next();
@@ -78,14 +86,11 @@ export async function middleware(request) {
       return NextResponse.redirect(new URL('/admin/dashboard', request.url));
     }
 
-    // If not authenticated, redirect to admin signin
-    if (!token) {
-      return NextResponse.redirect(new URL('/admin/auth/signin', request.url));
-    }
-
-    // If authenticated but not an admin, redirect to admin signin
-    if (token.role !== 'main-admin') {
-      return NextResponse.redirect(new URL('/admin/auth/signin', request.url));
+    // If not authenticated or not an admin, redirect to admin signin
+    if (!token || token.role !== 'main-admin') {
+      const signinUrl = new URL('/admin/auth/signin', request.url);
+      signinUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(signinUrl);
     }
 
     return NextResponse.next();
@@ -98,14 +103,11 @@ export async function middleware(request) {
       return NextResponse.next();
     }
 
-    // If not authenticated, redirect to customer signin
-    if (!token) {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
-    }
-
-    // If authenticated but not a customer, redirect to customer signin
-    if (token.role !== 'customer') {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    // If not authenticated or not a customer, redirect to customer signin
+    if (!token || token.role !== 'customer') {
+      const signinUrl = new URL('/auth/signin', request.url);
+      signinUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(signinUrl);
     }
 
     return NextResponse.next();
