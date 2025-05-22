@@ -47,31 +47,31 @@ export const authOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Handle role-specific redirects
-      if (url.startsWith(baseUrl)) {
-        const path = url.substring(baseUrl.length);
-        
-        // If trying to access supplier area
-        if (path.startsWith('/supplier')) {
-          return `${baseUrl}/supplier/auth/signin`;
-        }
-        
-        // If trying to access admin area
-        if (path.startsWith('/admin')) {
-          return `${baseUrl}/admin/auth/signin`;
-        }
-        
-        // If trying to access customer area
-        if (path.startsWith('/customer')) {
-          return `${baseUrl}/auth/signin`;
-        }
+      // Always allow auth-related URLs to proceed as is
+      if (url.includes('/auth/')) {
+        return url;
       }
-      
-      return url.startsWith(baseUrl) ? url : baseUrl;
+
+      // If URL is already absolute, verify it's for our domain
+      if (url.startsWith('http')) {
+        return url.startsWith(baseUrl) ? url : baseUrl;
+      }
+
+      // Handle relative URLs
+      return `${baseUrl}${url}`;
     }
   },
   pages: {
-    signIn: '/auth/signin',
+    signIn: (request) => {
+      const { url } = request;
+      if (url.includes('/supplier/')) {
+        return '/supplier/auth/signin';
+      }
+      if (url.includes('/admin/')) {
+        return '/admin/auth/signin';
+      }
+      return '/auth/signin';
+    },
     error: '/auth/error',
     verifyRequest: '/auth/verify-request',
   },

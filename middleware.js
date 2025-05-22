@@ -26,7 +26,9 @@ export async function middleware(request) {
       return NextResponse.next();
     }
     // Not logged in or not a supplier, redirect to supplier signin
-    return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
+    const redirectUrl = new URL('/supplier/auth/signin', request.url);
+    redirectUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
   // Handle admin routes
@@ -40,13 +42,17 @@ export async function middleware(request) {
       return NextResponse.next();
     }
     // Not logged in or not an admin, redirect to admin signin
-    return NextResponse.redirect(new URL('/admin/auth/signin', request.url));
+    const redirectUrl = new URL('/admin/auth/signin', request.url);
+    redirectUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
   // Handle customer routes
   if (pathname.startsWith('/customer')) {
     if (!token || token.role !== 'customer') {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
+      const redirectUrl = new URL('/auth/signin', request.url);
+      redirectUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(redirectUrl);
     }
     return NextResponse.next();
   }
