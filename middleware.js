@@ -157,6 +157,12 @@ export async function middleware(request) {
     return NextResponse.redirect(new URL('https://daqaiq.com', request.url));
   }
 
+  // If accessing the root URL
+  if (pathname === '/') {
+    // Redirect to the supplier signin page
+    return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
+  }
+
   return NextResponse.next();
 }
 
