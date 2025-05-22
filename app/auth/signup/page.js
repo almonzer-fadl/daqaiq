@@ -2,13 +2,11 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function SignIn() {
+export default function SignUp() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -20,22 +18,52 @@ export default function SignIn() {
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email');
     const password = formData.get('password');
+    const confirmPassword = formData.get('confirmPassword');
+    const companyName = formData.get('companyName');
+    const phone = formData.get('phone');
+
+    // Basic validation
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
 
     try {
+      // Register the user
+      const res = await fetch('/api/auth/supplier/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          password,
+          companyName,
+          phone,
+          role: 'supplier'
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      // If registration successful, sign in automatically
       const result = await signIn('credentials', {
         email,
         password,
         redirect: false,
-        callbackUrl,
       });
 
       if (result?.error) {
-        setError('Invalid email or password');
+        setError('Registration successful but login failed. Please try signing in.');
+        router.push('/auth/signin');
       } else {
-        router.push(callbackUrl);
+        router.push('/dashboard');
       }
     } catch (error) {
-      setError('An error occurred. Please try again.');
+      setError(error.message || 'An error occurred during registration.');
     } finally {
       setIsLoading(false);
     }
@@ -50,7 +78,7 @@ export default function SignIn() {
           alt="Daqaiq Supplier"
         />
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to your supplier account
+          Create your supplier account
         </h2>
       </div>
 
@@ -62,6 +90,21 @@ export default function SignIn() {
                 <span className="block sm:inline">{error}</span>
               </div>
             )}
+
+            <div>
+              <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
+                Company Name
+              </label>
+              <div className="mt-1">
+                <input
+                  id="companyName"
+                  name="companyName"
+                  type="text"
+                  required
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+            </div>
             
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -80,6 +123,21 @@ export default function SignIn() {
             </div>
 
             <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                Phone Number
+              </label>
+              <div className="mt-1">
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+            </div>
+
+            <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
               </label>
@@ -88,30 +146,24 @@ export default function SignIn() {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
                   required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Confirm Password
+              </label>
+              <div className="mt-1">
                 <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                  Remember me
-                </label>
-              </div>
-
-              <div className="text-sm">
-                <Link href="/auth/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
-                  Forgot your password?
-                </Link>
               </div>
             </div>
 
@@ -123,7 +175,7 @@ export default function SignIn() {
                   isLoading ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
-                {isLoading ? 'Signing in...' : 'Sign in'}
+                {isLoading ? 'Creating account...' : 'Create Account'}
               </button>
             </div>
           </form>
@@ -135,17 +187,17 @@ export default function SignIn() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500">
-                  New to Daqaiq?
+                  Already have an account?
                 </span>
               </div>
             </div>
 
             <div className="mt-6">
               <Link
-                href="/auth/signup"
+                href="/auth/signin"
                 className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
               >
-                Create a supplier account
+                Sign in
               </Link>
             </div>
           </div>

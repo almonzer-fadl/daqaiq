@@ -1,80 +1,60 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
+// Helper to get subdomain
+function getSubdomain(host) {
+  const hostParts = host.split('.');
+  if (hostParts.length > 2) {
+    return hostParts[0];
+  }
+  return null;
+}
+
 export async function middleware(request) {
-  const { pathname } = request.nextUrl;
+  const { pathname, host } = request.nextUrl;
+  const subdomain = getSubdomain(host);
   const token = await getToken({ req: request });
 
-  // Allow all auth-related paths and static files
-  if (
-    pathname.includes('/auth/') ||
-    pathname.startsWith('/api/') ||
-    pathname.startsWith('/_next/') ||
-    pathname.includes('/static/')
-  ) {
-    return NextResponse.next();
-  }
+  // Handle supplier subdomain
+  if (subdomain === 'supplier') {
+    // Allow access to auth pages and static files
+    if (
+      pathname.startsWith('/auth/') ||
+      pathname.startsWith('/api/') ||
+      pathname.startsWith('/_next/') ||
+      pathname === '/' ||  // Allow landing page
+      pathname.includes('/static/')
+    ) {
+      return NextResponse.next();
+    }
 
-  // Prevent authenticated users from accessing auth pages
-  if (token && pathname.includes('/auth/')) {
-    const role = token.role;
-    if (role === 'supplier') {
-      return NextResponse.redirect(new URL('/supplier/dashboard', request.url));
-    }
-    if (role === 'main-admin') {
-      return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-    }
-    if (role === 'customer') {
-      return NextResponse.redirect(new URL('/customer/dashboard', request.url));
-    }
-  }
-
-  // Handle supplier routes
-  if (pathname.startsWith('/supplier')) {
-    if (token?.role === 'supplier') {
-      if (pathname === '/supplier') {
-        return NextResponse.redirect(new URL('/supplier/dashboard', request.url));
+    // For dashboard and other protected routes
+    if (pathname.startsWith('/dashboard')) {
+      if (!token || token.role !== 'supplier') {
+        // Store the intended URL and redirect to signin
+        const signinUrl = new URL('/auth/signin', request.url);
+        signinUrl.searchParams.set('callbackUrl', pathname);
+        return NextResponse.redirect(signinUrl);
       }
       return NextResponse.next();
     }
-    const currentUrl = encodeURIComponent(pathname);
-    return NextResponse.redirect(
-      new URL(`/supplier/auth/signin?callbackUrl=${currentUrl}`, request.url)
-    );
-  }
 
-  // Handle admin routes
-  if (pathname.startsWith('/admin')) {
-    if (token?.role === 'main-admin') {
-      if (pathname === '/admin') {
-        return NextResponse.redirect(new URL('/admin/dashboard', request.url));
-      }
-      return NextResponse.next();
-    }
-    const currentUrl = encodeURIComponent(pathname);
-    return NextResponse.redirect(
-      new URL(`/admin/auth/signin?callbackUrl=${currentUrl}`, request.url)
-    );
-  }
-
-  // Handle customer routes
-  if (pathname.startsWith('/customer')) {
-    if (!token || token.role !== 'customer') {
-      const currentUrl = encodeURIComponent(pathname);
-      return NextResponse.redirect(
-        new URL(`/auth/signin?callbackUrl=${currentUrl}`, request.url)
-      );
-    }
+    // Allow access to public pages in supplier subdomain
     return NextResponse.next();
   }
 
-  // Allow access to all other routes (main website)
+  // Handle admin subdomain (similar logic as supplier)
+  if (subdomain === 'admin') {
+    // Similar logic as supplier, implement when needed
+    return NextResponse.next();
+  }
+
+  // For main domain, allow all access
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    '/:path*',
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 }; 
