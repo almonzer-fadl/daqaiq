@@ -1,11 +1,24 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { MAINTENANCE_MODE } from './app/config/maintenance';
+import createIntlMiddleware from 'next-intl/middleware';
+import { locales, defaultLocale } from './app/i18n/request';
+
+// Create the i18n middleware
+const intlMiddleware = createIntlMiddleware({
+  locales,
+  defaultLocale,
+  localePrefix: 'as-needed'
+});
 
 export async function middleware(request) {
   const { pathname, host } = request.nextUrl;
   const token = await getToken({ req: request });
   const isLocalhost = host === 'localhost:3000';
+
+  // Handle i18n first
+  const response = await intlMiddleware(request);
+  if (response) return response;
 
   // Debug logging
   console.log('Middleware executing:', {
@@ -165,6 +178,6 @@ export const config = {
     // Match all paths
     '/:path*',
     // But still exclude Next.js internal routes and static files
-    '/((?!_next/static|_next/image).*)',
+    '/((?!_next/static|_next/image|api|favicon.ico).*)',
   ],
 }; 

@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslation } from 'next-i18next';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export default function ForgotPassword() {
-  const { t } = useTranslation('common');
+  const t = useTranslations();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -29,19 +29,19 @@ export default function ForgotPassword() {
       if (response.ok) {
         setMessage({
           type: 'success',
-          text: t('supplier.forgotPassword.success', 'Password reset instructions have been sent to your email.')
+          text: t('supplier.forgotPassword.success')
         });
         setEmail('');
       } else {
         setMessage({
           type: 'error',
-          text: data.message || t('supplier.forgotPassword.error', 'An error occurred. Please try again.')
+          text: data.message || t('supplier.forgotPassword.error')
         });
       }
     } catch (error) {
       setMessage({
         type: 'error',
-        text: t('supplier.forgotPassword.error', 'An error occurred. Please try again.')
+        text: t('supplier.forgotPassword.error')
       });
     } finally {
       setIsLoading(false);
@@ -53,10 +53,10 @@ export default function ForgotPassword() {
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {t('supplier.forgotPassword.title', 'Reset Your Password')}
+            {t('supplier.forgotPassword.title')}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            {t('supplier.forgotPassword.description', 'Enter your email address and we will send you instructions to reset your password.')}
+            {t('supplier.forgotPassword.description')}
           </p>
         </div>
 
@@ -73,7 +73,7 @@ export default function ForgotPassword() {
 
           <div>
             <label htmlFor="email" className="sr-only">
-              {t('common.email', 'Email address')}
+              {t('common.email')}
             </label>
             <input
               id="email"
@@ -81,7 +81,7 @@ export default function ForgotPassword() {
               type="email"
               required
               className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              placeholder={t('common.email', 'Email address')}
+              placeholder={t('common.email')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
@@ -100,10 +100,10 @@ export default function ForgotPassword() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  {t('supplier.forgotPassword.sending', 'Sending...')}
+                  {t('supplier.forgotPassword.sending')}
                 </span>
               ) : (
-                t('supplier.forgotPassword.sendInstructions', 'Send Reset Instructions')
+                t('supplier.forgotPassword.sendInstructions')
               )}
             </button>
           </div>
@@ -113,7 +113,7 @@ export default function ForgotPassword() {
               href="/supplier/auth/login"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              {t('supplier.forgotPassword.backToLogin', 'Back to login')}
+              {t('supplier.forgotPassword.backToLogin')}
             </Link>
           </div>
         </form>
