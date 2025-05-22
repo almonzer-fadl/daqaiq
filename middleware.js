@@ -8,7 +8,7 @@ import { locales, defaultLocale } from './app/i18n/request';
 const intlMiddleware = createIntlMiddleware({
   locales,
   defaultLocale,
-  localePrefix: 'as-needed'
+  localePrefix: 'always'
 });
 
 export async function middleware(request) {
@@ -175,9 +175,7 @@ export async function middleware(request) {
 
 export const config = {
   matcher: [
-    // Match all paths
-    '/:path*',
-    // But still exclude Next.js internal routes and static files
-    '/((?!_next/static|_next/image|api|favicon.ico).*)',
+    // Match all paths except static files and api routes
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 }; 

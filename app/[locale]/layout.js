@@ -11,8 +11,9 @@ export default async function LocaleLayout({ children, params: { locale } }) {
 
   let messages;
   try {
-    messages = (await import(`../../public/locales/${locale}/common.json`)).default;
+    messages = (await import(`@/public/locales/${locale}/common.json`)).default;
   } catch (error) {
+    console.error('Failed to load messages:', error);
     notFound();
   }
 
