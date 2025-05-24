@@ -4,8 +4,12 @@ import dbConnect from '@/lib/dbConnect';
 import User from '../../../../../models/User';
 import Supplier from '../../../../../models/Supplier';
 import { validateEmail, validatePhone } from '@/lib/utils';
+import mongoose from 'mongoose';
 
 export async function POST(req) {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     await dbConnect();
 
@@ -66,10 +70,11 @@ export async function POST(req) {
 
     try {
       // Check if user/supplier already exists
-      const existingUser = await User.findOne({ email });
-      const existingSupplier = await Supplier.findOne({ taxId });
+      const existingUser = await User.findOne({ email }).session(session);
+      const existingSupplier = await Supplier.findOne({ taxId }).session(session);
       
       if (existingUser) {
+        await session.abortTransaction();
         return NextResponse.json(
           { message: 'البريد الإلكتروني مسجل مسبقاً' },
           { status: 400 }
@@ -77,6 +82,7 @@ export async function POST(req) {
       }
 
       if (existingSupplier) {
+        await session.abortTransaction();
         return NextResponse.json(
           { message: 'الرقم الضريبي مسجل مسبقاً' },
           { status: 400 }
@@ -84,38 +90,43 @@ export async function POST(req) {
       }
 
       // Create user first
-      const user = await User.create({
+      const hashedPassword = await bcrypt.hash(password, 12);
+      const user = await User.create([{
         name,
         email,
-        password, // Password will be hashed by the pre-save middleware
+        password: hashedPassword,
         roles: ['supplier'],
         phoneNumber: phone,
         businessName: companyName,
         businessType,
         taxId,
         isVerified: false
-      });
+      }], { session });
 
-      console.log('User created:', user._id);
+      console.log('User created:', user[0]._id);
 
       // Create supplier profile
-      const supplier = await Supplier.create({
-        user: user._id,
+      const supplier = await Supplier.create([{
+        user: user[0]._id,
         email,
         companyName,
         phone,
         businessType,
         taxId,
-        isVerified: false
-      });
+        isVerified: false,
+        status: 'pending'
+      }], { session });
 
-      console.log('Supplier created:', supplier._id);
+      console.log('Supplier created:', supplier[0]._id);
+
+      // Commit the transaction
+      await session.commitTransaction();
 
       // Remove sensitive data from response
       const responseData = {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
+        _id: user[0]._id,
+        name: user[0].name,
+        email: user[0].email,
         companyName,
         phone,
         businessType,
@@ -131,7 +142,10 @@ export async function POST(req) {
       );
     } catch (dbError) {
       console.error('Database operation error:', dbError);
+      await session.abortTransaction();
       throw dbError;
+    } finally {
+      session.endSession();
     }
   } catch (error) {
     console.error('Registration error:', error);
