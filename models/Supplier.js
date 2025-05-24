@@ -1,16 +1,16 @@
 import mongoose from 'mongoose';
 
 const supplierSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'User reference is required'],
+  },
   email: {
     type: String,
     required: [true, 'Email is required'],
-    unique: true,
-    lowercase: true,
     trim: true,
-  },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
+    lowercase: true,
   },
   companyName: {
     type: String,
@@ -22,30 +22,26 @@ const supplierSchema = new mongoose.Schema({
     required: [true, 'Phone number is required'],
     trim: true,
   },
-  role: {
+  businessType: {
     type: String,
-    enum: ['supplier'],
-    default: 'supplier',
+    enum: ['manufacturer', 'distributor', 'retailer', 'other'],
+    required: [true, 'Business type is required'],
+  },
+  taxId: {
+    type: String,
+    required: [true, 'Tax ID is required'],
+    unique: true,
+    trim: true,
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
   },
   status: {
     type: String,
     enum: ['pending', 'active', 'suspended'],
     default: 'pending',
   },
-  resetToken: String,
-  resetTokenExpiry: Date,
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-  lastLoginAt: Date,
-  // Business Details
-  businessType: String,
-  taxNumber: String,
   address: {
     street: String,
     city: String,
@@ -53,59 +49,26 @@ const supplierSchema = new mongoose.Schema({
     country: String,
     postalCode: String,
   },
-  // Bank Details
   bankDetails: {
     bankName: String,
     accountNumber: String,
     accountHolder: String,
     iban: String,
   },
-  // Settings
-  notificationPreferences: {
-    email: {
-      type: Boolean,
-      default: true,
-    },
-    sms: {
-      type: Boolean,
-      default: false,
-    },
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
-  // Stats
-  stats: {
-    totalOrders: {
-      type: Number,
-      default: 0,
-    },
-    totalProducts: {
-      type: Number,
-      default: 0,
-    },
-    rating: {
-      type: Number,
-      default: 0,
-    },
-    reviewCount: {
-      type: Number,
-      default: 0,
-    },
-  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  }
 });
 
 // Update timestamps on save
 supplierSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   next();
-});
-
-// Don't return password and reset token in queries
-supplierSchema.set('toJSON', {
-  transform: function(doc, ret, options) {
-    delete ret.password;
-    delete ret.resetToken;
-    delete ret.resetTokenExpiry;
-    return ret;
-  }
 });
 
 const Supplier = mongoose.models.Supplier || mongoose.model('Supplier', supplierSchema);
