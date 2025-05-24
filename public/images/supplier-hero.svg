@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background Elements -->
+    <circle cx="400" cy="300" r="250" fill="#E3F2FD" opacity="0.5"/>
+    <circle cx="400" cy="300" r="200" fill="#BBDEFB" opacity="0.3"/>
+    
+    <!-- Store/Shop Building -->
+    <path d="M300 200 L500 200 L550 300 L250 300 Z" fill="#2196F3"/>
+    <rect x="320" y="300" width="160" height="150" fill="#1976D2"/>
+    <rect x="380" y="350" width="40" height="100" fill="#FFFFFF"/>
+    
+    <!-- Shopping Cart Icon -->
+    <circle cx="600" cy="150" r="30" fill="#4CAF50"/>
+    <path d="M580 150 L620 150 L610 170 L590 170 Z" fill="#FFFFFF"/>
+    <circle cx="590" cy="180" r="5" fill="#FFFFFF"/>
+    <circle cx="610" cy="180" r="5" fill="#FFFFFF"/>
+    
+    <!-- Money/Growth Icons -->
+    <path d="M150 400 L200 300 L250 350 L300 250" stroke="#4CAF50" stroke-width="8" fill="none"/>
+    <circle cx="150" cy="400" r="10" fill="#4CAF50"/>
+    <circle cx="200" cy="300" r="10" fill="#4CAF50"/>
+    <circle cx="250" cy="350" r="10" fill="#4CAF50"/>
+    <circle cx="300" cy="250" r="10" fill="#4CAF50"/>
+    
+    <!-- Dollar Signs -->
+    <text x="550" y="400" font-family="Arial" font-size="40" fill="#2196F3">$</text>
+    <text x="600" y="350" font-family="Arial" font-size="40" fill="#2196F3">$</text>
+    <text x="650" y="450" font-family="Arial" font-size="40" fill="#2196F3">$</text>
+    
+    <!-- Connection Lines -->
+    <path d="M400 100 Q500 200 600 150" stroke="#90CAF9" stroke-width="4" stroke-dasharray="10,5" fill="none"/>
+    <path d="M400 100 Q300 200 200 150" stroke="#90CAF9" stroke-width="4" stroke-dasharray="10,5" fill="none"/>
+    
+    <!-- Mobile Device -->
+    <rect x="370" y="80" width="60" height="100" rx="10" fill="#424242"/>
+    <rect x="375" y="85" width="50" height="85" rx="5" fill="#FFFFFF"/>
+    <circle cx="400" cy="170" r="5" fill="#FFFFFF"/>
+</svg> 
