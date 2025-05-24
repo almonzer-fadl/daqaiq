@@ -15,8 +15,8 @@ export default function SupplierSignUp() {
     confirmPassword: '',
     companyName: '',
     phoneNumber: '',
-    commercialRegister: '',
-    vatNumber: '',
+    businessType: 'retailer', // Default value
+    taxId: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -30,15 +30,55 @@ export default function SupplierSignUp() {
   };
 
   const validateForm = () => {
-    if (formData.password !== formData.confirmPassword) {
-      setError('كلمات المرور غير متطابقة');
+    // Check for empty required fields
+    const requiredFields = ['name', 'email', 'password', 'confirmPassword', 'companyName', 'phoneNumber', 'businessType', 'taxId'];
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        setError(`الرجاء تعبئة حقل ${getFieldLabel(field)}`);
+        return false;
+      }
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('صيغة البريد الإلكتروني غير صحيحة');
       return false;
     }
+
+    // Validate password
     if (formData.password.length < 8) {
       setError('كلمة المرور يجب أن تكون 8 أحرف على الأقل');
       return false;
     }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('كلمات المرور غير متطابقة');
+      return false;
+    }
+
+    // Validate phone number (Saudi format)
+    const phoneRegex = /^((\+9665)|(05))[0-9]{8}$/;
+    if (!phoneRegex.test(formData.phoneNumber)) {
+      setError('رقم الجوال غير صحيح. يجب أن يبدأ ب 05 أو +9665');
+      return false;
+    }
+
     return true;
+  };
+
+  const getFieldLabel = (field) => {
+    const labels = {
+      name: 'اسم المسؤول',
+      email: 'البريد الإلكتروني',
+      password: 'كلمة المرور',
+      confirmPassword: 'تأكيد كلمة المرور',
+      companyName: 'اسم الشركة',
+      phoneNumber: 'رقم الجوال',
+      businessType: 'نوع النشاط التجاري',
+      taxId: 'الرقم الضريبي'
+    };
+    return labels[field];
   };
 
   const handleSubmit = async (e) => {
@@ -55,7 +95,13 @@ export default function SupplierSignUp() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          companyName: formData.companyName,
+          phone: formData.phoneNumber,
+          businessType: formData.businessType,
+          taxId: formData.taxId,
           role: 'supplier'
         }),
       });
@@ -66,18 +112,8 @@ export default function SupplierSignUp() {
         throw new Error(data.message || 'حدث خطأ أثناء التسجيل');
       }
 
-      // Sign in automatically after successful registration
-      const result = await signIn('credentials', {
-        email: formData.email,
-        password: formData.password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        router.push('/auth/signin?registered=true');
-      } else {
-        router.push('/dashboard');
-      }
+      // Redirect to sign in page after successful registration
+      router.push('/auth/signin?registered=true');
     } catch (error) {
       setError(error.message);
     } finally {
@@ -157,6 +193,27 @@ export default function SupplierSignUp() {
             </div>
 
             <div>
+              <label htmlFor="businessType" className="block text-sm font-medium text-gray-700">
+                نوع النشاط التجاري
+              </label>
+              <div className="mt-1">
+                <select
+                  id="businessType"
+                  name="businessType"
+                  required
+                  value={formData.businessType}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                >
+                  <option value="manufacturer">مصنع</option>
+                  <option value="distributor">موزع</option>
+                  <option value="retailer">تاجر تجزئة</option>
+                  <option value="other">أخرى</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 البريد الإلكتروني
               </label>
@@ -185,6 +242,7 @@ export default function SupplierSignUp() {
                   name="phoneNumber"
                   type="tel"
                   required
+                  placeholder="05xxxxxxxx"
                   value={formData.phoneNumber}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -194,34 +252,16 @@ export default function SupplierSignUp() {
             </div>
 
             <div>
-              <label htmlFor="commercialRegister" className="block text-sm font-medium text-gray-700">
-                رقم السجل التجاري
-              </label>
-              <div className="mt-1">
-                <input
-                  id="commercialRegister"
-                  name="commercialRegister"
-                  type="text"
-                  required
-                  value={formData.commercialRegister}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  dir="ltr"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="vatNumber" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="taxId" className="block text-sm font-medium text-gray-700">
                 الرقم الضريبي
               </label>
               <div className="mt-1">
                 <input
-                  id="vatNumber"
-                  name="vatNumber"
+                  id="taxId"
+                  name="taxId"
                   type="text"
                   required
-                  value={formData.vatNumber}
+                  value={formData.taxId}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   dir="ltr"
@@ -270,10 +310,10 @@ export default function SupplierSignUp() {
                 type="submit"
                 disabled={isLoading}
                 className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
-                  isLoading ? 'opacity-75 cursor-not-allowed' : ''
+                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
-                {isLoading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب'}
+                {isLoading ? 'جاري التسجيل...' : 'إنشاء حساب'}
               </button>
             </div>
           </form>
