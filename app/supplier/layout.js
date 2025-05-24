@@ -12,17 +12,17 @@ export default function SupplierLayout({ children }) {
   const pathname = usePathname();
 
   // Check if current path is an auth route or the landing page
-  const isAuthRoute = pathname.startsWith('/supplier/auth/');
-  const isLandingPage = pathname === '/supplier';
+  const isAuthRoute = pathname.startsWith('/auth/');
+  const isLandingPage = pathname === '/';
   const isPublicRoute = isAuthRoute || isLandingPage;
 
   useEffect(() => {
     // Only run the auth check if we're not on a public route
     if (!isPublicRoute) {
       if (status === 'unauthenticated') {
-        router.push('/supplier/auth/signin');
+        router.push('/auth/signin');
       } else if (status === 'authenticated' && session?.user?.role !== 'supplier') {
-        signOut({ redirect: true, callbackUrl: '/supplier/auth/signin' });
+        signOut({ redirect: true, callbackUrl: '/auth/signin' });
       }
     }
   }, [status, session, router, isPublicRoute]);

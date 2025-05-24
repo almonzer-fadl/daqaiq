@@ -4,44 +4,33 @@ export const SUPPLIER_URL = process.env.NEXT_PUBLIC_SUPPLIER_URL || 'https://sup
 
 // Auth URLs
 export const AUTH_URLS = {
-  signin: '/auth/signin',
-  signup: '/auth/register',
-  forgotPassword: '/auth/forgot-password',
-  supplierSignin: '/auth/signin/supplier',
-  supplierSignup: '/auth/register/supplier',
+  // Customer auth
+  signin: '/customer/auth/signin',
+  signup: '/customer/auth/signup',
+  forgotPassword: '/customer/auth/forgot-password',
+  
+  // Supplier auth
+  supplierSignin: '/supplier/auth/signin',
+  supplierSignup: '/supplier/auth/signup',
+  supplierForgotPassword: '/supplier/auth/forgot-password',
 };
 
-// Supplier URLs
+// Supplier routes
 export const SUPPLIER_ROUTES = {
-  dashboard: '/',
+  home: '/',
+  dashboard: '/dashboard',
   products: '/products',
-  addProduct: '/products/add',
-  editProduct: (id) => `/products/${id}/edit`,
-  viewProduct: (id) => `/products/${id}`,
   orders: '/orders',
-  viewOrder: (id) => `/orders/${id}`,
-  inventory: '/inventory',
-  analytics: '/analytics',
-  profile: '/profile',
+  settings: '/settings',
 };
 
-// Customer URLs
+// Customer routes
 export const CUSTOMER_ROUTES = {
   home: '/',
-  products: '/products',
-  viewProduct: (slug) => `/products/${slug}`,
-  category: '/category',
-  viewCategory: (slug) => `/category/${slug}`,
-  viewSubcategory: (categorySlug, subcategorySlug) => 
-    `/category/${categorySlug}?subcategory=${subcategorySlug}`,
-  cart: '/cart',
-  wishlist: '/wishlist',
-  about: '/about',
-  contact: '/contact',
-  faq: '/faq',
-  location: '/location',
-  help: '/help',
-  prices: '/prices',
+  profile: '/customer/profile',
+  orders: '/customer/orders',
+  wishlist: '/customer/wishlist',
+  settings: '/customer/settings',
 };
 
 // API URLs

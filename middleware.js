@@ -16,7 +16,7 @@ function getSubdomain(host) {
 }
 
 export async function middleware(request) {
-  const { pathname } = request.nextUrl;
+  const { pathname, host } = request.nextUrl;
   
   // Check if in maintenance mode
   if (MAINTENANCE_MODE.enabled) {
@@ -48,19 +48,23 @@ export async function middleware(request) {
     }
   }
 
-  // Handle domain/subdomain routing
-  const hostname = request.headers.get('host');
-  const isSupplierDomain = hostname.startsWith('supplier.');
-
-  if (isSupplierDomain) {
-    // Supplier subdomain handling
-    if (!pathname.startsWith('/supplier') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
-      return NextResponse.redirect(new URL('/supplier', request.url));
+  // Check if it's a supplier subdomain
+  if (host.startsWith('supplier.')) {
+    // If accessing root path on supplier subdomain, serve the supplier landing page
+    if (pathname === '/') {
+      return NextResponse.rewrite(new URL('/supplier', request.url));
+    }
+    
+    // If accessing /supplier/* paths on supplier subdomain, remove /supplier prefix
+    if (pathname.startsWith('/supplier')) {
+      const newUrl = new URL(pathname.replace('/supplier', ''), request.url);
+      return NextResponse.rewrite(newUrl);
     }
   } else {
-    // Main domain handling
-    if (pathname === '/supplier') {
-      return NextResponse.redirect(new URL('/', request.url));
+    // If accessing supplier routes on main domain, redirect to supplier subdomain
+    if (pathname.startsWith('/supplier')) {
+      const newUrl = new URL(pathname, `https://supplier.${host}`);
+      return NextResponse.redirect(newUrl);
     }
   }
 
@@ -70,12 +74,12 @@ export async function middleware(request) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except:
-     * 1. _next/static (static files)
-     * 2. _next/image (image optimization files)
-     * 3. favicon.ico (favicon file)
-     * 4. public folder
+     * Match all paths except for:
+     * 1. /api routes
+     * 2. /_next (Next.js internals)
+     * 3. /_static (inside /public)
+     * 4. all root files inside /public (e.g. /favicon.ico)
      */
-    '/((?!_next/static|_next/image|favicon.ico|public/|assets/).*)',
+    '/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)',
   ],
 }; 
