@@ -48,38 +48,36 @@ const Navbar = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="flex-1 flex items-center justify-center px-2 lg:px-6">
-            <div className="max-w-lg w-full">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="ابحث عن قطع الغيار..."
-                  className="w-full bg-gray-100 rounded-lg pr-10 pl-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={handleSearchKeyPress}
-                />
-                <button
-                  className="absolute right-0 top-0 mt-2 mr-3 text-gray-400 hover:text-gray-600"
-                  onClick={handleSearchClick}
-                >
-                  🔍
-                </button>
-              </div>
+          <div className="flex-1 flex items-center justify-center px-2 lg:px-6 lg:max-w-2xl">
+            <div className="w-full relative">
+              <input
+                type="text"
+                placeholder="ابحث عن قطع الغيار..."
+                className="w-full bg-gray-100 rounded-lg pr-10 pl-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={handleSearchKeyPress}
+              />
+              <button
+                className="absolute right-0 top-0 mt-2 mr-3 text-gray-400 hover:text-gray-600"
+                onClick={handleSearchClick}
+              >
+                🔍
+              </button>
             </div>
           </div>
 
-          {/* Auth Dropdown and Cart */}
-          <div className="flex gap-4 items-center">
+          {/* Auth and Cart */}
+          <div className="flex items-center gap-6">
             {/* Cart */}
-            <Link href="/cart" className="hover:text-primary">
+            <Link href="/cart" className="text-gray-600 hover:text-gray-900 text-2xl">
               🛒
             </Link>
 
             {/* Auth Dropdown */}
             <div className="relative">
               <button
-                className="hover:text-primary focus:outline-none"
+                className="text-gray-600 hover:text-gray-900 text-2xl focus:outline-none"
                 onClick={() => setShowAuthDropdown(!showAuthDropdown)}
                 onBlur={() => setTimeout(() => setShowAuthDropdown(false), 200)}
               >
