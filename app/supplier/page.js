@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { toast } from 'react-hot-toast';
-import { SUPPLIER_TRANSLATIONS as t } from '../constants/translations';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function SupplierLanding() {
   const { data: session, status } = useSession();
@@ -14,31 +13,39 @@ export default function SupplierLanding() {
   // If authenticated supplier, redirect to dashboard
   useEffect(() => {
     if (status === 'authenticated' && session?.user?.role === 'supplier') {
-      router.push('/dashboard');
+      router.push('/supplier/dashboard');
     }
   }, [session, status, router]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm">
+    <div className="min-h-screen bg-white">
+      {/* Simple Navigation */}
+      <nav className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
-                <img
-                  className="h-8 w-auto"
-                  src="/logo.png"
-                  alt="Daqaiq Supplier"
+            <div className="flex-shrink-0 flex items-center">
+              <Link href="/">
+                <Image
+                  src="/images/logo.png"
+                  alt="Daqaiq Logo"
+                  width={120}
+                  height={40}
+                  className="h-10 w-auto"
                 />
-              </div>
+              </Link>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
               <Link
-                href="/auth/signin"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                href="/supplier/auth/signin"
+                className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
               >
-                Sign In
+                تسجيل الدخول
+              </Link>
+              <Link
+                href="/supplier/auth/signup"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                التسجيل كمورد
               </Link>
             </div>
           </div>
@@ -46,113 +53,88 @@ export default function SupplierLanding() {
       </nav>
 
       {/* Hero Section */}
-      <div className="relative">
+      <div className="bg-gradient-to-b from-blue-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
             <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-              <span className="block">Grow Your Business with</span>
-              <span className="block text-indigo-600">Daqaiq Marketplace</span>
+              <span className="block">ابدأ البيع مع دقائق</span>
+              <span className="block text-blue-600">وانمي تجارتك</span>
             </h1>
             <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-              Join thousands of successful sellers who trust Daqaiq to reach millions of customers.
-              Start selling today and expand your business.
+              انضم إلى مجتمع الموردين في دقائق واصل إلى آلاف العملاء المحتملين. نوفر لك منصة متكاملة لإدارة مبيعاتك وتنمية أعمالك.
             </p>
-            <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
-              <div className="rounded-md shadow">
-                <Link
-                  href="/auth/signup"
-                  className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
-                >
-                  Start Selling
-                </Link>
-              </div>
-              <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-                <Link
-                  href="/auth/signin"
-                  className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10"
-                >
-                  Sign In
-                </Link>
-              </div>
+            <div className="mt-10">
+              <Link
+                href="/supplier/auth/signup"
+                className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:text-lg md:px-10"
+              >
+                ابدأ الآن
+              </Link>
             </div>
           </div>
         </div>
       </div>
 
       {/* Features Section */}
-      <div className="py-12 bg-white">
+      <div className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:text-center">
-            <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">Benefits</h2>
-            <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-              Why sell on Daqaiq?
-            </p>
-          </div>
-
-          <div className="mt-10">
-            <div className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
-              {/* Feature 1 */}
-              <div className="relative">
-                <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                  {/* Icon */}
-                </div>
-                <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Reach Millions</p>
-                <p className="mt-2 ml-16 text-base text-gray-500">
-                  Access millions of customers across the region.
-                </p>
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+            {/* Feature 1 */}
+            <div className="text-center">
+              <div className="flex items-center justify-center h-16 w-16 rounded-md bg-blue-100 text-blue-600 mx-auto">
+                <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
               </div>
+              <h3 className="mt-4 text-xl font-medium text-gray-900">نمو سريع</h3>
+              <p className="mt-2 text-base text-gray-500">
+                اصل إلى آلاف العملاء المحتملين وانمي مبيعاتك بشكل سريع
+              </p>
+            </div>
 
-              {/* Feature 2 */}
-              <div className="relative">
-                <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                  {/* Icon */}
-                </div>
-                <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Easy Management</p>
-                <p className="mt-2 ml-16 text-base text-gray-500">
-                  Powerful tools to manage your inventory and orders.
-                </p>
+            {/* Feature 2 */}
+            <div className="text-center">
+              <div className="flex items-center justify-center h-16 w-16 rounded-md bg-blue-100 text-blue-600 mx-auto">
+                <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
               </div>
+              <h3 className="mt-4 text-xl font-medium text-gray-900">إدارة سهلة</h3>
+              <p className="mt-2 text-base text-gray-500">
+                لوحة تحكم متكاملة لإدارة منتجاتك وطلباتك بكل سهولة
+              </p>
+            </div>
 
-              {/* Feature 3 */}
-              <div className="relative">
-                <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                  {/* Icon */}
-                </div>
-                <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Secure Payments</p>
-                <p className="mt-2 ml-16 text-base text-gray-500">
-                  Reliable and secure payment processing.
-                </p>
+            {/* Feature 3 */}
+            <div className="text-center">
+              <div className="flex items-center justify-center h-16 w-16 rounded-md bg-blue-100 text-blue-600 mx-auto">
+                <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
               </div>
-
-              {/* Feature 4 */}
-              <div className="relative">
-                <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                  {/* Icon */}
-                </div>
-                <p className="ml-16 text-lg leading-6 font-medium text-gray-900">24/7 Support</p>
-                <p className="mt-2 ml-16 text-base text-gray-500">
-                  Dedicated support team to help you succeed.
-                </p>
-              </div>
+              <h3 className="mt-4 text-xl font-medium text-gray-900">دعم متواصل</h3>
+              <p className="mt-2 text-base text-gray-500">
+                فريق دعم متخصص لمساعدتك في كل خطوة
+              </p>
             </div>
           </div>
         </div>
       </div>
 
       {/* CTA Section */}
-      <div className="bg-indigo-50">
+      <div className="bg-blue-50">
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
           <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            <span className="block">Ready to boost your sales?</span>
-            <span className="block text-indigo-600">Start selling on Daqaiq today.</span>
+            <span className="block">جاهز لبدء رحلة النجاح؟</span>
+            <span className="block text-blue-600">انضم إلى دقائق اليوم.</span>
           </h2>
           <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
             <div className="inline-flex rounded-md shadow">
               <Link
-                href="/auth/signup"
-                className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                href="/supplier/auth/signup"
+                className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
               >
-                Get Started
+                سجل الآن
               </Link>
             </div>
           </div>

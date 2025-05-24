@@ -1,7 +1,7 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { signOut } from 'next-auth/react';
 import Navigation from '../components/supplier/Navigation';
@@ -9,14 +9,26 @@ import Navigation from '../components/supplier/Navigation';
 export default function SupplierLayout({ children }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
+
+  // Check if current path is an auth route
+  const isAuthRoute = pathname.startsWith('/supplier/auth/');
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin');
-    } else if (status === 'authenticated' && session?.user?.role !== 'supplier') {
-      signOut({ redirect: true, callbackUrl: 'https://daqaiq.com/auth/signin' });
+    // Only run the auth check if we're not on an auth route
+    if (!isAuthRoute) {
+      if (status === 'unauthenticated') {
+        router.push('/supplier/auth/signin');
+      } else if (status === 'authenticated' && session?.user?.role !== 'supplier') {
+        signOut({ redirect: true, callbackUrl: '/supplier/auth/signin' });
+      }
     }
-  }, [status, session, router]);
+  }, [status, session, router, isAuthRoute]);
+
+  // Don't protect auth routes
+  if (isAuthRoute) {
+    return children;
+  }
 
   if (status === 'loading') {
     return (
