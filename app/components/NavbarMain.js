@@ -31,9 +31,9 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav dir="rtl" className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className="flex flex-row-reverse justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/">
@@ -54,13 +54,13 @@ const Navbar = () => {
                 <input
                   type="text"
                   placeholder="ابحث عن قطع الغيار..."
-                  className="w-full bg-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-gray-100 rounded-lg pr-10 pl-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleSearchKeyPress}
                 />
                 <button
-                  className="absolute left-0 top-0 mt-2 ml-3 text-gray-400 hover:text-gray-600"
+                  className="absolute right-0 top-0 mt-2 mr-3 text-gray-400 hover:text-gray-600"
                   onClick={handleSearchClick}
                 >
                   🔍
@@ -69,8 +69,14 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Auth Dropdown */}
+          {/* Auth Dropdown and Cart */}
           <div className="flex gap-4 items-center">
+            {/* Cart */}
+            <Link href="/cart" className="hover:text-primary">
+              🛒
+            </Link>
+
+            {/* Auth Dropdown */}
             <div className="relative">
               <button
                 className="hover:text-primary focus:outline-none"
@@ -80,19 +86,19 @@ const Navbar = () => {
                 👤
               </button>
               {showAuthDropdown && (
-                <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                   <div className="py-1" role="menu">
                     {session ? (
                       <>
                         <Link
                           href={CUSTOMER_ROUTES.profile}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 text-right"
                         >
                           الملف الشخصي
                         </Link>
                         <Link
                           href={CUSTOMER_ROUTES.orders}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 text-right"
                         >
                           طلباتي
                         </Link>
@@ -107,13 +113,13 @@ const Navbar = () => {
                       <>
                         <Link
                           href={AUTH_URLS.signin}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 text-right"
                         >
                           تسجيل الدخول
                         </Link>
                         <Link
                           href={AUTH_URLS.signup}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 text-right"
                         >
                           إنشاء حساب
                         </Link>
@@ -123,11 +129,6 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-
-            {/* Cart */}
-            <Link href="/cart" className="hover:text-primary">
-              🛒
-            </Link>
           </div>
         </div>
       </div>
