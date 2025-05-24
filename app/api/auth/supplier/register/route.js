@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/dbConnect';
+import User from '@/models/User';
 import Supplier from '@/models/Supplier';
 import { validateEmail, validatePhone } from '@/lib/utils';
 
@@ -52,61 +53,63 @@ export async function POST(req) {
       );
     }
 
-    // Check if supplier already exists
-    const existingSupplier = await Supplier.findOne({ 
-      $or: [
-        { email },
-        { taxId }
-      ]
-    });
+    // Check if user/supplier already exists
+    const existingUser = await User.findOne({ email });
+    const existingSupplier = await Supplier.findOne({ taxId });
     
-    if (existingSupplier) {
-      if (existingSupplier.email === email) {
-        return NextResponse.json(
-          { message: 'البريد الإلكتروني مسجل مسبقاً' },
-          { status: 400 }
-        );
-      }
-      if (existingSupplier.taxId === taxId) {
-        return NextResponse.json(
-          { message: 'الرقم الضريبي مسجل مسبقاً' },
-          { status: 400 }
-        );
-      }
+    if (existingUser) {
+      return NextResponse.json(
+        { message: 'البريد الإلكتروني مسجل مسبقاً' },
+        { status: 400 }
+      );
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    if (existingSupplier) {
+      return NextResponse.json(
+        { message: 'الرقم الضريبي مسجل مسبقاً' },
+        { status: 400 }
+      );
+    }
 
-    // Create new supplier
-    const supplier = await Supplier.create({
+    // Create user first
+    const user = await User.create({
       name,
       email,
-      password: hashedPassword,
+      password: await bcrypt.hash(password, 12),
+      roles: ['supplier'],
+      phoneNumber: phone,
+      businessName: companyName,
+      businessType,
+      taxId,
+      isVerified: false
+    });
+
+    // Create supplier profile
+    const supplier = await Supplier.create({
+      user: user._id,
+      email,
       companyName,
       phone,
       businessType,
       taxId,
-      role: 'supplier',
-      status: 'pending', // Suppliers need approval before they can start selling
+      isVerified: false
     });
 
     // Remove sensitive data from response
-    const supplierResponse = {
-      _id: supplier._id,
-      name: supplier.name,
-      email: supplier.email,
-      companyName: supplier.companyName,
-      phone: supplier.phone,
-      businessType: supplier.businessType,
-      role: supplier.role,
-      status: supplier.status,
+    const responseData = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      companyName,
+      phone,
+      businessType,
+      status: 'pending'
     };
 
     return NextResponse.json(
       { 
         message: 'تم التسجيل بنجاح. سيتم مراجعة حسابك وتفعيله قريباً', 
-        user: supplierResponse 
+        user: responseData 
       },
       { status: 201 }
     );
