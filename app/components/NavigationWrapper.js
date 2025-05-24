@@ -9,11 +9,13 @@ import FooterMain from '@/components/FooterMain';
 export default function NavigationWrapper({ children }) {
   const pathname = usePathname();
   const isMaintenancePage = pathname === '/maintenance';
+  const isSupplierRoute = pathname.startsWith('/supplier');
 
-  if (isMaintenancePage) {
+  // Don't show navigation for maintenance page or supplier routes
+  if (isMaintenancePage || isSupplierRoute) {
     return <>{children}</>;
   }
- 
+
   return (
     <>
       <HeaderTop />
