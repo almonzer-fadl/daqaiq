@@ -3,10 +3,6 @@ import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import AuthProvider from '@/components/AuthProvider';
 import ClientProviders from '@/components/providers/ClientProviders';
-import HeaderTop from '@/components/navigation/HeaderTop';
-import NavbarMain from '@/components/navigation/NavbarMain';
-import NavLinks from '@/components/navigation/NavLinks';
-import FooterMain from '@/components/FooterMain';
 import NavigationWrapper from '@/components/NavigationWrapper';
 
 const inter = Inter({ 

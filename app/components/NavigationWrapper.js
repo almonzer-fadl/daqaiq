@@ -1,9 +1,9 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import HeaderTop from '@/components/navigation/HeaderTop';
-import NavbarMain from '@/components/navigation/NavbarMain';
-import NavLinks from '@/components/navigation/NavLinks';
+import HeaderTop from '@/components/HeaderTop';
+import NavbarMain from '@/components/NavbarMain';
+import NavLinks from '@/components/NavLinks';
 import FooterMain from '@/components/FooterMain';
 
 export default function NavigationWrapper({ children }) {
