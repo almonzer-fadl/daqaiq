@@ -13,9 +13,6 @@ export default function NavigationWrapper({ children }) {
   if (isMaintenancePage) {
     return <>{children}</>;
   }
- if(isSupplierPage){
-  return <>{children}</>;
- }
  
   return (
     <>
