@@ -14,9 +14,9 @@ export default function SupplierSignUp() {
     password: '',
     confirmPassword: '',
     companyName: '',
-    phoneNumber: '',
-    businessType: 'retailer', // Default value
-    taxId: '',
+    phone: '',
+    businessType: 'manufacturer',
+    taxId: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -31,7 +31,7 @@ export default function SupplierSignUp() {
 
   const validateForm = () => {
     // Check for empty required fields
-    const requiredFields = ['name', 'email', 'password', 'confirmPassword', 'companyName', 'phoneNumber', 'businessType', 'taxId'];
+    const requiredFields = ['name', 'email', 'password', 'confirmPassword', 'companyName', 'phone', 'businessType', 'taxId'];
     for (const field of requiredFields) {
       if (!formData[field]) {
         setError(`الرجاء تعبئة حقل ${getFieldLabel(field)}`);
@@ -59,7 +59,7 @@ export default function SupplierSignUp() {
 
     // Validate phone number (Saudi format)
     const phoneRegex = /^((\+9665)|(05))[0-9]{8}$/;
-    if (!phoneRegex.test(formData.phoneNumber)) {
+    if (!phoneRegex.test(formData.phone)) {
       setError('رقم الجوال غير صحيح. يجب أن يبدأ ب 05 أو +9665');
       return false;
     }
@@ -74,7 +74,7 @@ export default function SupplierSignUp() {
       password: 'كلمة المرور',
       confirmPassword: 'تأكيد كلمة المرور',
       companyName: 'اسم الشركة',
-      phoneNumber: 'رقم الجوال',
+      phone: 'رقم الجوال',
       businessType: 'نوع النشاط التجاري',
       taxId: 'الرقم الضريبي'
     };
@@ -99,10 +99,9 @@ export default function SupplierSignUp() {
           email: formData.email,
           password: formData.password,
           companyName: formData.companyName,
-          phone: formData.phoneNumber,
+          phone: formData.phone,
           businessType: formData.businessType,
-          taxId: formData.taxId,
-          role: 'supplier'
+          taxId: formData.taxId
         }),
       });
 
@@ -193,6 +192,25 @@ export default function SupplierSignUp() {
             </div>
 
             <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                رقم الجوال
+              </label>
+              <div className="mt-1">
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  placeholder="05xxxxxxxx"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  dir="ltr"
+                />
+              </div>
+            </div>
+
+            <div>
               <label htmlFor="businessType" className="block text-sm font-medium text-gray-700">
                 نوع النشاط التجاري
               </label>
@@ -214,6 +232,24 @@ export default function SupplierSignUp() {
             </div>
 
             <div>
+              <label htmlFor="taxId" className="block text-sm font-medium text-gray-700">
+                الرقم الضريبي
+              </label>
+              <div className="mt-1">
+                <input
+                  id="taxId"
+                  name="taxId"
+                  type="text"
+                  required
+                  value={formData.taxId}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  dir="ltr"
+                />
+              </div>
+            </div>
+
+            <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 البريد الإلكتروني
               </label>
@@ -225,43 +261,6 @@ export default function SupplierSignUp() {
                   autoComplete="email"
                   required
                   value={formData.email}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  dir="ltr"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
-                رقم الجوال
-              </label>
-              <div className="mt-1">
-                <input
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  type="tel"
-                  required
-                  placeholder="05xxxxxxxx"
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  dir="ltr"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="taxId" className="block text-sm font-medium text-gray-700">
-                الرقم الضريبي
-              </label>
-              <div className="mt-1">
-                <input
-                  id="taxId"
-                  name="taxId"
-                  type="text"
-                  required
-                  value={formData.taxId}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   dir="ltr"

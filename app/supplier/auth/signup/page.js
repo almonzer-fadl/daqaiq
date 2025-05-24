@@ -8,13 +8,14 @@ import Image from 'next/image';
 export default function SupplierSignUp() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    businessName: '',
+    name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    phoneNumber: '',
-    businessType: '',
-    taxNumber: '',
+    companyName: '',
+    phone: '',
+    businessType: 'manufacturer',
+    taxId: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -28,15 +29,62 @@ export default function SupplierSignUp() {
   };
 
   const validateForm = () => {
-    if (formData.password !== formData.confirmPassword) {
-      setError('كلمات المرور غير متطابقة');
+    // Check for empty required fields
+    const requiredFields = ['name', 'email', 'password', 'confirmPassword', 'companyName', 'phone', 'businessType', 'taxId'];
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        setError(`الرجاء تعبئة حقل ${getFieldLabel(field)}`);
+        return false;
+      }
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('صيغة البريد الإلكتروني غير صحيحة');
       return false;
     }
+
+    // Validate password
     if (formData.password.length < 8) {
       setError('كلمة المرور يجب أن تكون 8 أحرف على الأقل');
       return false;
     }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('كلمات المرور غير متطابقة');
+      return false;
+    }
+
+    // Validate phone number (Saudi format)
+    const phoneRegex = /^((\+9665)|(05))[0-9]{8}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      setError('رقم الجوال غير صحيح. يجب أن يبدأ ب 05 أو +9665');
+      return false;
+    }
+
+    // Validate tax ID (15 digits)
+    const taxIdRegex = /^[0-9]{15}$/;
+    if (!taxIdRegex.test(formData.taxId)) {
+      setError('الرقم الضريبي يجب أن يتكون من 15 رقم');
+      return false;
+    }
+
     return true;
+  };
+
+  const getFieldLabel = (field) => {
+    const labels = {
+      name: 'اسم المسؤول',
+      email: 'البريد الإلكتروني',
+      password: 'كلمة المرور',
+      confirmPassword: 'تأكيد كلمة المرور',
+      companyName: 'اسم الشركة',
+      phone: 'رقم الجوال',
+      businessType: 'نوع النشاط التجاري',
+      taxId: 'الرقم الضريبي'
+    };
+    return labels[field];
   };
 
   const handleSubmit = async (e) => {
@@ -53,8 +101,13 @@ export default function SupplierSignUp() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
-          role: 'supplier'
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          companyName: formData.companyName,
+          phone: formData.phone,
+          businessType: formData.businessType,
+          taxId: formData.taxId
         }),
       });
 
@@ -74,7 +127,7 @@ export default function SupplierSignUp() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div dir="rtl" className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <Link href="/supplier">
@@ -111,16 +164,16 @@ export default function SupplierSignUp() {
             )}
 
             <div>
-              <label htmlFor="businessName" className="block text-sm font-medium text-gray-700">
-                اسم الشركة
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                اسم المسؤول
               </label>
               <div className="mt-1">
                 <input
-                  id="businessName"
-                  name="businessName"
+                  id="name"
+                  name="name"
                   type="text"
                   required
-                  value={formData.businessName}
+                  value={formData.name}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
@@ -147,16 +200,17 @@ export default function SupplierSignUp() {
             </div>
 
             <div>
-              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
                 رقم الجوال
               </label>
               <div className="mt-1">
                 <input
-                  id="phoneNumber"
-                  name="phoneNumber"
+                  id="phone"
+                  name="phone"
                   type="tel"
                   required
-                  value={formData.phoneNumber}
+                  placeholder="05xxxxxxxx أو +9665xxxxxxxx"
+                  value={formData.phone}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   dir="ltr"
@@ -177,26 +231,26 @@ export default function SupplierSignUp() {
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 >
-                  <option value="">اختر نوع النشاط</option>
-                  <option value="retail">تجارة التجزئة</option>
-                  <option value="wholesale">تجارة الجملة</option>
                   <option value="manufacturer">مصنع</option>
-                  <option value="distributor">موزع معتمد</option>
+                  <option value="distributor">موزع</option>
+                  <option value="retailer">تاجر تجزئة</option>
+                  <option value="other">أخرى</option>
                 </select>
               </div>
             </div>
 
             <div>
-              <label htmlFor="taxNumber" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="taxId" className="block text-sm font-medium text-gray-700">
                 الرقم الضريبي
               </label>
               <div className="mt-1">
                 <input
-                  id="taxNumber"
-                  name="taxNumber"
+                  id="taxId"
+                  name="taxId"
                   type="text"
                   required
-                  value={formData.taxNumber}
+                  placeholder="الرقم الضريبي المكون من 15 رقم"
+                  value={formData.taxId}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   dir="ltr"
