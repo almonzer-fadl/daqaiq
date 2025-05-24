@@ -7,6 +7,7 @@ import HeaderTop from '@/components/navigation/HeaderTop';
 import NavbarMain from '@/components/navigation/NavbarMain';
 import NavLinks from '@/components/navigation/NavLinks';
 import FooterMain from '@/components/FooterMain';
+import NavigationWrapper from '@/components/NavigationWrapper';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -24,11 +25,9 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <AuthProvider>
           <ClientProviders>
-            <HeaderTop />
-            <NavbarMain />
-            <NavLinks />
-            <main>{children}</main>
-            <FooterMain />
+            <NavigationWrapper>
+              {children}
+            </NavigationWrapper>
           </ClientProviders>
           <Toaster position="bottom-left" />
         </AuthProvider>
