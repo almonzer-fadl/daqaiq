@@ -60,13 +60,13 @@ export default function LandingHeader() {
             {/* Auth buttons */}
             <div className="flex items-center gap-4">
               <Link
-                href={AUTH_URLS.signin}
+                href="/auth/signin"
                 className="text-gray-700 hover:text-gray-900"
               >
                 تسجيل الدخول
               </Link>
               <Link
-                href={AUTH_URLS.supplierSignup}
+                href="/auth/signup"
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 التسجيل كمورد

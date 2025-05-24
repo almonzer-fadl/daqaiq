@@ -4,96 +4,144 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
-export default function SignUp() {
+export default function SupplierSignUp() {
   const router = useRouter();
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    companyName: '',
+    phoneNumber: '',
+    commercialRegister: '',
+    vatNumber: '',
+  });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const validateForm = () => {
+    if (formData.password !== formData.confirmPassword) {
+      setError('كلمات المرور غير متطابقة');
+      return false;
+    }
+    if (formData.password.length < 8) {
+      setError('كلمة المرور يجب أن تكون 8 أحرف على الأقل');
+      return false;
+    }
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     setIsLoading(true);
     setError('');
 
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get('email');
-    const password = formData.get('password');
-    const confirmPassword = formData.get('confirmPassword');
-    const companyName = formData.get('companyName');
-    const phone = formData.get('phone');
-
-    // Basic validation
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      // Register the user
-      const res = await fetch('/api/auth/supplier/register', {
+      const response = await fetch('/api/auth/supplier/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          email,
-          password,
-          companyName,
-          phone,
+          ...formData,
           role: 'supplier'
         }),
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (!res.ok) {
-        throw new Error(data.message || 'Registration failed');
+      if (!response.ok) {
+        throw new Error(data.message || 'حدث خطأ أثناء التسجيل');
       }
 
-      // If registration successful, sign in automatically
+      // Sign in automatically after successful registration
       const result = await signIn('credentials', {
-        email,
-        password,
+        email: formData.email,
+        password: formData.password,
         redirect: false,
       });
 
       if (result?.error) {
-        setError('Registration successful but login failed. Please try signing in.');
-        router.push('/auth/signin');
+        router.push('/auth/signin?registered=true');
       } else {
         router.push('/dashboard');
       }
     } catch (error) {
-      setError(error.message || 'An error occurred during registration.');
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div dir="rtl" className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <img
-          className="mx-auto h-12 w-auto"
-          src="/logo.png"
-          alt="Daqaiq Supplier"
-        />
+        <div className="flex justify-center">
+          <Link href="/">
+            <Image
+              src="/images/logo.png"
+              alt="Daqaiq Logo"
+              width={150}
+              height={50}
+              className="h-12 w-auto"
+            />
+          </Link>
+        </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Create your supplier account
+          تسجيل حساب مورد جديد
         </h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          أو{' '}
+          <Link
+            href="/auth/signin"
+            className="font-medium text-blue-600 hover:text-blue-500"
+          >
+            قم بتسجيل الدخول إلى حسابك
+          </Link>
+        </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                <span className="block sm:inline">{error}</span>
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+                {error}
               </div>
             )}
 
             <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                اسم المسؤول
+              </label>
+              <div className="mt-1">
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+            </div>
+
+            <div>
               <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
-                Company Name
+                اسم الشركة
               </label>
               <div className="mt-1">
                 <input
@@ -101,14 +149,16 @@ export default function SignUp() {
                   name="companyName"
                   type="text"
                   required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  value={formData.companyName}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
             </div>
-            
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+                البريد الإلكتروني
               </label>
               <div className="mt-1">
                 <input
@@ -117,29 +167,71 @@ export default function SignUp() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  dir="ltr"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                Phone Number
+              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
+                رقم الجوال
               </label>
               <div className="mt-1">
                 <input
-                  id="phone"
-                  name="phone"
+                  id="phoneNumber"
+                  name="phoneNumber"
                   type="tel"
                   required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  dir="ltr"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="commercialRegister" className="block text-sm font-medium text-gray-700">
+                رقم السجل التجاري
+              </label>
+              <div className="mt-1">
+                <input
+                  id="commercialRegister"
+                  name="commercialRegister"
+                  type="text"
+                  required
+                  value={formData.commercialRegister}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  dir="ltr"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="vatNumber" className="block text-sm font-medium text-gray-700">
+                الرقم الضريبي
+              </label>
+              <div className="mt-1">
+                <input
+                  id="vatNumber"
+                  name="vatNumber"
+                  type="text"
+                  required
+                  value={formData.vatNumber}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  dir="ltr"
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
+                كلمة المرور
               </label>
               <div className="mt-1">
                 <input
@@ -147,14 +239,17 @@ export default function SignUp() {
                   name="password"
                   type="password"
                   required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  dir="ltr"
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password
+                تأكيد كلمة المرور
               </label>
               <div className="mt-1">
                 <input
@@ -162,7 +257,10 @@ export default function SignUp() {
                   name="confirmPassword"
                   type="password"
                   required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  dir="ltr"
                 />
               </div>
             </div>
@@ -171,36 +269,14 @@ export default function SignUp() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                  isLoading ? 'opacity-75 cursor-not-allowed' : ''
                 }`}
               >
-                {isLoading ? 'Creating account...' : 'Create Account'}
+                {isLoading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب'}
               </button>
             </div>
           </form>
-
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  Already have an account?
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <Link
-                href="/auth/signin"
-                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-              >
-                Sign in
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
     </div>
