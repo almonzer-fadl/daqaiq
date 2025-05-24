@@ -111,7 +111,13 @@ export default function SupplierSignUp() {
         }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Failed to parse response:', parseError);
+        throw new Error('حدث خطأ في معالجة استجابة الخادم');
+      }
 
       if (!response.ok) {
         throw new Error(data.message || 'حدث خطأ أثناء التسجيل');
@@ -120,7 +126,8 @@ export default function SupplierSignUp() {
       // Redirect to sign in page after successful registration
       router.push('/supplier/auth/signin?registered=true');
     } catch (error) {
-      setError(error.message);
+      console.error('Registration error:', error);
+      setError(error.message || 'حدث خطأ أثناء التسجيل');
     } finally {
       setIsLoading(false);
     }

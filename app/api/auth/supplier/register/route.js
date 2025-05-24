@@ -7,13 +7,21 @@ import { validateEmail, validatePhone } from '@/lib/utils';
 import mongoose from 'mongoose';
 
 export async function POST(req) {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
+  let session;
+  
   try {
-    await dbConnect();
+    // First try to parse the request body
+    let body;
+    try {
+      body = await req.json();
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError);
+      return NextResponse.json(
+        { message: 'خطأ في تنسيق البيانات المرسلة' },
+        { status: 400 }
+      );
+    }
 
-    const body = await req.json();
     const { 
       name,
       email, 
@@ -24,7 +32,7 @@ export async function POST(req) {
       taxId
     } = body;
 
-    // Add console.log for debugging
+    // Log received data
     console.log('Received registration data:', {
       name,
       email,
@@ -36,7 +44,15 @@ export async function POST(req) {
 
     // Validate required fields
     if (!name || !email || !password || !companyName || !phone || !businessType || !taxId) {
-      console.log('Missing required fields');
+      console.log('Missing required fields:', {
+        hasName: !!name,
+        hasEmail: !!email,
+        hasPassword: !!password,
+        hasCompanyName: !!companyName,
+        hasPhone: !!phone,
+        hasBusinessType: !!businessType,
+        hasTaxId: !!taxId
+      });
       return NextResponse.json(
         { message: 'جميع الحقول مطلوبة' },
         { status: 400 }
@@ -62,11 +78,27 @@ export async function POST(req) {
     // Validate business type
     const validBusinessTypes = ['manufacturer', 'distributor', 'retailer', 'other'];
     if (!validBusinessTypes.includes(businessType)) {
+      console.log('Invalid business type:', businessType);
       return NextResponse.json(
         { message: 'نوع النشاط التجاري غير صحيح' },
         { status: 400 }
       );
     }
+
+    // Connect to database
+    try {
+      await dbConnect();
+    } catch (dbError) {
+      console.error('Database connection error:', dbError);
+      return NextResponse.json(
+        { message: 'خطأ في الاتصال بقاعدة البيانات' },
+        { status: 500 }
+      );
+    }
+
+    // Start transaction
+    session = await mongoose.startSession();
+    session.startTransaction();
 
     try {
       // Check if user/supplier already exists
@@ -143,9 +175,10 @@ export async function POST(req) {
     } catch (dbError) {
       console.error('Database operation error:', dbError);
       await session.abortTransaction();
-      throw dbError;
-    } finally {
-      session.endSession();
+      return NextResponse.json(
+        { message: 'حدث خطأ أثناء إنشاء الحساب في قاعدة البيانات' },
+        { status: 500 }
+      );
     }
   } catch (error) {
     console.error('Registration error:', error);
@@ -153,5 +186,9 @@ export async function POST(req) {
       { message: 'حدث خطأ أثناء إنشاء الحساب' },
       { status: 500 }
     );
+  } finally {
+    if (session) {
+      session.endSession();
+    }
   }
 } 
