@@ -68,6 +68,28 @@ export async function middleware(request) {
     }
   }
 
+  const token = await getToken({ req: request });
+  const isSupplierRoute = pathname.startsWith('/dashboard') ||
+                         pathname.startsWith('/products') ||
+                         pathname.startsWith('/orders') ||
+                         pathname.startsWith('/analytics');
+
+  // If it's a supplier route and user is not authenticated or not a supplier
+  if (isSupplierRoute) {
+    if (!token) {
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    }
+
+    if (token.role !== 'supplier') {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+  }
+
+  // If user is authenticated and tries to access auth pages
+  if (token && (pathname.startsWith('/auth'))) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
   return NextResponse.next();
 }
 
@@ -81,5 +103,10 @@ export const config = {
      * 4. all root files inside /public (e.g. /favicon.ico)
      */
     '/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)',
+    '/dashboard/:path*',
+    '/products/:path*',
+    '/orders/:path*',
+    '/analytics/:path*',
+    '/auth/:path*'
   ],
 }; 
