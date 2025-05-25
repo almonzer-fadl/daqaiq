@@ -21,6 +21,12 @@ const supplierSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Phone number is required'],
     trim: true,
+    validate: {
+      validator: function(v) {
+        return /^((\+9665)|(05))[0-9]{8}$/.test(v);
+      },
+      message: props => `${props.value} is not a valid Saudi phone number!`
+    }
   },
   businessType: {
     type: String,
@@ -32,6 +38,12 @@ const supplierSchema = new mongoose.Schema({
     required: [true, 'Tax ID is required'],
     unique: true,
     trim: true,
+    validate: {
+      validator: function(v) {
+        return /^[0-9]{15}$/.test(v);
+      },
+      message: props => `Tax ID must be exactly 15 digits!`
+    }
   },
   isVerified: {
     type: Boolean,

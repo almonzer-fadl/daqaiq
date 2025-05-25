@@ -70,10 +70,21 @@ export async function POST(req) {
     }
 
     // Validate phone number (Saudi format)
-    if (!validatePhone(phone)) {
+    const phoneRegex = /^((\+9665)|(05))[0-9]{8}$/;
+    if (!phoneRegex.test(phone)) {
       console.log('Invalid phone format:', phone);
       return NextResponse.json(
-        { message: 'رقم الجوال غير صحيح' },
+        { message: 'رقم الجوال غير صحيح. يجب أن يبدأ ب 05 أو +9665 ويتكون من 10 أرقام' },
+        { status: 400 }
+      );
+    }
+
+    // Validate tax ID (must be 15 digits)
+    const taxIdRegex = /^[0-9]{15}$/;
+    if (!taxIdRegex.test(taxId)) {
+      console.log('Invalid tax ID format:', taxId);
+      return NextResponse.json(
+        { message: 'الرقم الضريبي يجب أن يتكون من 15 رقم' },
         { status: 400 }
       );
     }
