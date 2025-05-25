@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { SUPPLIER_TRANSLATIONS as t } from '../../../../../constants/translations';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 export function useSupplierForm() {
   const router = useRouter();
