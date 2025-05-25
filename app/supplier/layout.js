@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { signOut } from 'next-auth/react';
-import Navigation from '../components/supplier/Navigation';
+import Navigation from './components/Navigation';
 
 export default function SupplierLayout({ children }) {
   const { data: session, status } = useSession();
