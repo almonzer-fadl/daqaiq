@@ -22,6 +22,12 @@ export async function POST(req) {
       );
     }
 
+    // Log the received data (excluding password)
+    console.log('Received registration data:', {
+      ...body,
+      password: '[REDACTED]'
+    });
+
     const { 
       name,
       email, 
@@ -32,35 +38,31 @@ export async function POST(req) {
       taxId
     } = body;
 
-    // Log received data
-    console.log('Received registration data:', {
-      name,
-      email,
-      companyName,
-      phone,
-      businessType,
-      taxId
-    });
+    // Detailed validation logging
+    const validationErrors = [];
+    
+    if (!name) validationErrors.push('Name is missing');
+    if (!email) validationErrors.push('Email is missing');
+    if (!password) validationErrors.push('Password is missing');
+    if (!companyName) validationErrors.push('Company name is missing');
+    if (!phone) validationErrors.push('Phone is missing');
+    if (!businessType) validationErrors.push('Business type is missing');
+    if (!taxId) validationErrors.push('Tax ID is missing');
 
-    // Validate required fields
-    if (!name || !email || !password || !companyName || !phone || !businessType || !taxId) {
-      console.log('Missing required fields:', {
-        hasName: !!name,
-        hasEmail: !!email,
-        hasPassword: !!password,
-        hasCompanyName: !!companyName,
-        hasPhone: !!phone,
-        hasBusinessType: !!businessType,
-        hasTaxId: !!taxId
-      });
+    if (validationErrors.length > 0) {
+      console.log('Validation errors:', validationErrors);
       return NextResponse.json(
-        { message: 'جميع الحقول مطلوبة' },
+        { 
+          message: 'جميع الحقول مطلوبة', 
+          details: validationErrors 
+        },
         { status: 400 }
       );
     }
 
     // Validate email format
     if (!validateEmail(email)) {
+      console.log('Invalid email format:', email);
       return NextResponse.json(
         { message: 'صيغة البريد الإلكتروني غير صحيحة' },
         { status: 400 }
@@ -69,6 +71,7 @@ export async function POST(req) {
 
     // Validate phone number (Saudi format)
     if (!validatePhone(phone)) {
+      console.log('Invalid phone format:', phone);
       return NextResponse.json(
         { message: 'رقم الجوال غير صحيح' },
         { status: 400 }
@@ -88,6 +91,7 @@ export async function POST(req) {
     // Connect to database
     try {
       await dbConnect();
+      console.log('Successfully connected to database');
     } catch (dbError) {
       console.error('Database connection error:', dbError);
       return NextResponse.json(
@@ -96,33 +100,34 @@ export async function POST(req) {
       );
     }
 
+    // Check for existing email and taxId before starting transaction
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      console.log('Email already exists:', email);
+      return NextResponse.json(
+        { message: 'البريد الإلكتروني مسجل مسبقاً' },
+        { status: 400 }
+      );
+    }
+
+    const existingTaxId = await Supplier.findOne({ taxId });
+    if (existingTaxId) {
+      console.log('Tax ID already exists:', taxId);
+      return NextResponse.json(
+        { message: 'الرقم الضريبي مسجل مسبقاً' },
+        { status: 400 }
+      );
+    }
+
     // Start transaction
     session = await mongoose.startSession();
     session.startTransaction();
 
     try {
-      // Check if user/supplier already exists
-      const existingUser = await User.findOne({ email }).session(session);
-      const existingSupplier = await Supplier.findOne({ taxId }).session(session);
-      
-      if (existingUser) {
-        await session.abortTransaction();
-        return NextResponse.json(
-          { message: 'البريد الإلكتروني مسجل مسبقاً' },
-          { status: 400 }
-        );
-      }
-
-      if (existingSupplier) {
-        await session.abortTransaction();
-        return NextResponse.json(
-          { message: 'الرقم الضريبي مسجل مسبقاً' },
-          { status: 400 }
-        );
-      }
-
-      // Create user first
+      // Hash password
       const hashedPassword = await bcrypt.hash(password, 12);
+      
+      // Create user
       const user = await User.create([{
         name,
         email,
@@ -135,7 +140,7 @@ export async function POST(req) {
         isVerified: false
       }], { session });
 
-      console.log('User created:', user[0]._id);
+      console.log('User created successfully:', user[0]._id);
 
       // Create supplier profile
       const supplier = await Supplier.create([{
@@ -149,39 +154,57 @@ export async function POST(req) {
         status: 'pending'
       }], { session });
 
-      console.log('Supplier created:', supplier[0]._id);
+      console.log('Supplier profile created successfully:', supplier[0]._id);
 
       // Commit the transaction
       await session.commitTransaction();
-
-      // Remove sensitive data from response
-      const responseData = {
-        _id: user[0]._id,
-        name: user[0].name,
-        email: user[0].email,
-        companyName,
-        phone,
-        businessType,
-        status: 'pending'
-      };
+      console.log('Transaction committed successfully');
 
       return NextResponse.json(
         { 
-          message: 'تم التسجيل بنجاح. سيتم مراجعة حسابك وتفعيله قريباً', 
-          user: responseData 
+          message: 'تم التسجيل بنجاح. سيتم مراجعة حسابك وتفعيله قريباً',
+          user: {
+            _id: user[0]._id,
+            name: user[0].name,
+            email: user[0].email,
+            companyName,
+            phone,
+            businessType,
+            status: 'pending'
+          }
         },
         { status: 201 }
       );
     } catch (dbError) {
-      console.error('Database operation error:', dbError);
+      console.error('Database operation error:', {
+        error: dbError.message,
+        stack: dbError.stack,
+        code: dbError.code
+      });
+      
       await session.abortTransaction();
+      console.log('Transaction aborted due to error');
+
+      // Handle specific MongoDB error codes
+      if (dbError.code === 11000) {
+        const field = Object.keys(dbError.keyPattern)[0];
+        return NextResponse.json(
+          { message: `${field === 'email' ? 'البريد الإلكتروني' : 'الرقم الضريبي'} مسجل مسبقاً` },
+          { status: 400 }
+        );
+      }
+
       return NextResponse.json(
         { message: 'حدث خطأ أثناء إنشاء الحساب في قاعدة البيانات' },
         { status: 500 }
       );
     }
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Unhandled registration error:', {
+      error: error.message,
+      stack: error.stack
+    });
+    
     return NextResponse.json(
       { message: 'حدث خطأ أثناء إنشاء الحساب' },
       { status: 500 }
@@ -189,6 +212,7 @@ export async function POST(req) {
   } finally {
     if (session) {
       session.endSession();
+      console.log('Database session ended');
     }
   }
 } 
