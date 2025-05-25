@@ -198,6 +198,28 @@ export const SUPPLIER_TRANSLATIONS = {
     }
   },
 
+  // Common translations
+  common: {
+    loading: 'جاري التحميل...',
+    error: 'حدث خطأ',
+    retry: 'إعادة المحاولة',
+    success: 'تمت العملية بنجاح',
+    save: 'حفظ',
+    cancel: 'إلغاء',
+    delete: 'حذف',
+    edit: 'تعديل',
+    view: 'عرض',
+    search: 'بحث',
+    filter: 'تصفية',
+    sort: 'ترتيب',
+    all: 'الكل',
+    noData: 'لا توجد بيانات',
+    loadMore: 'تحميل المزيد',
+    required: 'مطلوب',
+    optional: 'اختياري',
+    back: 'رجوع'
+  },
+
   // Flattened translations for auth pages
   supplierRegistration: 'تسجيل حساب مورد جديد',
   name: 'الاسم',
