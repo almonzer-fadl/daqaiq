@@ -198,48 +198,37 @@ export const SUPPLIER_TRANSLATIONS = {
     }
   },
 
-  // Analytics
-  analytics: {
-    title: 'التحليلات',
-    sections: {
-      salesOverview: 'نظرة عامة على المبيعات',
-      topProducts: 'أفضل المنتجات',
-      salesByCategory: 'المبيعات حسب الفئة',
-      recentSales: 'المبيعات الأخيرة'
-    },
-    periods: {
-      weekly: 'أسبوعي',
-      monthly: 'شهري',
-      yearly: 'سنوي'
-    }
-  },
-
-  // Common
-  common: {
-    loading: 'جاري التحميل...',
-    error: 'حدث خطأ',
-    retry: 'إعادة المحاولة',
-    success: 'تمت العملية بنجاح',
-    save: 'حفظ',
-    cancel: 'إلغاء',
-    delete: 'حذف',
-    edit: 'تعديل',
-    view: 'عرض',
-    search: 'بحث',
-    filter: 'تصفية',
-    sort: 'ترتيب',
-    all: 'الكل',
-    noData: 'لا توجد بيانات',
-    loadMore: 'تحميل المزيد',
-    required: 'مطلوب',
-    optional: 'اختياري',
-    back: 'رجوع',
-    invalidEmail: 'البريد الإلكتروني غير صالح',
-    passwordTooShort: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل',
-    passwordMismatch: 'كلمة المرور غير متطابقة',
-    invalidPhone: 'رقم الجوال غير صالح',
-    invalidTaxId: 'الرقم الضريبي غير صالح',
-    profileUpdated: 'تم تحديث الملف الشخصي بنجاح',
-    profileUpdateFailed: 'فشل تحديث الملف الشخصي'
-  }
+  // Flattened translations for auth pages
+  supplierRegistration: 'تسجيل حساب مورد جديد',
+  name: 'الاسم',
+  email: 'البريد الإلكتروني',
+  password: 'كلمة المرور',
+  companyName: 'اسم الشركة',
+  companyRegistration: 'رقم السجل التجاري',
+  register: 'تسجيل',
+  registering: 'جاري التسجيل...',
+  registrationSuccess: 'تم التسجيل بنجاح',
+  registrationSuccessMessage: 'تم إنشاء حسابك بنجاح. سيتم تحويلك إلى صفحة تسجيل الدخول.',
+  redirectingToLogin: 'جاري التحويل إلى صفحة تسجيل الدخول...',
+  
+  // Validation messages
+  requiredFields: 'جميع الحقول مطلوبة',
+  invalidEmail: 'البريد الإلكتروني غير صالح',
+  passwordLength: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل',
+  passwordNumber: 'كلمة المرور يجب أن تحتوي على رقم واحد على الأقل',
+  genericError: 'حدث خطأ',
+  registrationFailed: 'فشل التسجيل',
+  
+  // Reset password
+  resetPassword: 'إعادة تعيين كلمة المرور',
+  resetPasswordDescription: 'أدخل كلمة المرور الجديدة',
+  newPassword: 'كلمة المرور الجديدة',
+  confirmPassword: 'تأكيد كلمة المرور',
+  passwordsDoNotMatch: 'كلمات المرور غير متطابقة',
+  resetPasswordSuccess: 'تم إعادة تعيين كلمة المرور بنجاح',
+  resetPasswordFailed: 'فشل إعادة تعيين كلمة المرور',
+  invalidResetToken: 'رمز إعادة التعيين غير صالح أو مفقود',
+  resetting: 'جاري إعادة التعيين...',
+  backToSignIn: 'العودة إلى تسجيل الدخول',
+  loading: 'جاري التحميل...'
 }; 

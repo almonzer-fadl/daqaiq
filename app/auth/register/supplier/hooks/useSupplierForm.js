@@ -29,7 +29,7 @@ export function useSupplierForm() {
 
   const validateForm = () => {
     if (!formData.name || !formData.email || !formData.password || !formData.businessName || !formData.businessType || !formData.taxId) {
-      setError(t.requiredField);
+      setError(t.requiredFields);
       return false;
     }
 
@@ -40,7 +40,7 @@ export function useSupplierForm() {
     }
 
     if (formData.password.length < 6) {
-      setError(t.passwordTooShort);
+      setError(t.passwordLength);
       return false;
     }
 

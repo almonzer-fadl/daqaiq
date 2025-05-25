@@ -17,7 +17,7 @@ function ResetPasswordContent() {
 
   useEffect(() => {
     if (!token) {
-      setError('Invalid or missing reset token');
+      setError(t.invalidResetToken);
       setTimeout(() => {
         router.push('/auth/forgot-password');
       }, 3000);
@@ -31,13 +31,13 @@ function ResetPasswordContent() {
     setSuccess('');
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t.passwordsDoNotMatch);
       setLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError(t.passwordLength);
       setLoading(false);
       return;
     }
@@ -54,10 +54,10 @@ function ResetPasswordContent() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to reset password');
+        throw new Error(data.error || t.resetPasswordFailed);
       }
 
-      setSuccess('Password has been reset successfully');
+      setSuccess(t.resetPasswordSuccess);
       setTimeout(() => {
         router.push('/auth/signin');
       }, 3000);
@@ -74,7 +74,7 @@ function ResetPasswordContent() {
         <div className="max-w-md w-full space-y-8">
           <div className="rounded-md bg-red-50 p-4">
             <div className="text-sm text-red-700">
-              Invalid or missing reset token. Redirecting to forgot password page...
+              {t.invalidResetToken}
             </div>
           </div>
         </div>
@@ -170,7 +170,7 @@ export default function ResetPassword() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600">{t.loading}</p>
         </div>
       </div>
     }>
