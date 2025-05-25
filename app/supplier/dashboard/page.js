@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { SUPPLIER_TRANSLATIONS as t } from '@/constants/translations';
 
 export default function SupplierDashboard() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [metrics, setMetrics] = useState({
     totalOrders: 0,
@@ -19,6 +19,16 @@ export default function SupplierDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/supplier/auth/signin');
+      return;
+    }
+
+    if (status === 'authenticated' && session?.user?.role !== 'supplier') {
+      router.push('/');
+      return;
+    }
+
     async function fetchMetrics() {
       try {
         const response = await fetch('/api/supplier/dashboard/metrics');
@@ -36,14 +46,18 @@ export default function SupplierDashboard() {
     if (session?.user?.role === 'supplier') {
       fetchMetrics();
     }
-  }, [session]);
+  }, [session, status, router]);
 
-  if (loading) {
+  if (status === 'loading' || loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
+  }
+
+  if (!session || session?.user?.role !== 'supplier') {
+    return null;
   }
 
   return (

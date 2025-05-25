@@ -17,11 +17,11 @@ export const AUTH_URLS = {
 
 // Supplier routes
 export const SUPPLIER_ROUTES = {
-  home: '/',
-  dashboard: '/dashboard',
-  products: '/products',
-  orders: '/orders',
-  settings: '/settings',
+  home: '/supplier',
+  dashboard: '/supplier/dashboard',
+  products: '/supplier/products',
+  orders: '/supplier/orders',
+  settings: '/supplier/settings',
 };
 
 // Customer routes
