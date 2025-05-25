@@ -101,29 +101,37 @@ export async function POST(req) {
     }
 
     // Check for existing email and taxId before starting transaction
-    const existingEmail = await User.findOne({ email });
-    if (existingEmail) {
-      console.log('Email already exists:', email);
-      return NextResponse.json(
-        { message: 'البريد الإلكتروني مسجل مسبقاً' },
-        { status: 400 }
-      );
-    }
+    try {
+      const existingEmail = await User.findOne({ email }).lean();
+      if (existingEmail) {
+        console.log('Email already exists:', email);
+        return NextResponse.json(
+          { message: 'البريد الإلكتروني مسجل مسبقاً' },
+          { status: 400 }
+        );
+      }
 
-    const existingTaxId = await Supplier.findOne({ taxId });
-    if (existingTaxId) {
-      console.log('Tax ID already exists:', taxId);
+      const existingTaxId = await Supplier.findOne({ taxId }).lean();
+      if (existingTaxId) {
+        console.log('Tax ID already exists:', taxId);
+        return NextResponse.json(
+          { message: 'الرقم الضريبي مسجل مسبقاً' },
+          { status: 400 }
+        );
+      }
+    } catch (lookupError) {
+      console.error('Error checking for existing user/supplier:', lookupError);
       return NextResponse.json(
-        { message: 'الرقم الضريبي مسجل مسبقاً' },
-        { status: 400 }
+        { message: 'حدث خطأ أثناء التحقق من البيانات' },
+        { status: 500 }
       );
     }
 
     // Start transaction
-    session = await mongoose.startSession();
-    session.startTransaction();
-
     try {
+      session = await mongoose.startSession();
+      session.startTransaction();
+
       // Hash password
       const hashedPassword = await bcrypt.hash(password, 12);
       
@@ -176,14 +184,16 @@ export async function POST(req) {
         { status: 201 }
       );
     } catch (dbError) {
+      if (session) {
+        await session.abortTransaction();
+        console.log('Transaction aborted due to error');
+      }
+
       console.error('Database operation error:', {
         error: dbError.message,
         stack: dbError.stack,
         code: dbError.code
       });
-      
-      await session.abortTransaction();
-      console.log('Transaction aborted due to error');
 
       // Handle specific MongoDB error codes
       if (dbError.code === 11000) {
@@ -211,7 +221,7 @@ export async function POST(req) {
     );
   } finally {
     if (session) {
-      session.endSession();
+      await session.endSession();
       console.log('Database session ended');
     }
   }
