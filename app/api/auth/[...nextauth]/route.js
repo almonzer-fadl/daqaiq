@@ -2,7 +2,7 @@ import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/dbConnect';
-import Supplier from '@/models/Supplier';
+import User from '@/models/User';
 
 const handler = NextAuth({
   providers: [
@@ -13,30 +13,40 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('البريد الإلكتروني وكلمة المرور مطلوبة');
+        }
+
         try {
           await dbConnect();
 
-          const supplier = await Supplier.findOne({ email: credentials.email });
+          // Find user by email
+          const user = await User.findOne({ 
+            email: credentials.email,
+            roles: { $in: ['supplier'] } 
+          });
           
-          if (!supplier) {
-            throw new Error('Invalid email or password');
+          if (!user) {
+            console.log('User not found:', credentials.email);
+            throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة');
           }
 
-          const isValid = await bcrypt.compare(credentials.password, supplier.password);
+          // Compare password
+          const isValid = await bcrypt.compare(credentials.password, user.password);
           
           if (!isValid) {
-            throw new Error('Invalid email or password');
+            console.log('Invalid password for user:', credentials.email);
+            throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة');
           }
 
-          // Update last login
-          supplier.lastLoginAt = new Date();
-          await supplier.save();
+          console.log('Login successful for user:', credentials.email);
 
           return {
-            id: supplier._id.toString(),
-            email: supplier.email,
-            role: supplier.role,
-            companyName: supplier.companyName,
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+            role: 'supplier',
+            businessName: user.businessName,
           };
         } catch (error) {
           console.error('Auth error:', error);
@@ -54,7 +64,7 @@ const handler = NextAuth({
       if (user) {
         token.role = user.role;
         token.id = user.id;
-        token.companyName = user.companyName;
+        token.businessName = user.businessName;
       }
       return token;
     },
@@ -62,7 +72,7 @@ const handler = NextAuth({
       if (token) {
         session.user.role = token.role;
         session.user.id = token.id;
-        session.user.companyName = token.companyName;
+        session.user.businessName = token.businessName;
       }
       return session;
     },
