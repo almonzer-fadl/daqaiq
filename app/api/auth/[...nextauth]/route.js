@@ -14,25 +14,44 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.log('Missing credentials:', { 
+            hasEmail: !!credentials?.email, 
+            hasPassword: !!credentials?.password 
+          });
           throw new Error('البريد الإلكتروني وكلمة المرور مطلوبة');
         }
 
         try {
           await dbConnect();
+          console.log('Database connected successfully');
 
           // Find user by email
+          console.log('Searching for user with email:', credentials.email);
           const user = await User.findOne({ 
             email: credentials.email,
             roles: { $in: ['supplier'] } 
-          });
-          
+          }).select('+password'); // Explicitly select password field
+
           if (!user) {
-            console.log('User not found:', credentials.email);
+            console.log('User not found with email:', credentials.email);
             throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة');
           }
 
+          console.log('User found:', {
+            id: user._id,
+            email: user.email,
+            hasPassword: !!user.password,
+            roles: user.roles
+          });
+
+          // Debug password comparison
+          console.log('Attempting password comparison');
+          console.log('Input password exists:', !!credentials.password);
+          console.log('Stored password exists:', !!user.password);
+          
           // Compare password
           const isValid = await bcrypt.compare(credentials.password, user.password);
+          console.log('Password comparison result:', isValid);
           
           if (!isValid) {
             console.log('Invalid password for user:', credentials.email);
@@ -49,7 +68,11 @@ const handler = NextAuth({
             businessName: user.businessName,
           };
         } catch (error) {
-          console.error('Auth error:', error);
+          console.error('Auth error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+          });
           throw error;
         }
       }
