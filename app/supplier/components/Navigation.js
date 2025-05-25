@@ -13,11 +13,11 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/auth/signin' });
+    await signOut({ callbackUrl: '/supplier/auth/signin' });
   };
 
   const navigation = [
-    { name: t.dashboard, href: '/', icon: '📊' },
+    { name: t.dashboard, href: '/supplier/dashboard', icon: '📊' },
     { name: t.products, href: '/supplier/products', icon: '📦' },
     { name: t.orders, href: '/supplier/orders', icon: '🛍️' },
     { name: t.inventory, href: '/supplier/inventory', icon: '📋' },
@@ -59,7 +59,7 @@ export default function Navigation() {
         <div className="flex flex-col h-full">
           {/* Logo and Toggle */}
           <div className="flex items-center justify-between p-4 border-b">
-            <Link href="/" className="flex items-center">
+            <Link href="/supplier/dashboard" className="flex items-center">
               <span className="text-xl font-bold text-blue-600">دقائق</span>
             </Link>
             <button
@@ -133,7 +133,7 @@ export default function Navigation() {
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
-              <span className="mr-4">{t.logout}</span>
+              {isSidebarOpen && <span className="mr-4">{t.logout}</span>}
             </button>
           </div>
         </div>
@@ -155,7 +155,7 @@ export default function Navigation() {
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-4 border-b">
-            <Link href="/supplier" className="flex items-center">
+            <Link href="/supplier/dashboard" className="flex items-center">
               <span className="text-xl font-bold text-blue-600">دقائق</span>
             </Link>
             <button
@@ -213,6 +213,19 @@ export default function Navigation() {
               </div>
             </div>
           </Link>
+
+          {/* Logout Button */}
+          <div className="p-4 border-t">
+            <button
+              onClick={handleLogout}
+              className="flex items-center w-full px-4 py-3 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-700"
+            >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span className="mr-4">{t.logout}</span>
+            </button>
+          </div>
         </div>
       </div>
     </>
