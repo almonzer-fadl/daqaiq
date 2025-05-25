@@ -49,16 +49,18 @@ export async function middleware(request) {
   }
 
   // Check if it's a supplier subdomain
-  if (host.startsWith('supplier.')) {
+  const isSupplierSubdomain = host.startsWith('supplier.');
+  
+  if (isSupplierSubdomain) {
     // If accessing root path on supplier subdomain, serve the supplier landing page
     if (pathname === '/') {
       return NextResponse.rewrite(new URL('/supplier', request.url));
     }
-    
-    // If accessing /supplier/* paths on supplier subdomain, remove /supplier prefix
-    if (pathname.startsWith('/supplier')) {
-      const newUrl = new URL(pathname.replace('/supplier', ''), request.url);
-      return NextResponse.rewrite(newUrl);
+
+    // If not already prefixed with /supplier, add it
+    if (!pathname.startsWith('/supplier')) {
+      const newPathname = `/supplier${pathname}`;
+      return NextResponse.rewrite(new URL(newPathname, request.url));
     }
   } else {
     // If accessing supplier routes on main domain, redirect to supplier subdomain
@@ -68,16 +70,21 @@ export async function middleware(request) {
     }
   }
 
+  // Get the token for protected route checks
   const token = await getToken({ req: request });
-  const isSupplierRoute = pathname.startsWith('/dashboard') ||
-                         pathname.startsWith('/products') ||
-                         pathname.startsWith('/orders') ||
-                         pathname.startsWith('/analytics');
+  
+  // Define protected supplier routes
+  const isProtectedSupplierRoute = pathname.startsWith('/supplier/dashboard') ||
+                                 pathname.startsWith('/supplier/products') ||
+                                 pathname.startsWith('/supplier/orders') ||
+                                 pathname.startsWith('/supplier/analytics') ||
+                                 pathname.startsWith('/supplier/inventory') ||
+                                 pathname.startsWith('/supplier/profile');
 
-  // If it's a supplier route and user is not authenticated or not a supplier
-  if (isSupplierRoute) {
+  // Handle authentication for protected supplier routes
+  if (isProtectedSupplierRoute) {
     if (!token) {
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
+      return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
     }
 
     if (token.role !== 'supplier') {
@@ -86,8 +93,8 @@ export async function middleware(request) {
   }
 
   // If user is authenticated and tries to access auth pages
-  if (token && (pathname.startsWith('/auth'))) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  if (token && pathname.startsWith('/supplier/auth/')) {
+    return NextResponse.redirect(new URL('/supplier/dashboard', request.url));
   }
 
   return NextResponse.next();
