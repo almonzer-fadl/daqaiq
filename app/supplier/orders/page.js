@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
 import Link from 'next/link';
-import { SUPPLIER_TRANSLATIONS as t } from '../../constants/translations';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 export default function SupplierOrders() {
   const { data: session } = useSession();
@@ -193,11 +193,11 @@ export default function SupplierOrders() {
                         onChange={(e) => handleStatusChange(order._id, e.target.value)}
                         className="text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                       >
-                        <option value="pending">{t.pending || 'قيد الانتظار'}</option>
-                        <option value="processing">{t.processing || 'قيد المعالجة'}</option>
-                        <option value="shipped">{t.shipped || 'تم الشحن'}</option>
-                        <option value="delivered">{t.delivered || 'تم التوصيل'}</option>
-                        <option value="cancelled">{t.cancelled || 'ملغي'}</option>
+                        <option value="pending">{t.orders.status.pending}</option>
+                        <option value="processing">{t.orders.status.processing}</option>
+                        <option value="shipped">{t.orders.status.shipped}</option>
+                        <option value="delivered">{t.orders.status.delivered}</option>
+                        <option value="cancelled">{t.orders.status.cancelled}</option>
                       </select>
                     </div>
                   </div>

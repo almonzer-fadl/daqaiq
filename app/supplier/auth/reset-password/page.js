@@ -1,142 +1,136 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-
-const translations = {
-  en: {
-    title: 'Reset Your Password',
-    newPassword: 'New Password',
-    confirmPassword: 'Confirm Password',
-    passwordMismatch: 'Passwords do not match.',
-    passwordTooShort: 'Password must be at least 8 characters long.',
-    success: 'Password has been reset successfully. You can now login with your new password.',
-    error: 'An error occurred while resetting your password.',
-    invalidToken: 'Invalid or missing reset token.',
-    invalidTokenTitle: 'Invalid Reset Link',
-    invalidTokenMessage: 'This password reset link is invalid or has expired.',
-    requestNewLink: 'Request a new password reset link',
-    resetButton: 'Reset Password',
-    resetting: 'Resetting...'
-  },
-  ar: {
-    title: 'إعادة تعيين كلمة المرور',
-    newPassword: 'كلمة المرور الجديدة',
-    confirmPassword: 'تأكيد كلمة المرور',
-    passwordMismatch: 'كلمات المرور غير متطابقة.',
-    passwordTooShort: 'يجب أن تكون كلمة المرور 8 أحرف على الأقل.',
-    success: 'تم إعادة تعيين كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول باستخدام كلمة المرور الجديدة.',
-    error: 'حدث خطأ أثناء إعادة تعيين كلمة المرور.',
-    invalidToken: 'رمز إعادة التعيين غير صالح أو مفقود.',
-    invalidTokenTitle: 'رابط إعادة التعيين غير صالح',
-    invalidTokenMessage: 'رابط إعادة تعيين كلمة المرور هذا غير صالح أو منتهي الصلاحية.',
-    requestNewLink: 'طلب رابط إعادة تعيين جديد',
-    resetButton: 'إعادة تعيين كلمة المرور',
-    resetting: 'جاري إعادة التعيين...'
-  }
-};
+import Image from 'next/image';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 export default function ResetPassword() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
-  // Default to Arabic
-  const t = translations.ar;
 
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [formData, setFormData] = useState({
+    password: '',
+    confirmPassword: '',
+  });
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState({ type: '', text: '' });
-  const [isTokenValid, setIsTokenValid] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    if (!token) {
-      setIsTokenValid(false);
-      setMessage({
-        type: 'error',
-        text: t.invalidToken
-      });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const validateForm = () => {
+    if (!formData.password || !formData.confirmPassword) {
+      setError(t.common.required);
+      return false;
     }
-  }, [token, t]);
+
+    if (formData.password.length < 8) {
+      setError(t.common.passwordTooShort);
+      return false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError(t.common.passwordMismatch);
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     setIsLoading(true);
-    setMessage({ type: '', text: '' });
-
-    if (password !== confirmPassword) {
-      setMessage({
-        type: 'error',
-        text: t.passwordMismatch
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    if (password.length < 8) {
-      setMessage({
-        type: 'error',
-        text: t.passwordTooShort
-      });
-      setIsLoading(false);
-      return;
-    }
+    setError('');
 
     try {
-      const response = await fetch('/api/supplier/auth/reset-password', {
+      const response = await fetch('/api/auth/supplier/reset-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ token, password }),
+        body: JSON.stringify({
+          token,
+          password: formData.password,
+        }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({
-          type: 'success',
-          text: t.success
-        });
-        // Redirect to login page after 3 seconds
+        setSuccess(true);
         setTimeout(() => {
-          router.push('/supplier/auth/login');
+          router.push('/supplier/auth/signin');
         }, 3000);
       } else {
-        setMessage({
-          type: 'error',
-          text: data.message || t.error
-        });
+        throw new Error(data.message || t.common.error);
       }
     } catch (error) {
-      setMessage({
-        type: 'error',
-        text: t.error
-      });
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (!isTokenValid) {
+  if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-gray-900">
-              {t.invalidTokenTitle}
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              {t.invalidTokenMessage}
-            </p>
-            <div className="mt-4">
-              <Link
-                href="/supplier/auth/forgot-password"
-                className="font-medium text-blue-600 hover:text-blue-500"
+      <div dir="rtl" className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-red-600">{t.auth.resetPassword.invalidToken}</h2>
+              <p className="mt-2 text-sm text-gray-600">
+                {t.auth.resetPassword.invalidTokenMessage}
+              </p>
+              <div className="mt-6">
+                <Link
+                  href="/supplier/auth/forgot-password"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-500"
+                >
+                  {t.auth.resetPassword.tryAgain}
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (success) {
+    return (
+      <div dir="rtl" className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <div className="text-center">
+              <svg
+                className="mx-auto h-12 w-12 text-green-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                {t.requestNewLink}
-              </Link>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <h2 className="mt-4 text-2xl font-bold text-gray-900">{t.auth.resetPassword.success}</h2>
+              <p className="mt-2 text-sm text-gray-600">
+                {t.auth.resetPassword.successMessage}
+              </p>
             </div>
           </div>
         </div>
@@ -145,80 +139,85 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {t.title}
-          </h2>
+    <div dir="rtl" className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="flex justify-center">
+          <Link href="/supplier">
+            <Image
+              src="/images/logo.png"
+              alt="دقائق"
+              width={150}
+              height={50}
+              className="h-12 w-auto"
+            />
+          </Link>
         </div>
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          {t.auth.resetPassword.title}
+        </h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          {t.auth.resetPassword.subtitle}
+        </p>
+      </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {message.text && (
-            <div className={`rounded-md p-4 ${
-              message.type === 'success' 
-                ? 'bg-green-100 border border-green-400 text-green-700' 
-                : 'bg-red-100 border border-red-400 text-red-700'
-            }`}>
-              {message.text}
-            </div>
-          )}
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+                {error}
+              </div>
+            )}
 
-          <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="password" className="sr-only">
-                {t.newPassword}
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                {t.auth.resetPassword.newPassword}
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder={t.newPassword}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-              />
+              <div className="mt-1">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  dir="ltr"
+                />
+              </div>
             </div>
-            <div>
-              <label htmlFor="confirmPassword" className="sr-only">
-                {t.confirmPassword}
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder={t.confirmPassword}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-          </div>
 
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <span className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  {t.resetting}
-                </span>
-              ) : (
-                t.resetButton
-              )}
-            </button>
-          </div>
-        </form>
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                {t.auth.resetPassword.confirmPassword}
+              </label>
+              <div className="mt-1">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  dir="ltr"
+                />
+              </div>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                  isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {isLoading ? t.auth.resetPassword.loading : t.auth.resetPassword.submit}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

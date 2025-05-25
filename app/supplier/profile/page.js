@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
 import Image from 'next/image';
-import { SUPPLIER_TRANSLATIONS as t } from '../../constants/translations';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 export default function SupplierProfile() {
   const { data: session, update: updateSession } = useSession();
@@ -182,7 +182,7 @@ export default function SupplierProfile() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || t.profileUpdateFailed);
+        throw new Error(data.message || t.profile.actions.updateFailed);
       }
 
       // Update image preview with the new image from server
@@ -207,10 +207,10 @@ export default function SupplierProfile() {
         }
       });
 
-      toast.success(t.profileUpdated);
+      toast.success(t.profile.actions.updated);
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error(error.message || t.profileUpdateFailed);
+      toast.error(error.message || t.profile.actions.updateFailed);
     } finally {
       setSaving(false);
     }
@@ -226,18 +226,18 @@ export default function SupplierProfile() {
 
   return (
     <div dir="rtl" className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-8">{t.profileSettings}</h1>
+      <h1 className="text-2xl font-bold mb-8">{t.profile.title}</h1>
       
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Profile Image */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">{t.profileImage}</h2>
+          <h2 className="text-lg font-semibold mb-4">{t.profile.sections.image.title}</h2>
           <div className="flex items-center space-x-6">
             <div className="relative h-24 w-24">
               {imagePreview ? (
                 <Image
                   src={imagePreview}
-                  alt={t.profileImage}
+                  alt={t.profile.sections.image.title}
                   fill
                   className="rounded-full object-cover"
                 />
@@ -250,7 +250,7 @@ export default function SupplierProfile() {
               )}
             </div>
             <label className="block">
-              <span className="sr-only">{t.chooseProfileImage}</span>
+              <span className="sr-only">{t.profile.sections.image.choose}</span>
               <input
                 type="file"
                 accept="image/*"
@@ -268,264 +268,109 @@ export default function SupplierProfile() {
 
         {/* Company Information */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">معلومات الشركة</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <h2 className="text-lg font-semibold mb-4">{t.profile.sections.company.title}</h2>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700">اسم الشركة</label>
+              <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
+                {t.profile.sections.company.name}
+              </label>
               <input
                 type="text"
+                id="companyName"
                 name="companyName"
                 value={formData.companyName}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">اسم جهة الاتصال</label>
-              <input
-                type="text"
-                name="contactName"
-                value={formData.contactName}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">البريد الإلكتروني</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">رقم الهاتف</label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Address */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">العنوان</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">عنوان الشارع</label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">المدينة</label>
-              <input
-                type="text"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">المنطقة/المحافظة</label>
-              <input
-                type="text"
-                name="state"
-                value={formData.state}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">الرمز البريدي</label>
-              <input
-                type="text"
-                name="postalCode"
-                value={formData.postalCode}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">الدولة</label>
-              <input
-                type="text"
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Business Information */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">معلومات العمل</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">الرقم الضريبي</label>
-              <input
-                type="text"
-                name="taxId"
-                value={formData.taxId}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">نوع العمل</label>
+              <label htmlFor="businessType" className="block text-sm font-medium text-gray-700">
+                {t.profile.sections.company.businessType}
+              </label>
               <select
+                id="businessType"
                 name="businessType"
                 value={formData.businessType}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               >
-                <option value="">اختر النوع</option>
-                <option value="corporation">شركة مساهمة</option>
-                <option value="llc">شركة ذات مسؤولية محدودة</option>
-                <option value="partnership">شراكة</option>
-                <option value="soleProprietorship">مؤسسة فردية</option>
+                <option value="manufacturer">{t.auth.signup.businessTypes.manufacturer}</option>
+                <option value="distributor">{t.auth.signup.businessTypes.distributor}</option>
+                <option value="retailer">{t.auth.signup.businessTypes.retailer}</option>
+                <option value="other">{t.auth.signup.businessTypes.other}</option>
               </select>
             </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">وصف العمل</label>
-              <textarea
-                name="description"
-                value={formData.description}
+            <div>
+              <label htmlFor="taxId" className="block text-sm font-medium text-gray-700">
+                {t.profile.sections.company.taxId}
+              </label>
+              <input
+                type="text"
+                id="taxId"
+                name="taxId"
+                value={formData.taxId}
                 onChange={handleChange}
-                rows={4}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               />
             </div>
           </div>
         </div>
 
-        {/* Online Presence */}
+        {/* Contact Information */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">التواجد الإلكتروني</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <h2 className="text-lg font-semibold mb-4">{t.profile.sections.contact.title}</h2>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-gray-700">الموقع الإلكتروني</label>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                {t.profile.sections.contact.name}
+              </label>
               <input
-                type="url"
-                name="website"
-                value={formData.website}
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">فيسبوك</label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                {t.profile.sections.contact.email}
+              </label>
               <input
-                type="url"
-                name="socialMedia.facebook"
-                value={formData.socialMedia.facebook}
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                dir="ltr"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">تويتر</label>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                {t.profile.sections.contact.phone}
+              </label>
               <input
-                type="url"
-                name="socialMedia.twitter"
-                value={formData.socialMedia.twitter}
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                dir="ltr"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">لينكد إن</label>
-              <input
-                type="url"
-                name="socialMedia.linkedin"
-                value={formData.socialMedia.linkedin}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                 dir="ltr"
               />
             </div>
           </div>
         </div>
 
-        {/* Bank Information */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">المعلومات البنكية</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">اسم الحساب</label>
-              <input
-                type="text"
-                name="bankInfo.accountName"
-                value={formData.bankInfo.accountName}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">رقم الحساب</label>
-              <input
-                type="text"
-                name="bankInfo.accountNumber"
-                value={formData.bankInfo.accountNumber}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                dir="ltr"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">اسم البنك</label>
-              <input
-                type="text"
-                name="bankInfo.bankName"
-                value={formData.bankInfo.bankName}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">رمز SWIFT/BIC</label>
-              <input
-                type="text"
-                name="bankInfo.swiftCode"
-                value={formData.bankInfo.swiftCode}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                dir="ltr"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Form Buttons */}
-        <div className="flex justify-end space-x-4">
-          <button
-            type="button"
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            onClick={() => window.history.back()}
-          >
-            {t.cancel}
-          </button>
+        {/* Submit Button */}
+        <div className="flex justify-end">
           <button
             type="submit"
-            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            disabled={saving}
+            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            disabled={loading}
           >
-            {saving ? `${t.saving}...` : t.save}
+            {loading ? t.profile.actions.saving : t.profile.actions.save}
           </button>
         </div>
       </form>

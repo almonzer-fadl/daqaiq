@@ -13,7 +13,7 @@ import {
   ArcElement,
 } from 'chart.js';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
-import { SUPPLIER_TRANSLATIONS as t } from '../constants/translations';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 // Register ChartJS components
 ChartJS.register(

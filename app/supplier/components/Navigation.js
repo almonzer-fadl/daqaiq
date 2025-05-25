@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { SUPPLIER_TRANSLATIONS as t } from '@/constants/translations';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 export default function Navigation() {
   const { data: session } = useSession();

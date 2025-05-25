@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from 'react-hot-toast';
-import { SUPPLIER_TRANSLATIONS as t } from '../../constants/translations';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
@@ -123,14 +123,17 @@ export default function ProductsPage() {
               <p className="text-sm text-gray-500 mb-2">{product.description}</p>
               <div className="flex items-center justify-between">
                 <span className="text-lg font-bold text-gray-900" dir="ltr">
-                  ر.س{product.price.toLocaleString('ar-SA')}
+                  {new Intl.NumberFormat('ar-SA', {
+                    style: 'currency',
+                    currency: 'SAR'
+                  }).format(product.price)}
                 </span>
                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                   product.status === 'active' ? 'bg-green-100 text-green-800' :
                   product.status === 'inactive' ? 'bg-red-100 text-red-800' :
                   'bg-gray-100 text-gray-800'
                 }`}>
-                  {t[product.status]}
+                  {t.products.status[product.status]}
                 </span>
               </div>
               <div className="mt-4 flex justify-between">

@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 export default function SupplierSignIn() {
   const router = useRouter();
@@ -37,12 +38,12 @@ export default function SupplierSignIn() {
       });
 
       if (result?.error) {
-        setError('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+        setError(t.auth.signin.error);
       } else {
         router.push('/supplier/dashboard');
       }
     } catch (error) {
-      setError('حدث خطأ أثناء تسجيل الدخول');
+      setError(t.common.error);
     } finally {
       setIsLoading(false);
     }
@@ -55,7 +56,7 @@ export default function SupplierSignIn() {
           <Link href="/supplier">
             <Image
               src="/images/logo.png"
-              alt="Daqaiq Logo"
+              alt="دقائق"
               width={150}
               height={50}
               className="h-12 w-auto"
@@ -63,15 +64,15 @@ export default function SupplierSignIn() {
           </Link>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          تسجيل دخول المورد
+          {t.auth.signin.title}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          أو{' '}
+          {t.auth.signin.noAccount}{' '}
           <Link
             href="/supplier/auth/signup"
             className="font-medium text-blue-600 hover:text-blue-500"
           >
-            قم بإنشاء حساب جديد
+            {t.auth.signin.register}
           </Link>
         </p>
       </div>
@@ -87,7 +88,7 @@ export default function SupplierSignIn() {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                البريد الإلكتروني
+                {t.auth.signin.email}
               </label>
               <div className="mt-1">
                 <input
@@ -106,7 +107,7 @@ export default function SupplierSignIn() {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                كلمة المرور
+                {t.auth.signin.password}
               </label>
               <div className="mt-1">
                 <input
@@ -132,7 +133,7 @@ export default function SupplierSignIn() {
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <label htmlFor="remember-me" className="mr-2 block text-sm text-gray-900">
-                  تذكرني
+                  {t.auth.signin.rememberMe}
                 </label>
               </div>
 
@@ -141,7 +142,7 @@ export default function SupplierSignIn() {
                   href="/supplier/auth/forgot-password"
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
-                  نسيت كلمة المرور؟
+                  {t.auth.signin.forgotPassword}
                 </Link>
               </div>
             </div>
@@ -154,7 +155,7 @@ export default function SupplierSignIn() {
                   isLoading ? 'opacity-75 cursor-not-allowed' : ''
                 }`}
               >
-                {isLoading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
+                {isLoading ? t.auth.signin.loading : t.auth.signin.submit}
               </button>
             </div>
           </form>

@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import Link from 'next/link';
 import Image from 'next/image';
 import CsvUploader from '../../components/CsvUploader';
-import { SUPPLIER_TRANSLATIONS as t } from '../../constants/translations';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 export default function InventoryManagement() {
   const { data: session } = useSession();

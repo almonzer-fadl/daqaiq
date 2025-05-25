@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import LandingHeader from '@/components/supplier/LandingHeader';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 export default function SupplierLanding() {
   const { data: session, status } = useSession();
@@ -19,99 +20,105 @@ export default function SupplierLanding() {
   }, [session, status, router]);
 
   return (
-    <div className="min-h-screen bg-white">
-      <LandingHeader />
-      
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
-            <main dir="rtl" className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-              <div className="text-center lg:text-right">
-                <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                  <span className="block">ابدأ البيع مع دقائق</span>
-                  <span className="block text-blue-600">وانمي تجارتك</span>
-                </h1>
-                <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                  انضم إلى مجتمع الموردين في دقائق وواصل إلى آلاف العملاء المحتملين. نوفر لك منصة متكاملة لإدارة مبيعاتك وتنمية اعمالك
-                </p>
-                <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                  <div className="rounded-md shadow">
-                    <a
-                      href="#"
-                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
-                    >
-                      ابدا الآن
-                    </a>
-                  </div>
+    <div className="relative bg-white overflow-hidden">
+      <div className="max-w-7xl mx-auto">
+        <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
+          <main dir="rtl" className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
+            <div className="text-center lg:text-right">
+              <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+                <span className="block">{t.landing.title}</span>
+                <span className="block text-blue-600">{t.landing.subtitle}</span>
+              </h1>
+              <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                {t.landing.description}
+              </p>
+              <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
+                <div className="rounded-md shadow">
+                  <a
+                    href="/supplier/auth/signup"
+                    className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
+                  >
+                    {t.landing.startNow}
+                  </a>
+                </div>
+                <div className="mt-3 sm:mt-0 sm:mr-3">
+                  <a
+                    href="/supplier/auth/signin"
+                    className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-blue-100 hover:bg-blue-200 md:py-4 md:text-lg md:px-10"
+                  >
+                    {t.landing.login}
+                  </a>
                 </div>
               </div>
-            </main>
-          </div>
+            </div>
+          </main>
         </div>
       </div>
 
       {/* Features Section */}
-      <div className="py-24 bg-white">
+      <div className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-            {/* Feature 1 */}
-            <div className="text-center">
-              <div className="flex items-center justify-center h-16 w-16 rounded-md bg-blue-100 text-blue-600 mx-auto">
-                <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="mt-4 text-xl font-medium text-gray-900">نمو سريع</h3>
-              <p className="mt-2 text-base text-gray-500">
-                اصل إلى آلاف العملاء المحتملين وانمي مبيعاتك بشكل سريع
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="text-center">
-              <div className="flex items-center justify-center h-16 w-16 rounded-md bg-blue-100 text-blue-600 mx-auto">
-                <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                </svg>
-              </div>
-              <h3 className="mt-4 text-xl font-medium text-gray-900">إدارة سهلة</h3>
-              <p className="mt-2 text-base text-gray-500">
-                لوحة تحكم متكاملة لإدارة منتجاتك وطلباتك بكل سهولة
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="text-center">
-              <div className="flex items-center justify-center h-16 w-16 rounded-md bg-blue-100 text-blue-600 mx-auto">
-                <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <h3 className="mt-4 text-xl font-medium text-gray-900">دعم متواصل</h3>
-              <p className="mt-2 text-base text-gray-500">
-                فريق دعم متخصص لمساعدتك في كل خطوة
-              </p>
-            </div>
+          <div className="text-center">
+            <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+              {t.landing.featuresTitle}
+            </h2>
+            <p className="mt-4 text-lg text-gray-500">
+              {t.landing.featuresDescription}
+            </p>
           </div>
-        </div>
-      </div>
 
-      {/* CTA Section */}
-      <div className="bg-blue-50">
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
-          <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            <span className="block">جاهز لبدء رحلة النجاح؟</span>
-            <span className="block text-blue-600">انضم إلى دقائق اليوم.</span>
-          </h2>
-          <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
-            <div className="inline-flex rounded-md shadow">
-              <Link
-                href="/supplier/auth/signup"
-                className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-              >
-                سجل الآن
-              </Link>
+          <div className="mt-10">
+            <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
+              {/* Feature 1 */}
+              <div className="bg-white overflow-hidden shadow rounded-lg">
+                <div className="p-6">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </div>
+                    <div className="mr-4">
+                      <h3 className="text-lg font-medium text-gray-900">{t.landing.feature1Title}</h3>
+                      <p className="mt-2 text-base text-gray-500">{t.landing.feature1Description}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature 2 */}
+              <div className="bg-white overflow-hidden shadow rounded-lg">
+                <div className="p-6">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    </div>
+                    <div className="mr-4">
+                      <h3 className="text-lg font-medium text-gray-900">{t.landing.feature2Title}</h3>
+                      <p className="mt-2 text-base text-gray-500">{t.landing.feature2Description}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="bg-white overflow-hidden shadow rounded-lg">
+                <div className="p-6">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="mr-4">
+                      <h3 className="text-lg font-medium text-gray-900">{t.landing.feature3Title}</h3>
+                      <p className="mt-2 text-base text-gray-500">{t.landing.feature3Description}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

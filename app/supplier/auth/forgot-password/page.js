@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 export default function ForgotPassword() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function ForgotPassword() {
     setError('');
 
     if (!email) {
-      setError('الرجاء إدخال البريد الإلكتروني');
+      setError(t.common.required);
       setIsLoading(false);
       return;
     }
@@ -37,7 +38,7 @@ export default function ForgotPassword() {
       if (response.ok) {
         setSuccess(true);
       } else {
-        throw new Error(data.message || 'حدث خطأ أثناء معالجة الطلب');
+        throw new Error(data.message || t.common.error);
       }
     } catch (error) {
       setError(error.message);
@@ -77,16 +78,16 @@ export default function ForgotPassword() {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              <h2 className="mt-4 text-2xl font-bold text-gray-900">تم إرسال رابط إعادة تعيين كلمة المرور</h2>
+              <h2 className="mt-4 text-2xl font-bold text-gray-900">{t.auth.forgotPassword.success}</h2>
               <p className="mt-2 text-sm text-gray-600">
-                إذا كان البريد الإلكتروني مسجلاً لدينا، فستصلك رسالة تحتوي على تعليمات إعادة تعيين كلمة المرور خلال دقائق.
+                {t.auth.forgotPassword.subtitle}
               </p>
               <div className="mt-6">
                 <Link
                   href="/supplier/auth/signin"
                   className="text-sm font-medium text-blue-600 hover:text-blue-500"
                 >
-                  العودة إلى تسجيل الدخول
+                  {t.auth.forgotPassword.backToLogin}
                 </Link>
               </div>
             </div>
@@ -111,10 +112,10 @@ export default function ForgotPassword() {
           </Link>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          نسيت كلمة المرور؟
+          {t.auth.forgotPassword.title}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور
+          {t.auth.forgotPassword.subtitle}
         </p>
       </div>
 
@@ -122,23 +123,14 @@ export default function ForgotPassword() {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="rounded-md bg-red-50 p-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div className="mr-3">
-                    <p className="text-sm font-medium text-red-800">{error}</p>
-                  </div>
-                </div>
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+                {error}
               </div>
             )}
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                البريد الإلكتروني
+                {t.auth.forgotPassword.email}
               </label>
               <div className="mt-1">
                 <input
@@ -150,7 +142,6 @@ export default function ForgotPassword() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="your@email.com"
                   dir="ltr"
                 />
               </div>
@@ -164,7 +155,7 @@ export default function ForgotPassword() {
                   isLoading ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
-                {isLoading ? 'جاري الإرسال...' : 'إرسال رابط إعادة التعيين'}
+                {isLoading ? t.auth.forgotPassword.loading : t.auth.forgotPassword.submit}
               </button>
             </div>
 
@@ -173,7 +164,7 @@ export default function ForgotPassword() {
                 href="/supplier/auth/signin"
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
-                العودة إلى تسجيل الدخول
+                {t.auth.forgotPassword.backToLogin}
               </Link>
             </div>
           </form>

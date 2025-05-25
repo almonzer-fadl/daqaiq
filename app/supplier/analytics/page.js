@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';
 import dynamic from 'next/dynamic';
-import { SUPPLIER_TRANSLATIONS as t } from '../../constants/translations';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 // Dynamically import Chart.js components
 const DynamicCharts = dynamic(
@@ -95,40 +95,49 @@ export default function SupplierAnalytics() {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">{t.analytics}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t.analytics.title}</h1>
         <select
           value={period}
           onChange={(e) => setPeriod(e.target.value)}
           className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="7d">{t.weeklySales}</option>
-          <option value="30d">{t.monthlySales}</option>
-          <option value="90d">{t.yearlySales}</option>
+          <option value="7d">{t.analytics.periods.weekly}</option>
+          <option value="30d">{t.analytics.periods.monthly}</option>
+          <option value="90d">{t.analytics.periods.yearly}</option>
         </select>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">{t.totalSales}</h3>
+          <h3 className="text-sm font-medium text-gray-500">{t.analytics.sections.totalSales}</h3>
           <p className="mt-2 text-3xl font-semibold text-gray-900" dir="ltr">
-            ر.س{(analytics?.salesOverview?.totalSales || 0).toLocaleString('ar-SA')}
+            {new Intl.NumberFormat('ar-SA', {
+              style: 'currency',
+              currency: 'SAR'
+            }).format(analytics?.salesOverview?.totalSales || 0)}
           </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">{t.monthlyRevenue}</h3>
+          <h3 className="text-sm font-medium text-gray-500">{t.analytics.sections.monthlyRevenue}</h3>
           <p className="mt-2 text-3xl font-semibold text-gray-900" dir="ltr">
-            ر.س{(analytics?.salesOverview?.monthlyRevenue || 0).toLocaleString('ar-SA')}
+            {new Intl.NumberFormat('ar-SA', {
+              style: 'currency',
+              currency: 'SAR'
+            }).format(analytics?.salesOverview?.monthlyRevenue || 0)}
           </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">{t.averageOrderValue}</h3>
+          <h3 className="text-sm font-medium text-gray-500">{t.analytics.sections.averageOrderValue}</h3>
           <p className="mt-2 text-3xl font-semibold text-gray-900" dir="ltr">
-            ر.س{(analytics?.salesOverview?.averageOrderValue || 0).toLocaleString('ar-SA')}
+            {new Intl.NumberFormat('ar-SA', {
+              style: 'currency',
+              currency: 'SAR'
+            }).format(analytics?.salesOverview?.averageOrderValue || 0)}
           </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-sm font-medium text-gray-500">{t.totalOrders}</h3>
+          <h3 className="text-sm font-medium text-gray-500">{t.analytics.sections.totalOrders}</h3>
           <p className="mt-2 text-3xl font-semibold text-gray-900" dir="ltr">
             {(analytics?.salesOverview?.totalOrders || 0).toLocaleString('ar-SA')}
           </p>

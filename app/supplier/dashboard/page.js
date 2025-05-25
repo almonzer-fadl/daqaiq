@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { SUPPLIER_TRANSLATIONS as t } from '@/constants/translations';
+import { toast } from 'react-hot-toast';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 export default function SupplierDashboard() {
   const { data: session, status } = useSession();
@@ -17,6 +18,7 @@ export default function SupplierDashboard() {
     revenue: 0
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -31,13 +33,24 @@ export default function SupplierDashboard() {
 
     async function fetchMetrics() {
       try {
-        const response = await fetch('/api/supplier/dashboard/metrics');
-        if (response.ok) {
-          const data = await response.json();
-          setMetrics(data);
+        setLoading(true);
+        setError(null);
+        const response = await fetch('/api/supplier/dashboard/metrics', {
+          headers: {
+            'Authorization': `Bearer ${session?.accessToken}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch metrics');
         }
+
+        const data = await response.json();
+        setMetrics(data);
       } catch (error) {
         console.error('Error fetching metrics:', error);
+        setError(error.message);
+        toast.error(t.common.error);
       } finally {
         setLoading(false);
       }
@@ -56,6 +69,23 @@ export default function SupplierDashboard() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">{t.common.error}</h2>
+          <p className="text-gray-600">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            {t.common.retry}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!session || session?.user?.role !== 'supplier') {
     return null;
   }
@@ -66,7 +96,7 @@ export default function SupplierDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            {t.welcome}, {session?.user?.name}
+            {t.dashboard.welcome}, {session?.user?.name}
           </h1>
           <p className="mt-1 text-sm text-gray-600">
             {new Date().toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
@@ -80,7 +110,7 @@ export default function SupplierDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:border-blue-500 transition-colors">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">{t.totalOrders}</p>
+              <p className="text-sm font-medium text-gray-600">{t.dashboard.metrics.totalOrders}</p>
               <h3 className="text-2xl font-bold text-gray-900 mt-2">{metrics.totalOrders}</h3>
             </div>
             <div className="bg-blue-100 p-3 rounded-lg">
@@ -91,7 +121,7 @@ export default function SupplierDashboard() {
           </div>
           <div className="mt-4">
             <span className="text-sm text-gray-600">
-              {metrics.pendingOrders} {t.pendingOrders}
+              {metrics.pendingOrders} {t.dashboard.metrics.pendingOrders}
             </span>
           </div>
         </div>
@@ -100,7 +130,7 @@ export default function SupplierDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:border-green-500 transition-colors">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">{t.totalProducts}</p>
+              <p className="text-sm font-medium text-gray-600">{t.dashboard.metrics.totalProducts}</p>
               <h3 className="text-2xl font-bold text-gray-900 mt-2">{metrics.totalProducts}</h3>
             </div>
             <div className="bg-green-100 p-3 rounded-lg">
@@ -111,20 +141,20 @@ export default function SupplierDashboard() {
           </div>
           <div className="mt-4">
             <button 
-              onClick={() => router.push('/supplier/products/add')}
+              onClick={() => router.push('/supplier/products')}
               className="text-sm text-green-600 hover:text-green-700"
             >
-              {t.addNewProduct} →
+              {t.dashboard.quickActions.manageProducts} →
             </button>
           </div>
         </div>
 
-        {/* Revenue */}
+        {/* Total Revenue */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:border-purple-500 transition-colors">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">{t.totalRevenue}</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-2">
+              <p className="text-sm font-medium text-gray-600">{t.dashboard.metrics.totalRevenue}</p>
+              <h3 className="text-2xl font-bold text-gray-900 mt-2" dir="ltr">
                 {new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR' }).format(metrics.revenue)}
               </h3>
             </div>
@@ -139,7 +169,7 @@ export default function SupplierDashboard() {
               onClick={() => router.push('/supplier/analytics')}
               className="text-sm text-purple-600 hover:text-purple-700"
             >
-              {t.viewAnalytics} →
+              {t.dashboard.quickActions.viewAnalytics} →
             </button>
           </div>
         </div>
@@ -147,13 +177,13 @@ export default function SupplierDashboard() {
 
       {/* Quick Actions */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.quickActions}</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.dashboard.quickActions.title}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <button
             onClick={() => router.push('/supplier/orders')}
             className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            <span className="font-medium">{t.viewOrders}</span>
+            <span className="font-medium">{t.dashboard.quickActions.viewOrders}</span>
             <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
@@ -163,7 +193,7 @@ export default function SupplierDashboard() {
             onClick={() => router.push('/supplier/products')}
             className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            <span className="font-medium">{t.manageProducts}</span>
+            <span className="font-medium">{t.dashboard.quickActions.manageProducts}</span>
             <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
@@ -173,7 +203,7 @@ export default function SupplierDashboard() {
             onClick={() => router.push('/supplier/inventory')}
             className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            <span className="font-medium">{t.manageInventory}</span>
+            <span className="font-medium">{t.dashboard.quickActions.manageInventory}</span>
             <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
@@ -185,10 +215,10 @@ export default function SupplierDashboard() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">{t.rating}</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t.dashboard.metrics.rating}</h2>
             <div className="flex items-center mt-2">
               <span className="text-3xl font-bold text-yellow-500">{metrics.rating.toFixed(1)}</span>
-              <div className="flex items-center ml-2">
+              <div className="flex items-center mr-2">
                 {[...Array(5)].map((_, i) => (
                   <svg
                     key={i}
@@ -200,8 +230,8 @@ export default function SupplierDashboard() {
                   </svg>
                 ))}
               </div>
-              <span className="ml-2 text-sm text-gray-600">
-                ({metrics.reviewCount} {t.reviews})
+              <span className="text-sm text-gray-600">
+                ({metrics.reviewCount} {t.dashboard.metrics.reviews})
               </span>
             </div>
           </div>

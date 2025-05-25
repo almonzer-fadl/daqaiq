@@ -18,34 +18,40 @@ export async function GET(req) {
 
     await dbConnect();
 
+    // Get supplier data
     const supplier = await Supplier.findById(token.id);
     if (!supplier) {
       return NextResponse.json({ error: 'Supplier not found' }, { status: 404 });
     }
 
-    // Get pending orders count
-    const pendingOrders = await Order.countDocuments({
-      supplier: supplier._id,
-      status: 'pending'
-    });
+    // Get orders metrics
+    const [pendingOrders, completedOrders, totalOrders] = await Promise.all([
+      Order.countDocuments({ supplierId: supplier._id, status: 'pending' }),
+      Order.find({ supplierId: supplier._id, status: 'delivered' }),
+      Order.countDocuments({ supplierId: supplier._id })
+    ]);
 
-    // Calculate total revenue
-    const orders = await Order.find({
-      supplier: supplier._id,
-      status: 'completed'
-    });
-    
-    const revenue = orders.reduce((total, order) => total + order.totalAmount, 0);
+    // Calculate revenue from completed orders
+    const revenue = completedOrders.reduce((total, order) => total + (order.totalAmount || 0), 0);
 
-    // Return dashboard metrics
-    return NextResponse.json({
-      totalOrders: supplier.stats.totalOrders,
-      totalProducts: supplier.stats.totalProducts,
-      rating: supplier.stats.rating,
-      reviewCount: supplier.stats.reviewCount,
-      pendingOrders,
-      revenue
-    });
+    // Get or set default stats
+    const stats = {
+      totalOrders: totalOrders || 0,
+      totalProducts: supplier.stats?.totalProducts || 0,
+      rating: supplier.stats?.rating || 0,
+      reviewCount: supplier.stats?.reviewCount || 0,
+      pendingOrders: pendingOrders || 0,
+      revenue: revenue || 0
+    };
+
+    // Update supplier stats if they've changed
+    if (stats.totalOrders !== supplier.stats?.totalOrders) {
+      await Supplier.findByIdAndUpdate(supplier._id, {
+        'stats.totalOrders': stats.totalOrders
+      });
+    }
+
+    return NextResponse.json(stats);
   } catch (error) {
     console.error('Metrics error:', error);
     return NextResponse.json(

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 export default function SupplierSignUp() {
   const router = useRouter();
@@ -33,7 +34,7 @@ export default function SupplierSignUp() {
     const requiredFields = ['name', 'email', 'password', 'confirmPassword', 'companyName', 'phone', 'businessType', 'taxId'];
     for (const field of requiredFields) {
       if (!formData[field]) {
-        setError(`الرجاء تعبئة حقل ${getFieldLabel(field)}`);
+        setError(`${t.common.required}: ${getFieldLabel(field)}`);
         return false;
       }
     }
@@ -41,32 +42,32 @@ export default function SupplierSignUp() {
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      setError('صيغة البريد الإلكتروني غير صحيحة');
+      setError(t.common.invalidEmail);
       return false;
     }
 
     // Validate password
     if (formData.password.length < 8) {
-      setError('كلمة المرور يجب أن تكون 8 أحرف على الأقل');
+      setError(t.common.passwordTooShort);
       return false;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('كلمات المرور غير متطابقة');
+      setError(t.common.passwordMismatch);
       return false;
     }
 
     // Validate phone number (Saudi format)
     const phoneRegex = /^((\+9665)|(05))[0-9]{8}$/;
     if (!phoneRegex.test(formData.phone)) {
-      setError('رقم الجوال غير صحيح. يجب أن يبدأ ب 05 أو +9665');
+      setError(t.common.invalidPhone);
       return false;
     }
 
     // Validate tax ID (15 digits)
     const taxIdRegex = /^[0-9]{15}$/;
     if (!taxIdRegex.test(formData.taxId)) {
-      setError('الرقم الضريبي يجب أن يتكون من 15 رقم');
+      setError(t.common.invalidTaxId);
       return false;
     }
 
@@ -75,14 +76,14 @@ export default function SupplierSignUp() {
 
   const getFieldLabel = (field) => {
     const labels = {
-      name: 'اسم المسؤول',
-      email: 'البريد الإلكتروني',
-      password: 'كلمة المرور',
-      confirmPassword: 'تأكيد كلمة المرور',
-      companyName: 'اسم الشركة',
-      phone: 'رقم الجوال',
-      businessType: 'نوع النشاط التجاري',
-      taxId: 'الرقم الضريبي'
+      name: t.auth.signup.name,
+      email: t.auth.signup.email,
+      password: t.auth.signup.password,
+      confirmPassword: t.auth.signup.confirmPassword,
+      companyName: t.auth.signup.companyName,
+      phone: t.auth.signup.phone,
+      businessType: t.auth.signup.businessType,
+      taxId: t.auth.signup.taxId
     };
     return labels[field];
   };
@@ -111,23 +112,16 @@ export default function SupplierSignUp() {
         }),
       });
 
-      let data;
-      try {
-        data = await response.json();
-      } catch (parseError) {
-        console.error('Failed to parse response:', parseError);
-        throw new Error('حدث خطأ في معالجة استجابة الخادم');
-      }
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'حدث خطأ أثناء التسجيل');
+        throw new Error(data.message || t.common.error);
       }
 
-      // Redirect to sign in page after successful registration
       router.push('/supplier/auth/signin?registered=true');
     } catch (error) {
       console.error('Registration error:', error);
-      setError(error.message || 'حدث خطأ أثناء التسجيل');
+      setError(error.message || t.common.error);
     } finally {
       setIsLoading(false);
     }
@@ -140,7 +134,7 @@ export default function SupplierSignUp() {
           <Link href="/supplier">
             <Image
               src="/images/logo.png"
-              alt="Daqaiq Logo"
+              alt="دقائق"
               width={150}
               height={50}
               className="h-12 w-auto"
@@ -148,15 +142,15 @@ export default function SupplierSignUp() {
           </Link>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          تسجيل حساب مورد جديد
+          {t.auth.signup.title}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          أو{' '}
+          {t.auth.signup.haveAccount}{' '}
           <Link
             href="/supplier/auth/signin"
             className="font-medium text-blue-600 hover:text-blue-500"
           >
-            قم بتسجيل الدخول إلى حسابك
+            {t.auth.signup.login}
           </Link>
         </p>
       </div>
@@ -172,7 +166,7 @@ export default function SupplierSignUp() {
 
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                اسم المسؤول
+                {t.auth.signup.name}
               </label>
               <div className="mt-1">
                 <input
@@ -189,7 +183,7 @@ export default function SupplierSignUp() {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                البريد الإلكتروني
+                {t.auth.signup.email}
               </label>
               <div className="mt-1">
                 <input
@@ -208,7 +202,7 @@ export default function SupplierSignUp() {
 
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                رقم الجوال
+                {t.auth.signup.phone}
               </label>
               <div className="mt-1">
                 <input
@@ -216,7 +210,7 @@ export default function SupplierSignUp() {
                   name="phone"
                   type="tel"
                   required
-                  placeholder="05xxxxxxxx أو +9665xxxxxxxx"
+                  placeholder={t.auth.signup.phonePlaceholder}
                   value={formData.phone}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -227,7 +221,7 @@ export default function SupplierSignUp() {
 
             <div>
               <label htmlFor="businessType" className="block text-sm font-medium text-gray-700">
-                نوع النشاط التجاري
+                {t.auth.signup.businessType}
               </label>
               <div className="mt-1">
                 <select
@@ -238,17 +232,17 @@ export default function SupplierSignUp() {
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 >
-                  <option value="manufacturer">مصنع</option>
-                  <option value="distributor">موزع</option>
-                  <option value="retailer">تاجر تجزئة</option>
-                  <option value="other">أخرى</option>
+                  <option value="manufacturer">{t.auth.signup.businessTypes.manufacturer}</option>
+                  <option value="distributor">{t.auth.signup.businessTypes.distributor}</option>
+                  <option value="retailer">{t.auth.signup.businessTypes.retailer}</option>
+                  <option value="other">{t.auth.signup.businessTypes.other}</option>
                 </select>
               </div>
             </div>
 
             <div>
               <label htmlFor="taxId" className="block text-sm font-medium text-gray-700">
-                الرقم الضريبي
+                {t.auth.signup.taxId}
               </label>
               <div className="mt-1">
                 <input
@@ -267,7 +261,7 @@ export default function SupplierSignUp() {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                كلمة المرور
+                {t.auth.signup.password}
               </label>
               <div className="mt-1">
                 <input
@@ -285,7 +279,7 @@ export default function SupplierSignUp() {
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                تأكيد كلمة المرور
+                {t.auth.signup.confirmPassword}
               </label>
               <div className="mt-1">
                 <input
@@ -309,7 +303,7 @@ export default function SupplierSignUp() {
                   isLoading ? 'opacity-75 cursor-not-allowed' : ''
                 }`}
               >
-                {isLoading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب'}
+                {isLoading ? t.auth.signup.loading : t.auth.signup.submit}
               </button>
             </div>
           </form>
