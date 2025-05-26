@@ -71,6 +71,11 @@ export async function middleware(request) {
       return NextResponse.rewrite(new URL('/supplier', request.url));
     }
 
+    // If it's a public route, allow access without authentication
+    if (isPublicSupplierRoute) {
+      return NextResponse.next();
+    }
+
     // Define protected supplier routes that require authentication
     const isProtectedSupplierRoute = 
       pathname.startsWith('/supplier/dashboard') ||
@@ -80,11 +85,10 @@ export async function middleware(request) {
       pathname.startsWith('/supplier/inventory') ||
       pathname.startsWith('/supplier/profile');
 
-    // Get the token for protected route checks
-    const token = await getToken({ req: request });
-
-    // Handle authentication for protected supplier routes only
+    // Only check authentication for protected routes
     if (isProtectedSupplierRoute) {
+      const token = await getToken({ req: request });
+      
       if (!token) {
         return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
       }
@@ -95,15 +99,13 @@ export async function middleware(request) {
     }
 
     // If user is authenticated and tries to access auth pages
+    const token = await getToken({ req: request });
     if (token && pathname.startsWith('/supplier/auth/')) {
       return NextResponse.redirect(new URL('/supplier/dashboard', request.url));
     }
 
-    // If not already prefixed with /supplier and not a public route, add it
-    if (!pathname.startsWith('/supplier') && !isPublicSupplierRoute) {
-      const newPathname = `/supplier${pathname}`;
-      return NextResponse.rewrite(new URL(newPathname, request.url));
-    }
+    // For all other supplier routes that aren't explicitly public or protected
+    return NextResponse.next();
   } else {
     // If accessing supplier routes on main domain, redirect to supplier subdomain
     if (pathname.startsWith('/supplier')) {
