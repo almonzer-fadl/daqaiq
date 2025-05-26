@@ -1,22 +1,46 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
+const secret = process.env.NEXTAUTH_SECRET;
+
 export async function middleware(request) {
-  const { pathname, host } = request.nextUrl;
+  const { pathname, host, protocol } = request.nextUrl;
   
-  // Get the token
-  const token = await getToken({ req: request });
+  // Get the token with the correct domain configuration
+  const token = await getToken({ 
+    req: request,
+    secret,
+    secureCookie: process.env.NODE_ENV === 'production'
+  });
   
+  // Handle supplier subdomain logic
+  const isSupplierDomain = host.startsWith('supplier.');
+  const isSupplierPath = pathname.startsWith('/supplier');
+
   // If on main domain and trying to access supplier routes, redirect to supplier subdomain
-  if (!host.startsWith('supplier.') && pathname.startsWith('/supplier')) {
-    return NextResponse.redirect(new URL(pathname, `https://supplier.${host}`));
+  if (!isSupplierDomain && isSupplierPath) {
+    const url = new URL(pathname, `${protocol}//supplier.${host}`);
+    // Preserve query parameters and hash
+    url.search = request.nextUrl.search;
+    url.hash = request.nextUrl.hash;
+    return NextResponse.redirect(url);
+  }
+
+  // If on supplier subdomain but not on a supplier path, add /supplier prefix
+  if (isSupplierDomain && !isSupplierPath && !pathname.startsWith('/api/')) {
+    const url = new URL(`/supplier${pathname}`, request.url);
+    url.search = request.nextUrl.search;
+    url.hash = request.nextUrl.hash;
+    return NextResponse.redirect(url);
   }
 
   // Protected supplier routes
-  if (pathname.startsWith('/supplier') && !pathname.startsWith('/supplier/auth')) {
+  if (isSupplierPath && !pathname.startsWith('/supplier/auth')) {
     if (!token) {
       // Not authenticated, redirect to login
-      return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
+      const url = new URL('/supplier/auth/signin', request.url);
+      url.searchParams.set('callbackUrl', encodeURIComponent(request.url));
+      return NextResponse.redirect(url);
     }
 
     if (token.role !== 'supplier') {
