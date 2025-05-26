@@ -33,18 +33,11 @@ export default function SupplierSignIn() {
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
-        redirect: false,
+        redirect: true,
         callbackUrl: '/supplier/dashboard'
       });
-
-      if (result?.error) {
-        setError(t.auth.signin.error);
-      } else {
-        router.push('/supplier/dashboard');
-      }
     } catch (error) {
       setError(t.common.error);
-    } finally {
       setIsLoading(false);
     }
   };
