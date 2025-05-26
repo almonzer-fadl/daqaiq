@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
@@ -20,18 +20,7 @@ export default function SupplierDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.replace('/supplier/auth/signin');
-      return;
-    }
-
-    if (status === 'authenticated' && session?.user?.role === 'supplier') {
-      fetchMetrics();
-    }
-  }, [status, session]);
-
-  async function fetchMetrics() {
+  const fetchMetrics = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -50,7 +39,20 @@ export default function SupplierDashboard() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    // Only redirect if we're sure the session is not loading and user is not authenticated
+    if (status === 'unauthenticated') {
+      router.replace('/supplier/auth/signin');
+      return;
+    }
+
+    // Only fetch metrics if we have an authenticated supplier
+    if (status === 'authenticated' && session?.user?.role === 'supplier') {
+      fetchMetrics();
+    }
+  }, [status, session, router, fetchMetrics]);
 
   if (status === 'loading') {
     return (

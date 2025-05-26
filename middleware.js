@@ -16,30 +16,36 @@ export async function middleware(request) {
   // Handle supplier subdomain logic
   const isSupplierDomain = host.startsWith('supplier.');
   const isSupplierPath = pathname.startsWith('/supplier');
+  const isAuthPath = pathname.startsWith('/supplier/auth');
+  const isApiPath = pathname.startsWith('/api');
+  const isNextPath = pathname.startsWith('/_next');
+  const isPublicPath = isAuthPath || isApiPath || isNextPath;
 
   // If on main domain and trying to access supplier routes, redirect to supplier subdomain
   if (!isSupplierDomain && isSupplierPath) {
     const url = new URL(pathname, `${protocol}//supplier.${host}`);
-    // Preserve query parameters and hash
     url.search = request.nextUrl.search;
-    url.hash = request.nextUrl.hash;
     return NextResponse.redirect(url);
   }
 
+  // Don't redirect public paths or if already on the correct path format
+  if (isPublicPath || (isSupplierDomain && isSupplierPath)) {
+    return NextResponse.next();
+  }
+
   // If on supplier subdomain but not on a supplier path, add /supplier prefix
-  if (isSupplierDomain && !isSupplierPath && !pathname.startsWith('/api/')) {
-    const url = new URL(`/supplier${pathname}`, request.url);
+  if (isSupplierDomain && !isSupplierPath) {
+    const url = new URL(pathname === '/' ? '/supplier' : `/supplier${pathname}`, request.url);
     url.search = request.nextUrl.search;
-    url.hash = request.nextUrl.hash;
     return NextResponse.redirect(url);
   }
 
   // Protected supplier routes
-  if (isSupplierPath && !pathname.startsWith('/supplier/auth')) {
+  if (isSupplierPath && !isAuthPath) {
     if (!token) {
       // Not authenticated, redirect to login
       const url = new URL('/supplier/auth/signin', request.url);
-      url.searchParams.set('callbackUrl', encodeURIComponent(request.url));
+      url.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(url);
     }
 
@@ -55,7 +61,7 @@ export async function middleware(request) {
 
 export const config = {
   matcher: [
-    '/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
     '/supplier/:path*'
   ],
 }; 
