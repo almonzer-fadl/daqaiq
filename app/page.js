@@ -1,3 +1,5 @@
+import { headers } from 'next/headers';
+import SupplierLanding from './supplier/page';
 import HeroSlider from '@/components/HeroSlider';
 import CategorySlider from '@/components/category-slider/CategorySlider';
 import ProductSlider from '@/components/products/ProductSlider';
@@ -27,7 +29,16 @@ const dummyProducts = [
   }
 ];
 
-export default async function Home() {
+export default function RootPage() {
+  const headersList = headers();
+  const host = headersList.get('host') || '';
+  const isSupplierSubdomain = host.startsWith('supplier.');
+
+  if (isSupplierSubdomain) {
+    return <SupplierLanding />;
+  }
+
+  // Your main website landing page here
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
