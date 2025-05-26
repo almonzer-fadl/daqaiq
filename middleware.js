@@ -1,16 +1,14 @@
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-const secret = process.env.NEXTAUTH_SECRET;
-
 export async function middleware(request) {
   const { pathname, host, protocol } = request.nextUrl;
   
   // Get the token with the correct domain configuration
   const token = await getToken({ 
     req: request,
-    secret,
-    secureCookie: process.env.NODE_ENV === 'production'
+    secret: process.env.NEXTAUTH_SECRET,
+    secureCookie: true
   });
   
   // Handle supplier subdomain logic

@@ -38,19 +38,20 @@ export const authOptions = {
       }
     })
   ],
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   cookies: {
     sessionToken: {
-      name: 'next-auth.session-token',
+      name: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        domain: process.env.NODE_ENV === 'production' ? '.daqaiq.com' : undefined
+        secure: true,
+        domain: process.env.NODE_ENV === 'production' ? '.daqaiq.com' : 'localhost'
       }
     },
     callbackUrl: {
@@ -69,23 +70,22 @@ export const authOptions = {
     error: '/supplier/auth/error',
   },
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user }) {
       if (user) {
-        // Initial sign in
-        token.role = user.role;
         token.id = user.id;
-      }
-      // Update token if session is updated
-      if (trigger === "update" && session) {
-        token = { ...token, ...session };
+        token.email = user.email;
+        token.name = user.name;
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-      }
+      session.user = {
+        id: token.id,
+        email: token.email,
+        name: token.name,
+        role: token.role
+      };
       return session;
     }
   }
