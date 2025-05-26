@@ -7,7 +7,12 @@ import { toast } from 'react-hot-toast';
 import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
 
 export default function SupplierDashboard() {
-  const { data: session, status } = useSession();
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      window.location.href = '/supplier/auth/signin';
+    },
+  });
   const router = useRouter();
   const [metrics, setMetrics] = useState({
     totalOrders: 0,
@@ -42,19 +47,13 @@ export default function SupplierDashboard() {
   }, []);
 
   useEffect(() => {
-    // Only redirect if we're sure the session is not loading and user is not authenticated
-    if (status === 'unauthenticated') {
-      router.replace('/supplier/auth/signin');
-      return;
-    }
-
-    // Only fetch metrics if we have an authenticated supplier
-    if (status === 'authenticated' && session?.user?.role === 'supplier') {
+    if (session?.user?.role === 'supplier') {
       fetchMetrics();
     }
-  }, [status, session, router, fetchMetrics]);
+  }, [session, fetchMetrics]);
 
-  if (status === 'loading') {
+  // Show loading state while session is being fetched
+  if (status === 'loading' || loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -62,24 +61,8 @@ export default function SupplierDashboard() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">{t.common.error}</h2>
-          <p className="text-gray-600">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            {t.common.retry}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!session || session?.user?.role !== 'supplier') {
+  // Don't render anything if not a supplier
+  if (session?.user?.role !== 'supplier') {
     return null;
   }
 
