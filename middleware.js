@@ -56,7 +56,6 @@ export async function middleware(request) {
     const isPublicSupplierRoute = 
       pathname === '/' || 
       pathname === '/supplier' ||
-      pathname === '/supplier/landing' ||
       pathname.startsWith('/supplier/auth/') ||
       pathname.startsWith('/_next/') ||
       pathname.startsWith('/images/') ||
@@ -69,7 +68,7 @@ export async function middleware(request) {
 
     // If accessing root path on supplier subdomain, serve the supplier landing page
     if (pathname === '/') {
-      return NextResponse.rewrite(new URL('/supplier/landing', request.url));
+      return NextResponse.rewrite(new URL('/supplier', request.url));
     }
 
     // Define protected supplier routes that require authentication
