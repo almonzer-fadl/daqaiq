@@ -56,24 +56,23 @@ export async function middleware(request) {
     const isPublicSupplierRoute = 
       pathname === '/' || 
       pathname === '/supplier' ||
+      pathname === '/supplier/landing' ||
       pathname.startsWith('/supplier/auth/') ||
       pathname.startsWith('/_next/') ||
       pathname.startsWith('/images/') ||
       pathname.startsWith('/api/auth/') ||
-      pathname.startsWith('/api/supplier/auth/');
+      pathname.startsWith('/api/supplier/auth/') ||
+      pathname.startsWith('/api/supplier/public/') ||
+      pathname.includes('.') || // Allow static files
+      pathname.startsWith('/fonts/') ||
+      pathname.startsWith('/assets/');
 
     // If accessing root path on supplier subdomain, serve the supplier landing page
     if (pathname === '/') {
-      return NextResponse.rewrite(new URL('/supplier', request.url));
+      return NextResponse.rewrite(new URL('/supplier/landing', request.url));
     }
 
-    // If not already prefixed with /supplier and not a public route, add it
-    if (!pathname.startsWith('/supplier') && !isPublicSupplierRoute) {
-      const newPathname = `/supplier${pathname}`;
-      return NextResponse.rewrite(new URL(newPathname, request.url));
-    }
-
-    // Define protected supplier routes
+    // Define protected supplier routes that require authentication
     const isProtectedSupplierRoute = 
       pathname.startsWith('/supplier/dashboard') ||
       pathname.startsWith('/supplier/products') ||
@@ -85,7 +84,7 @@ export async function middleware(request) {
     // Get the token for protected route checks
     const token = await getToken({ req: request });
 
-    // Handle authentication for protected supplier routes
+    // Handle authentication for protected supplier routes only
     if (isProtectedSupplierRoute) {
       if (!token) {
         return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
@@ -99,6 +98,12 @@ export async function middleware(request) {
     // If user is authenticated and tries to access auth pages
     if (token && pathname.startsWith('/supplier/auth/')) {
       return NextResponse.redirect(new URL('/supplier/dashboard', request.url));
+    }
+
+    // If not already prefixed with /supplier and not a public route, add it
+    if (!pathname.startsWith('/supplier') && !isPublicSupplierRoute) {
+      const newPathname = `/supplier${pathname}`;
+      return NextResponse.rewrite(new URL(newPathname, request.url));
     }
   } else {
     // If accessing supplier routes on main domain, redirect to supplier subdomain

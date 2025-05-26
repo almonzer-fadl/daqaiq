@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -44,6 +44,30 @@ export default function HeroSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
+  const nextSlide = useCallback(() => {
+    if (!isAnimating) {
+      setIsAnimating(true);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+      setTimeout(() => setIsAnimating(false), 500);
+    }
+  }, [isAnimating]);
+
+  const prevSlide = useCallback(() => {
+    if (!isAnimating) {
+      setIsAnimating(true);
+      setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+      setTimeout(() => setIsAnimating(false), 500);
+    }
+  }, [isAnimating]);
+
+  const goToSlide = useCallback((index) => {
+    if (!isAnimating && index !== currentSlide) {
+      setIsAnimating(true);
+      setCurrentSlide(index);
+      setTimeout(() => setIsAnimating(false), 500);
+    }
+  }, [isAnimating, currentSlide]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide();
@@ -51,30 +75,6 @@ export default function HeroSlider() {
 
     return () => clearInterval(interval);
   }, [nextSlide]);
-
-  const nextSlide = () => {
-    if (!isAnimating) {
-      setIsAnimating(true);
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-      setTimeout(() => setIsAnimating(false), 500);
-    }
-  };
-
-  const prevSlide = () => {
-    if (!isAnimating) {
-      setIsAnimating(true);
-      setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-      setTimeout(() => setIsAnimating(false), 500);
-    }
-  };
-
-  const goToSlide = (index) => {
-    if (!isAnimating && index !== currentSlide) {
-      setIsAnimating(true);
-      setCurrentSlide(index);
-      setTimeout(() => setIsAnimating(false), 500);
-    }
-  };
 
   return (
     <div className="relative h-[600px] overflow-hidden">
