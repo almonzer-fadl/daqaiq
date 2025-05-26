@@ -52,32 +52,8 @@ export async function middleware(request) {
   const isSupplierSubdomain = host.startsWith('supplier.');
   
   if (isSupplierSubdomain) {
-    // Public supplier routes that don't need authentication
-    const isPublicSupplierRoute = 
-      pathname === '/' || 
-      pathname === '/supplier' ||
-      pathname.startsWith('/supplier/auth/') ||
-      pathname.startsWith('/_next/') ||
-      pathname.startsWith('/images/') ||
-      pathname.startsWith('/api/auth/') ||
-      pathname.startsWith('/api/supplier/auth/') ||
-      pathname.startsWith('/api/supplier/public/') ||
-      pathname.includes('.') || // Allow static files
-      pathname.startsWith('/fonts/') ||
-      pathname.startsWith('/assets/');
-
-    // If accessing root path on supplier subdomain, serve the supplier landing page
-    if (pathname === '/') {
-      return NextResponse.rewrite(new URL('/supplier', request.url));
-    }
-
-    // If it's a public route, allow access without authentication
-    if (isPublicSupplierRoute) {
-      return NextResponse.next();
-    }
-
-    // Define protected supplier routes that require authentication
-    const isProtectedSupplierRoute = 
+    // Define protected routes that require authentication
+    const isProtectedRoute = 
       pathname.startsWith('/supplier/dashboard') ||
       pathname.startsWith('/supplier/products') ||
       pathname.startsWith('/supplier/orders') ||
@@ -85,32 +61,28 @@ export async function middleware(request) {
       pathname.startsWith('/supplier/inventory') ||
       pathname.startsWith('/supplier/profile');
 
-    // Only check authentication for protected routes
-    if (isProtectedSupplierRoute) {
+    // If it's a protected route, check authentication
+    if (isProtectedRoute) {
       const token = await getToken({ req: request });
-      
       if (!token) {
         return NextResponse.redirect(new URL('/supplier/auth/signin', request.url));
       }
-
       if (token.role !== 'supplier') {
         return NextResponse.redirect(new URL('/', request.url));
       }
     }
 
-    // If user is authenticated and tries to access auth pages
-    const token = await getToken({ req: request });
-    if (token && pathname.startsWith('/supplier/auth/')) {
-      return NextResponse.redirect(new URL('/supplier/dashboard', request.url));
+    // Handle root path for supplier subdomain
+    if (pathname === '/') {
+      return NextResponse.rewrite(new URL('/supplier', request.url));
     }
 
-    // For all other supplier routes that aren't explicitly public or protected
+    // Allow all other routes to pass through
     return NextResponse.next();
   } else {
     // If accessing supplier routes on main domain, redirect to supplier subdomain
     if (pathname.startsWith('/supplier')) {
-      const newUrl = new URL(pathname, `https://supplier.${host}`);
-      return NextResponse.redirect(newUrl);
+      return NextResponse.redirect(new URL(pathname, `https://supplier.${host}`));
     }
   }
 
@@ -119,18 +91,7 @@ export async function middleware(request) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all paths except for:
-     * 1. /api routes
-     * 2. /_next (Next.js internals)
-     * 3. /_static (inside /public)
-     * 4. all root files inside /public (e.g. /favicon.ico)
-     */
     '/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)',
-    '/dashboard/:path*',
-    '/products/:path*',
-    '/orders/:path*',
-    '/analytics/:path*',
-    '/auth/:path*'
+    '/supplier/:path*'
   ],
 }; 
