@@ -22,46 +22,37 @@ export default function SupplierDashboard() {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/supplier/auth/signin');
+      router.replace('/supplier/auth/signin');
       return;
     }
 
-    if (status === 'authenticated' && session?.user?.role !== 'supplier') {
-      router.push('/');
-      return;
-    }
-
-    async function fetchMetrics() {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch('/api/supplier/dashboard/metrics', {
-          headers: {
-            'Authorization': `Bearer ${session?.accessToken}`
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch metrics');
-        }
-
-        const data = await response.json();
-        setMetrics(data);
-      } catch (error) {
-        console.error('Error fetching metrics:', error);
-        setError(error.message);
-        toast.error(t.common.error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (session?.user?.role === 'supplier') {
+    if (status === 'authenticated' && session?.user?.role === 'supplier') {
       fetchMetrics();
     }
-  }, [session, status, router]);
+  }, [status, session]);
 
-  if (status === 'loading' || loading) {
+  async function fetchMetrics() {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch('/api/supplier/dashboard/metrics');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch metrics');
+      }
+
+      const data = await response.json();
+      setMetrics(data);
+    } catch (error) {
+      console.error('Error fetching metrics:', error);
+      setError(error.message);
+      toast.error(t.common.error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (status === 'loading') {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
