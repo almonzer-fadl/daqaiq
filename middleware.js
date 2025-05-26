@@ -53,15 +53,14 @@ export async function middleware(request) {
   
   if (isSupplierSubdomain) {
     // Public supplier routes that don't need authentication
-    const isPublicSupplierRoute = pathname === '/' || 
-                                 pathname === '/supplier' ||
-                                 pathname.startsWith('/supplier/auth/') ||
-                                 pathname.startsWith('/_next/') ||
-                                 pathname.startsWith('/images/') ||
-                                 pathname.startsWith('/api/');
-
-    // Get the token for protected route checks
-    const token = await getToken({ req: request });
+    const isPublicSupplierRoute = 
+      pathname === '/' || 
+      pathname === '/supplier' ||
+      pathname.startsWith('/supplier/auth/') ||
+      pathname.startsWith('/_next/') ||
+      pathname.startsWith('/images/') ||
+      pathname.startsWith('/api/auth/') ||
+      pathname.startsWith('/api/supplier/auth/');
 
     // If accessing root path on supplier subdomain, serve the supplier landing page
     if (pathname === '/') {
@@ -75,12 +74,16 @@ export async function middleware(request) {
     }
 
     // Define protected supplier routes
-    const isProtectedSupplierRoute = pathname.startsWith('/supplier/dashboard') ||
-                                   pathname.startsWith('/supplier/products') ||
-                                   pathname.startsWith('/supplier/orders') ||
-                                   pathname.startsWith('/supplier/analytics') ||
-                                   pathname.startsWith('/supplier/inventory') ||
-                                   pathname.startsWith('/supplier/profile');
+    const isProtectedSupplierRoute = 
+      pathname.startsWith('/supplier/dashboard') ||
+      pathname.startsWith('/supplier/products') ||
+      pathname.startsWith('/supplier/orders') ||
+      pathname.startsWith('/supplier/analytics') ||
+      pathname.startsWith('/supplier/inventory') ||
+      pathname.startsWith('/supplier/profile');
+
+    // Get the token for protected route checks
+    const token = await getToken({ req: request });
 
     // Handle authentication for protected supplier routes
     if (isProtectedSupplierRoute) {
