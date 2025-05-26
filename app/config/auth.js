@@ -1,6 +1,9 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
+import dbConnect from '@/lib/dbConnect';
+import User from '@/lib/models/user';
 
-const authConfig = {
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -9,9 +12,34 @@ const authConfig = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        // Add your authentication logic here
-        // This is where you'll verify credentials against your database
-        return null;
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('البريد الإلكتروني وكلمة المرور مطلوبة');
+        }
+
+        try {
+          await dbConnect();
+          const user = await User.findOne({ email: credentials.email });
+          
+          if (!user) {
+            throw new Error('البريد الإلكتروني غير موجود');
+          }
+
+          const isValid = await bcrypt.compare(credentials.password, user.password);
+          
+          if (!isValid) {
+            throw new Error('كلمة المرور غير صحيحة');
+          }
+
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            role: user.role,
+            businessName: user.businessName
+          };
+        } catch (error) {
+          console.error('Auth error:', error);
+          throw error;
+        }
       }
     })
   ],
@@ -24,6 +52,7 @@ const authConfig = {
       if (user) {
         token.role = user.role;
         token.id = user.id;
+        token.businessName = user.businessName;
       }
       return token;
     },
@@ -31,6 +60,7 @@ const authConfig = {
       if (token) {
         session.user.role = token.role;
         session.user.id = token.id;
+        session.user.businessName = token.businessName;
       }
       return session;
     },
@@ -52,4 +82,4 @@ const authConfig = {
   secret: process.env.NEXTAUTH_SECRET
 };
 
-export default authConfig; 
+export default authOptions; 

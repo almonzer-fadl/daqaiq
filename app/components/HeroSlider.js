@@ -45,12 +45,12 @@ export default function HeroSlider() {
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const interval = setInterval(() => {
       nextSlide();
     }, 5000);
 
-    return () => clearInterval(timer);
-  }, [currentSlide]);
+    return () => clearInterval(interval);
+  }, [nextSlide]);
 
   const nextSlide = () => {
     if (!isAnimating) {

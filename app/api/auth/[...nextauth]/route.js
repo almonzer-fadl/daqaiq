@@ -1,8 +1,11 @@
 import NextAuth from 'next-auth';
+import { authOptions } from '@/app/config/auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
+
+const handler = NextAuth(authOptions);
 
 const handler = NextAuth({
   providers: [
@@ -108,4 +111,5 @@ const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
 });
 
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST };
+export { authOptions }; 

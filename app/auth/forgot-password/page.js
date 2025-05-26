@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -39,10 +40,12 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <img
-          className="mx-auto h-12 w-auto"
-          src="/logo.png"
-          alt="Daqaiq Supplier"
+        <Image 
+          src="/path-to-your-image"
+          alt="Forgot Password"
+          width={500}
+          height={300}
+          className="w-auto h-auto"
         />
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Reset your password

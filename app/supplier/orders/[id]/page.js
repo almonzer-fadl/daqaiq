@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { SUPPLIER_TRANSLATIONS as t } from '@/constants/supplier-translations';
+import Image from 'next/image';
 
 export default function OrderDetails() {
   const { data: session } = useSession();
@@ -134,9 +135,11 @@ export default function OrderDetails() {
                 <div key={item._id} className="py-4 flex items-center justify-between">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 w-16 h-16 border border-gray-200 rounded-md overflow-hidden">
-                      <img
-                        src={item.product.image || '/placeholder.png'}
+                      <Image 
+                        src={item.product.image}
                         alt={item.product.name}
+                        width={100}
+                        height={100}
                         className="w-full h-full object-center object-cover"
                       />
                     </div>
